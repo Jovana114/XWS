@@ -1,34 +1,30 @@
 package com.bezkoder.spring.data.mongodb.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import com.bezkoder.spring.data.mongodb.model.ERole;
+import com.bezkoder.spring.data.mongodb.model.Role;
+import com.bezkoder.spring.data.mongodb.payload.request.SignupRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
 import com.bezkoder.spring.data.mongodb.model.user;
 import com.bezkoder.spring.data.mongodb.repository.UserRepository;
+import org.springframework.web.servlet.ModelAndView;
 
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class UserController {
 
   @Autowired
   UserRepository userRepository;
 
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/get_users")
   public ResponseEntity<List<user>> getAllUsers(@RequestParam(required = false) String name) {
     try {
@@ -50,7 +46,7 @@ public class UserController {
   }
 
   @GetMapping("/get_users/{id}")
-  public ResponseEntity<user> getUserById(@PathVariable("id") String id) {
+  public ResponseEntity<user> getUserById(@PathVariable("id") Long id) {
     Optional<user> userData = userRepository.findById(id);
 
     if (userData.isPresent()) {
@@ -63,7 +59,10 @@ public class UserController {
   @PostMapping("/create_users")
   public ResponseEntity<user> createUser(@RequestBody user user_new) {
     try {
-      user _user = userRepository.save(new user(user_new.getName(), user_new.getEmail(), user_new.isPassword()));
+      user _user = userRepository.save(new user(user_new.getName(), user_new.getUsername(), user_new.getEmail(),
+             user_new.getPassword()));
+
+      userRepository.save(user_new);
       return new ResponseEntity<>(_user, HttpStatus.CREATED);
     } catch (Exception e) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -71,7 +70,7 @@ public class UserController {
   }
 
   @PutMapping("/update_users/{id}")
-  public ResponseEntity<user> updateUser(@PathVariable("id") String id, @RequestBody user user_new) {
+  public ResponseEntity<user> updateUser(@PathVariable("id") Long id, @RequestBody user user_new) {
     Optional<user> userData = userRepository.findById(id);
 
     if (userData.isPresent()) {
@@ -86,7 +85,7 @@ public class UserController {
   }
 
   @DeleteMapping("/delete_users/{id}")
-  public ResponseEntity<HttpStatus> deleteUser(@PathVariable("id") String id) {
+  public ResponseEntity<HttpStatus> deleteUser(@PathVariable("id") Long id) {
     try {
       userRepository.deleteById(id);
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -95,7 +94,7 @@ public class UserController {
     }
   }
 
-  @DeleteMapping("/delete_tutorials")
+  @DeleteMapping("/delete_users")
   public ResponseEntity<HttpStatus> deleteAllUsers() {
     try {
       userRepository.deleteAll();
