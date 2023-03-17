@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bezkoder.spring.data.mongodb.model.user;
 import com.bezkoder.spring.data.mongodb.repository.UserRepository;
 
+@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/api")
 public class UserController {
@@ -50,10 +51,10 @@ public class UserController {
 
   @GetMapping("/get_users/{id}")
   public ResponseEntity<user> getUserById(@PathVariable("id") String id) {
-    Optional<user> tutorialData = userRepository.findById(id);
+    Optional<user> userData = userRepository.findById(id);
 
-    if (tutorialData.isPresent()) {
-      return new ResponseEntity<>(tutorialData.get(), HttpStatus.OK);
+    if (userData.isPresent()) {
+      return new ResponseEntity<>(userData.get(), HttpStatus.OK);
     } else {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
