@@ -52,9 +52,9 @@ const SignUp: React.FC = () => {
         <div
           className="row d-flex justify-content-center align-items-center"
         >
-          <div className="card mb-3 mt-3 rounded" style={{ maxWidth: "500px" }}>
+          <div className="card mb-3 mt-3 rounded" style={{ width: "100%" }}>
             <div className="col-md-12">
-              <div className="card-body">
+              <div className="card-body" style={{height: '450px'}}>
                 <h3 className="card-title text-center text-secondary mt-3 mb-3">
                   Sign Up Form
                 </h3>

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { ToastContainer, toast, Flip } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
 import AuthWrapper from "../wrapper/AuthWrapper";
 
@@ -20,34 +21,20 @@ const Login: React.FC = (): JSX.Element => {
       password: data.password,
     };
     axios
-      .post("http://localhost:4000/api/login", params)
+      .post("https://reqres.in/api/login", params)
       .then(function (response) {
         //   IF EMAIL ALREADY EXISTS
         if (response.data.success === false) {
-          toast.error(response.data.error, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: false,
-            progress: 0,
-            toastId: "my_toast",
-          });
+          toast.error('Login Failed!', {
+            position: toast.POSITION.TOP_RIGHT
+        });
         } else {
-          toast.success(response.data.message, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: false,
-            progress: 0,
-            toastId: "my_toast",
-          });
+          toast.success('Login Successful!', {
+            position: toast.POSITION.TOP_RIGHT
+        });
           localStorage.setItem("auth", response.data.token);
           setTimeout(() => {
-            navigate("/");
+            navigate("/home");
           }, 3000);
         }
       })
@@ -63,18 +50,18 @@ const Login: React.FC = (): JSX.Element => {
         <div
           className="row d-flex justify-content-center align-items-center"
         >
-          <div className="card mb-3" style={{ maxWidth: "320px" }}>
+          <div className="card mb-3" style={{ width: "100%" }}>
             <div className="col-md-12">
-              <div className="card-body">
+              <div className="card-body" style={{height: '450px'}}>
                 <h3 className="card-title text-center text-secondary mt-3">
                   Login Form
                 </h3>
                 <form autoComplete="off" onSubmit={handleSubmit(login)}>
-                  <div className="mb-3 mt-4">
+                  <div className="">
                     <label className="form-label">Email</label>
                     <input
                       type="email"
-                      className="form-control shadow-none"
+                      className="form-control form-control-sm"
                       id="exampleFormControlInput1"
                       {...register("email", { required: "Email is required!" })}
                     />
@@ -84,11 +71,11 @@ const Login: React.FC = (): JSX.Element => {
                       </p>
                     )} */}
                   </div>
-                  <div className="mb-3">
+                  <div className="">
                     <label className="form-label">Password</label>
                     <input
                       type="password"
-                      className="form-control shadow-none"
+                      className="form-control form-control-sm"
                       id="exampleFormControlInput2"
                       {...register("password", {
                         required: "Password is required!",
