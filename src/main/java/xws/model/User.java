@@ -1,23 +1,31 @@
-package com.bezkoder.spring.data.mongodb.model;
+package xws.model;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "users")
-public class user {
+public class User {
   @Id
   private String id;
 
-  private String name;
+  private String username;
+
   private String email;
+
   private String password;
 
-  public user() {
+  @DBRef
+  private Set<Role> roles = new HashSet<>();
 
+  public User() {
   }
 
-  public user(String name, String email, String password) {
-    this.name = name;
+  public User(String username, String email, String password) {
+    this.username = username;
     this.email = email;
     this.password = password;
   }
@@ -30,12 +38,12 @@ public class user {
     this.id = id;
   }
 
-  public String getName() {
-    return name;
+  public String getUsername() {
+    return username;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setUsername(String username) {
+    this.username = username;
   }
 
   public String getEmail() {
@@ -46,7 +54,7 @@ public class user {
     this.email = email;
   }
 
-  public String isPassword() {
+  public String getPassword() {
     return password;
   }
 
@@ -54,13 +62,11 @@ public class user {
     this.password = password;
   }
 
-  @Override
-  public String toString() {
-    return "user{" +
-            "id='" + id + '\'' +
-            ", name='" + name + '\'' +
-            ", email='" + email + '\'' +
-            ", password=" + password +
-            '}';
+  public Set<Role> getRoles() {
+    return roles;
+  }
+
+  public void setRoles(Set<Role> roles) {
+    this.roles = roles;
   }
 }

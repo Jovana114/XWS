@@ -12,3 +12,7 @@ services:
       - 8080:8080
     links:
       - javatechiemongodb
+    environment:
+      SPRING_DATA_MONGODB_HOST: localhost
+      SPRING_DATA_MONGODB_PORT: 27017
+      SPRING_DATA_MONGODB_DATABASE: xws

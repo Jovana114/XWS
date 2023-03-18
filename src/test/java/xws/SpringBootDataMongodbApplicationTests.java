@@ -1,4 +1,4 @@
-package com.bezkoder.spring.data.mongodb;
+package xws;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
