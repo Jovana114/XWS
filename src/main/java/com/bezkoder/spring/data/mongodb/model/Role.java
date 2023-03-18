@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Role {
 
     @Id
-    private String id;
+    private Long id;
 
     private ERole name;
 
@@ -15,15 +15,20 @@ public class Role {
 
     }
 
+    public Role(Long id, ERole name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Role(ERole name) {
         this.name = name;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -33,5 +38,13 @@ public class Role {
 
     public void setName(ERole name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "Role{" +
+                "id=" + id +
+                ", name=" + name +
+                '}';
     }
 }

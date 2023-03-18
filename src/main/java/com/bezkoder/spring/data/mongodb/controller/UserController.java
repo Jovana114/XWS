@@ -5,6 +5,7 @@ import java.util.*;
 import com.bezkoder.spring.data.mongodb.model.ERole;
 import com.bezkoder.spring.data.mongodb.model.Role;
 import com.bezkoder.spring.data.mongodb.payload.request.SignupRequest;
+import com.bezkoder.spring.data.mongodb.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,11 @@ public class UserController {
   @Autowired
   UserRepository userRepository;
 
-  @PreAuthorize("hasRole('ADMIN')")
+  @Autowired
+  RoleRepository roleRepository;
+
   @GetMapping("/get_users")
+  @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
   public ResponseEntity<List<user>> getAllUsers(@RequestParam(required = false) String name) {
     try {
       List<user> users = new ArrayList<user>();
@@ -62,7 +66,7 @@ public class UserController {
       user _user = userRepository.save(new user(user_new.getName(), user_new.getUsername(), user_new.getEmail(),
              user_new.getPassword()));
 
-      userRepository.save(user_new);
+      userRepository.save(_user);
       return new ResponseEntity<>(_user, HttpStatus.CREATED);
     } catch (Exception e) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
