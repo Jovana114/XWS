@@ -1,18 +1,26 @@
 version: "3"
 services:
-  javatechiemongodb:
-    image: mongo:latest
-    container_name: "javatechiemongodb"
+  mongodb:
+    image: mongo
+    container_name: mongodb
     ports:
       - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=rootuser
+      - MONGO_INITDB_ROOT_PASSWORD=rootpass
+
   springboot-mongodb:
     image: springboot-mongodb:1.0
     container_name: springboot-mongodb
     ports:
       - 8080:8080
-    links:
-      - javatechiemongodb
     environment:
-      SPRING_DATA_MONGODB_HOST: localhost
-      SPRING_DATA_MONGODB_PORT: 27017
-      SPRING_DATA_MONGODB_DATABASE: xws
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=rootpass
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=rootpass
+    
+networks:
+  default:
+    name: mongodb_network
+    
+  

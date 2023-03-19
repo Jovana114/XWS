@@ -1,6 +1,0 @@
-spring:
-  data:
-    mongodb:
-      database: xws
-      host: javatechiemongodb
-      port: 27017
