@@ -8,6 +8,9 @@ import { useNavigate } from "react-router-dom";
 import AuthWrapper from "../wrapper/AuthWrapper";
 
 const Login: React.FC = (): JSX.Element => {
+  
+  document.title = "Login"
+
   const navigate = useNavigate();
   const {
     register,

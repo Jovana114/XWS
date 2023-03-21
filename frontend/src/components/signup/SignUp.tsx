@@ -6,6 +6,9 @@ import { ToastContainer, toast, Flip } from "react-toastify";
 import AuthWrapper from "../wrapper/AuthWrapper";
 
 const SignUp: React.FC = () => {
+
+  document.title = "Register"
+
   const navigate = useNavigate();
   const {
     register,
