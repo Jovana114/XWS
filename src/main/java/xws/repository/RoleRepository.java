@@ -7,5 +7,5 @@ import xws.model.Role;
 import java.util.Optional;
 
 public interface RoleRepository extends MongoRepository<Role, String> {
-    Optional<Role> findByName(ERole name);
+  Optional<Role> findByName(ERole name);
 }
