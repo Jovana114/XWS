@@ -24,40 +24,28 @@ public class TestController {
 		return "Public Content.";
 	}
 	
-	@GetMapping("/user")
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	@GetMapping("/guest")
+	@PreAuthorize("hasRole('GUEST')")
 	public String userAccess() {
 		return "User Content.";
 	}
 
-	@GetMapping("/mod")
-	@PreAuthorize("hasRole('MODERATOR')")
+	@GetMapping("/host")
+	@PreAuthorize("hasRole('HOST')")
 	public String moderatorAccess() {
 		return "Moderator Board.";
 	}
 
-	@GetMapping("/admin")
-	@PreAuthorize("hasRole('ADMIN')")
-	public String adminAccess() {
-		return "Admin Board.";
-	}
-
-	@PostMapping("/createAdmin")
-	public ResponseEntity<?> createAdmin() {
-		Role role = new Role(ERole.ROLE_ADMIN);
+	@PostMapping("/createHost")
+	public ResponseEntity<?> createHost() {
+		Role role = new Role(ERole.ROLE_HOST);
 		roleRepository.save(role);
-		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+		return ResponseEntity.ok(new MessageResponse("Host role created successfully!"));
 	}
-	@PostMapping("/createMod")
-	public ResponseEntity<?> createMod() {
-		Role role = new Role(ERole.ROLE_MODERATOR);
+	@PostMapping("/createGuest")
+	public ResponseEntity<?> createGuest() {
+		Role role = new Role(ERole.ROLE_GUEST);
 		roleRepository.save(role);
-		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-	}
-	@PostMapping("/createUser")
-	public ResponseEntity<?> createUser() {
-		Role role = new Role(ERole.ROLE_USER);
-		roleRepository.save(role);
-		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+		return ResponseEntity.ok(new MessageResponse("Guest role created successfully!"));
 	}
 }

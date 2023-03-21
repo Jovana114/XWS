@@ -17,11 +17,11 @@ const Login: React.FC = (): JSX.Element => {
 
   const login = (data: any) => {
     let params = {
-      email: data.email,
+      username: data.username,
       password: data.password,
     };
     axios
-      .post("https://reqres.in/api/login", params)
+      .post("http://localhost:8080/api/auth/signin", params)
       .then(function (response) {
         //   IF EMAIL ALREADY EXISTS
         if (response.data.success === false) {
@@ -32,7 +32,7 @@ const Login: React.FC = (): JSX.Element => {
           toast.success('Login Successful!', {
             position: toast.POSITION.TOP_RIGHT
         });
-          localStorage.setItem("auth", response.data.token);
+          localStorage.setItem("token", response.data.accessToken);
           setTimeout(() => {
             navigate("/home");
           }, 3000);
@@ -58,14 +58,15 @@ const Login: React.FC = (): JSX.Element => {
                 </h3>
                 <form autoComplete="off" onSubmit={handleSubmit(login)}>
                   <div className="">
-                    <label className="form-label">Email</label>
+                    <label className="form-label">Username</label>
                     <input
-                      type="email"
+                      type="text"
                       className="form-control form-control-sm"
                       id="exampleFormControlInput1"
-                      {...register("email", { required: "Email is required!" })}
+                      {...register("username", { required: "username is required!" })}
                     />
-                    {/* {errors.email && (
+                    {/* {errors.
+                     && (
                       <p className="text-danger" style={{ fontSize: 14 }}>
                         {errors.email.message}
                       </p>

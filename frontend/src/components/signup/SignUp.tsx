@@ -16,15 +16,14 @@ const SignUp: React.FC = () => {
   } = useForm();
   const submitData = (data: any) => {
     let params = {
-      firstname: data.firstname,
-      lastname: data.lastname,
+      username: data.username,
       email: data.email,
       password: data.password,
       confirmpassword: data.cpassword,
     };
     console.log(data);
     axios
-      .post("http://localhost:4000/api/signup", params)
+      .post("http://localhost:8080/api/auth/signup", params)
       .then(function (response) {
         toast.success(response.data.message, {
           position: "top-right",
@@ -65,40 +64,19 @@ const SignUp: React.FC = () => {
                 >
                   <div className="col-md-6">
                     <div className="">
-                      <label className="form-label">Firstname</label>
+                      <label className="form-label">Username</label>
                       <input
                         type="text"
                         className="form-control form-control-sm"
                         id="exampleFormControlInput1"
-                        {...register("firstname", {
-                          required: "Firstname is required!",
+                        {...register("username", {
+                          required: "Username is required!",
                         })}
                       />
-                      {/* {errors.firstname && (
-                        <p className="text-danger" style={{ fontSize: 14 }}>
-                          {errors.firstname.message}
-                        </p>
-                      )} */}
+                      
                     </div>
                   </div>
-                  <div className="col-md-6">
-                    <div className="">
-                      <label className="form-label">Lastname</label>
-                      <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        id="exampleFormControlInput2"
-                        {...register("lastname", {
-                          required: "Lastname is required!",
-                        })}
-                      />
-                      {/* {errors.lastname && (
-                        <p className="text-danger" style={{ fontSize: 14 }}>
-                          {errors.lastname.message}
-                        </p>
-                      )} */}
-                    </div>
-                  </div>
+                  
 
                   <div className="">
                     <label className="form-label">Email</label>
@@ -108,11 +86,6 @@ const SignUp: React.FC = () => {
                       id="exampleFormControlInput3"
                       {...register("email", { required: "Email is required!" })}
                     />
-                    {/* {errors.email && (
-                      <p className="text-danger" style={{ fontSize: 14 }}>
-                        {errors.email.message}
-                      </p>
-                    )} */}
                   </div>
                   <div className="">
                     <label className="form-label">Password</label>
@@ -124,11 +97,6 @@ const SignUp: React.FC = () => {
                         required: "Password is required!",
                       })}
                     />
-                    {/* {errors.password && (
-                      <p className="text-danger" style={{ fontSize: 14 }}>
-                        {errors.password.message}
-                      </p>
-                    )} */}
                   </div>
                   <div>
                     <label className="form-label">Confirm Password</label>
@@ -144,11 +112,6 @@ const SignUp: React.FC = () => {
                           "Passwords don't match.",
                       })}
                     />
-                    {/* {errors.cpassword && (
-                      <p className="text-danger" style={{ fontSize: 14 }}>
-                        {errors.cpassword.message}
-                      </p>
-                    )} */}
                   </div>
                   <div className="text-center mt-4 ">
                     <button
