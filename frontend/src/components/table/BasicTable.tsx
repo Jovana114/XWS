@@ -8,6 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import Button from "@mui/material/Button";
 import { useEffect, useState } from 'react';
 
 const token = localStorage.getItem("token");
@@ -45,6 +46,26 @@ useEffect(() => {
 }, []);
 
 
+const handleDelete = async (id: any, e: any) => {
+  e.preventDefault();
+
+  const requestOptions = {
+      method: "DELETE",
+      headers: {
+       "Content-type": "application/json",
+       Authorization: `Bearer ${token}`,
+     },
+    };
+    fetch(
+      "http://localhost:8080/api/flight/delete/" + id,
+      requestOptions,
+    ).then((response) => {
+      if (response.ok) console.log('success');
+    });
+   
+  };
+
+
   return rows.length > 0 ? (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -72,6 +93,14 @@ useEffect(() => {
               <TableCell align="right">{row.place_landing}</TableCell>
               <TableCell align="right">{row.number_of_tickets}</TableCell>
               <TableCell align="right">{row.price}</TableCell>
+              <TableCell>
+              <Button
+                onClick={e => handleDelete(row.id, e)}
+                  style={{ background: "#0d6efd", color: "white" }}
+              >
+                Delete
+              </Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
