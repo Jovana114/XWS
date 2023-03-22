@@ -6,12 +6,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import xws.model.Flight;
+import xws.model.User;
 import xws.payload.response.MessageResponse;
+import xws.payload.response.UserWithTicket;
 import xws.repository.FlightRepository;
+import xws.repository.UserRepository;
 import xws.service.FlightService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -23,6 +27,9 @@ public class FlightController {
 
     @Autowired
     FlightService flightService;
+
+    @Autowired
+    UserRepository userRepository;
 
     @PostMapping("/create/")
     @PreAuthorize("hasRole('HOST')")
@@ -72,6 +79,33 @@ public class FlightController {
         try {
             flightRepository.deleteById(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // karte:
+
+    @PutMapping("/buyTicket/{tiket_id}_{user_id}")
+    @PreAuthorize("hasRole('GUEST')")
+    public ResponseEntity<?> buyTicket(@PathVariable("tiket_id") String tiket_id, @PathVariable("user_id") String user_id) {
+        try {
+            Optional<Flight> flight = flightRepository.findById(tiket_id);
+            Optional<User> user = userRepository.findById(user_id);
+            if(flight.isPresent() && user.isPresent()){
+                Flight _flight = flight.get();
+                User _user = user.get();
+
+                if(_flight.getNumber_of_tickets() != 0) {
+                    _user.getFlights().add(_flight);
+                    userRepository.save(_user);
+
+                    _flight.setNumber_of_tickets(_flight.getNumber_of_tickets() - 1);
+                    flightRepository.save(_flight);
+
+                    return new ResponseEntity<>(_user.getFlights(), HttpStatus.OK);
+                }
+            } return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
