@@ -38,7 +38,7 @@ public class FlightController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasRole('HOST')")
+    @PreAuthorize("hasRole('HOST') or hasRole('GUEST')")
     public ResponseEntity<?> allFlight() {
         List<Flight> flights = flightRepository.findAll();
         if(!flights.isEmpty())

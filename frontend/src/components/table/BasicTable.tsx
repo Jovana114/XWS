@@ -42,7 +42,7 @@ const fetchData = () => {
 
 useEffect(() => {
   fetchData()
-})
+}, []);
 
 
   return rows.length > 0 ? (

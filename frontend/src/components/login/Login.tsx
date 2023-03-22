@@ -85,11 +85,6 @@ const Login: React.FC = (): JSX.Element => {
                         required: "Password is required!",
                       })}
                     />
-                    {/* {errors.password && (
-                      <p className="text-danger" style={{ fontSize: 14 }}>
-                        {errors.password.message}
-                      </p>
-                    )} */}
                   </div>
                   <div className="text-center mt-4 ">
                     <button
