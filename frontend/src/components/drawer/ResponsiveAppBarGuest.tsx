@@ -12,6 +12,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import ShowTickets  from "../ShowTickets/ShowTickets";
+import { Navigate } from "react-router-dom";
 
 
 const pages = ['Show tickets'];
@@ -20,6 +21,8 @@ const settings = ['Logout'];
 export const ResponsiveAppBarGuest = () => {
 
   const [openShowTickets, setOpenShowTickets] = React.useState(false);
+  const [navigate, setNavigate] = React.useState(false);
+  const [navigatePage, setNavigatePage] = React.useState("");
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -51,7 +54,20 @@ export const ResponsiveAppBarGuest = () => {
     handleCloseUserMenu();
     if (selectedPage === "Show tickets") {
       handleClickOpenShowTickets();
+    } else if (selectedPage === "Logout") {
+      logout();
     }
+  };
+
+  if (navigate) {
+    return <Navigate to="/login" />;
+  }
+
+  const logout = async () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("id");
+    localStorage.removeItem("role");
+    setNavigate(true);
   };
 
   return (
