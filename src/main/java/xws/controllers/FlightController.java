@@ -8,14 +8,13 @@ import org.springframework.web.bind.annotation.*;
 import xws.model.Flight;
 import xws.model.User;
 import xws.payload.response.MessageResponse;
-import xws.payload.response.UserWithTicket;
 import xws.repository.FlightRepository;
 import xws.repository.UserRepository;
 import xws.service.FlightService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -109,6 +108,22 @@ public class FlightController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/allTicketsPerUser/{user_id}")
+    @PreAuthorize("hasRole('GUEST')")
+    public ResponseEntity<?> allTicketsPerUser(@PathVariable String user_id) {
+        Optional<User> user = userRepository.findById(user_id);
+        if(user.isPresent()){
+            User _user = user.get();
+
+            List<Flight> flights = new ArrayList<>();
+            for (Flight fl: _user.getFlights()) {
+                flights.add(fl);
+            }
+            return new ResponseEntity<>(flights, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 }

@@ -36,8 +36,12 @@ const Login: React.FC = (): JSX.Element => {
             position: toast.POSITION.TOP_RIGHT
         });
           localStorage.setItem("token", response.data.accessToken);
+          localStorage.setItem("id", JSON.stringify(response.data.id));
+          localStorage.setItem("role", JSON.stringify(response.data.roles[0]));
           setTimeout(() => {
-            navigate("/home");
+            navigate(
+              `/home${response.data.roles[0].replace("ROLE_", "").toLowerCase()}`
+            );
           }, 3000);
         }
       })

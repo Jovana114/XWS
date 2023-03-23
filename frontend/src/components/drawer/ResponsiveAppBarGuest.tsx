@@ -11,15 +11,15 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import CreateFlight  from "../Flights/CreateFlight";
+import ShowTickets  from "../ShowTickets/ShowTickets";
 
 
-const pages = ['Create flight'];
+const pages = ['Show tickets'];
 const settings = ['Logout'];
 
-export const ResponsiveAppBarHost = () => {
+export const ResponsiveAppBarGuest = () => {
 
-  const [openCreateFlight, setOpenCreateFlight] = React.useState(false);
+  const [openShowTickets, setOpenShowTickets] = React.useState(false);
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -39,18 +39,18 @@ export const ResponsiveAppBarHost = () => {
     setAnchorElUser(null);
   };
 
-  const handleClickOpenCreateFlight = () => {
-    setOpenCreateFlight(true);
+  const handleClickOpenShowTickets = () => {
+    setOpenShowTickets(true);
   };
 
-  const handleCloseCreateFlight = () => {
-    setOpenCreateFlight(false);
+  const handleCloseShowTickets = () => {
+    setOpenShowTickets(false);
   };
 
   const handlePages = (selectedPage: string) => {
     handleCloseUserMenu();
-    if (selectedPage === "Create flight") {
-      handleClickOpenCreateFlight();
+    if (selectedPage === "Show tickets") {
+      handleClickOpenShowTickets();
     }
   };
 
@@ -146,7 +146,7 @@ export const ResponsiveAppBarHost = () => {
           </Toolbar>
         </Container>
       </AppBar>
-    <CreateFlight open={openCreateFlight} onClose={handleCloseCreateFlight} />
+    <ShowTickets open={openShowTickets} onClose={handleCloseShowTickets} />
     </>
   );
 };
