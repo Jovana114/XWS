@@ -12,15 +12,17 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import CreateFlight  from "../Flights/CreateFlight";
+import SignUpHosts  from "../signup/SignUpHosts";
 import { Navigate } from "react-router-dom";
 
 
-const pages = ['Create flight'];
+const pages = ['Create flight', 'Sign up hosts'];
 const settings = ['Logout'];
 
 export const ResponsiveAppBarHost = () => {
 
   const [openCreateFlight, setOpenCreateFlight] = React.useState(false);
+  const [openSignUpHosts, setOpenSignUpHosts] = React.useState(false);
   const [navigate, setNavigate] = React.useState(false);
   const [navigatePage, setNavigatePage] = React.useState("");
 
@@ -50,12 +52,22 @@ export const ResponsiveAppBarHost = () => {
     setOpenCreateFlight(false);
   };
 
+  const handleClickOpenSignUpHosts = () => {
+    setOpenSignUpHosts(true);
+  };
+
+  const handleCloseSignUpHosts = () => {
+    setOpenSignUpHosts(false);
+  };
+
   const handlePages = (selectedPage: string) => {
     handleCloseUserMenu();
     if (selectedPage === "Create flight") {
       handleClickOpenCreateFlight();
     } else if (selectedPage === "Logout") {
       logout();
+    } else if (selectedPage === "Sign up hosts") {
+      handleClickOpenSignUpHosts();
     }
   };
 
@@ -163,6 +175,7 @@ export const ResponsiveAppBarHost = () => {
         </Container>
       </AppBar>
     <CreateFlight open={openCreateFlight} onClose={handleCloseCreateFlight} />
+    <SignUpHosts open={openSignUpHosts} onClose={handleCloseSignUpHosts} />
     </>
   );
 };

@@ -44,7 +44,7 @@ const handleClose = () => {
   onClose();
 };
 
-  return rows.length > 0 ? (
+  return (
     <>
     <Dialog onClose={handleClose} open={open}>
     <TableContainer component={Paper}>
@@ -80,5 +80,5 @@ const handleClose = () => {
     </TableContainer>
     </Dialog>
     </>
-  ):<h1>No data</h1>
+  );
 }

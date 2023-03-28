@@ -65,7 +65,6 @@ const SignUp: React.FC = () => {
                   autoComplete="off"
                   onSubmit={handleSubmit(submitData)}
                 >
-                  <div className="col-md-6">
                     <div className="">
                       <label className="form-label">Username</label>
                       <input
@@ -78,7 +77,6 @@ const SignUp: React.FC = () => {
                       />
                       
                     </div>
-                  </div>
                   
 
                   <div className="">
