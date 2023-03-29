@@ -16,7 +16,12 @@ const user_id = JSON.parse(localStorage.getItem("id")!);
 
 export default function BasicTableGuest() {
   
-const [rows, setRows] = useState([])
+  const [rows, setRows] = useState<any[]>([])
+  const [search, setSearch] = useState('');
+  const [EndPlace, setEndPlace] = useState('');
+  const [date_and_time_taking_off, setDate_and_time_taking_off] = useState("");
+  const [date_and_time_landing, setDate_and_time_landing] = useState("");
+  const [number_of_tickets, setNumber_of_tickets] = useState(1);
 
 const config = {
   headers: {
@@ -67,23 +72,81 @@ const handleBuy = async (ticket_id: any, e: any) => {
     });
    
   };
+  const filteredRows = rows.filter(row => {
+    return (
+      row.place_taking_off.toLowerCase().includes(search.toLowerCase()) &&
+      row.date_and_time_taking_off.toLowerCase().includes(date_and_time_taking_off.toLowerCase()) && 
+      row.date_and_time_landing.toLowerCase().includes(date_and_time_landing.toLowerCase()) &&
+      row.place_landing.toLowerCase().includes(EndPlace.toLowerCase()) &&
+      row.number_of_tickets >= number_of_tickets
+      
+    );
+  });
 
 
-  return rows.length > 0 ? (
+  return (
+    <>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+    <div className="form-group divSize50L"></div>
+    <div className="form-group mt-3 divSize50L">
+                  <label style={{ textTransform: "capitalize" }}>Number of tickets</label>
+                  <input
+                    value={number_of_tickets}
+                    onChange={(e) => setNumber_of_tickets(Number(e.target.value))}
+                    required
+                    type="number"
+                    className="form-control mt-1"
+                    placeholder={""}
+                  />
+                </div>
+    <input
+    type="text"
+    placeholder="Start Place"
+    value={search}
+    onChange={(e) => setSearch(e.target.value)} />
+    <div className="form-group mt-3 divSize50L">
+                  <label style={{ textTransform: "capitalize" }}>Date and time of taking off</label>
+                  <input
+                    value={date_and_time_taking_off}
+                    onChange={(e) => setDate_and_time_taking_off(e.target.value)}
+                    required
+                    type="date"
+                    className="form-control mt-1"
+                    placeholder={""}
+                  />
+    </div>
+    <input
+    type="text"
+    placeholder="End Place"
+    value={EndPlace}
+    onChange={(e) => setEndPlace(e.target.value)} />
+    <div className="form-group mt-3 divSize50L">
+                  <label style={{ textTransform: "capitalize" }}>Date and time of landing</label>
+                  <input
+                    value={date_and_time_landing}
+                    onChange={(e) => setDate_and_time_landing(e.target.value)}
+                    required
+                    type="date"
+                    className="form-control mt-1"
+                    placeholder={""}
+                  />
+    </div>
+    </div>
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell>Date and Time of Taking Off</TableCell>
-            <TableCell align="right">Place of taking off</TableCell>
+            <TableCell align="right">Origin</TableCell>
             <TableCell align="right">Date and Time of Landing</TableCell>
-            <TableCell align="right">Place of landing</TableCell>
-            <TableCell align="right">Number of tickets</TableCell>
+            <TableCell align="right">Destination</TableCell>
+            <TableCell align="right">Tickets available</TableCell>
             <TableCell align="right">Price</TableCell>
+            <TableCell align="right">Price for {number_of_tickets}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row:any) => (
+          {filteredRows.map((row: any) => (
             <TableRow
               key={row.id}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -93,9 +156,11 @@ const handleBuy = async (ticket_id: any, e: any) => {
               </TableCell>
               <TableCell align="right">{row.place_taking_off}</TableCell>
               <TableCell align="right">{row.date_and_time_landing}</TableCell>
+
               <TableCell align="right">{row.place_landing}</TableCell>
               <TableCell align="right">{row.number_of_tickets}</TableCell>
               <TableCell align="right">{row.price}</TableCell>
+              <TableCell align="right">{row.price * number_of_tickets}</TableCell>
               <TableCell>
               <Button
                 onClick={e => handleBuy(row.id, e)}
@@ -108,6 +173,6 @@ const handleBuy = async (ticket_id: any, e: any) => {
           ))}
         </TableBody>
       </Table>
-    </TableContainer>
-  ):<h1>No data</h1>
+    </TableContainer></>)
 }
+
