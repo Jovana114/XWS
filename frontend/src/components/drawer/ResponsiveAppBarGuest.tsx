@@ -14,7 +14,6 @@ import MenuItem from '@mui/material/MenuItem';
 import ShowTickets  from "../ShowTickets/ShowTickets";
 import { Navigate } from "react-router-dom";
 
-
 const pages = ['Show tickets'];
 const settings = ['Logout'];
 
@@ -72,7 +71,7 @@ export const ResponsiveAppBarGuest = () => {
 
   return (
     <>
-      <AppBar position="static">
+      <AppBar position="static" className="nav-bar">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>

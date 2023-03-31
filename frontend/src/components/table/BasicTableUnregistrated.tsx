@@ -7,16 +7,14 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import Button from "@mui/material/Button";
 import { useEffect, useState } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
 
 const token = localStorage.getItem("token");
 const user_id = JSON.parse(localStorage.getItem("id")!);
 
-export default function BasicTableGuest() {
+export default function BasicTableUnregistrated() {
   
   const [rows, setRows] = useState<any[]>([])
   const [search, setSearch] = useState('');
@@ -54,31 +52,6 @@ useEffect(() => {
 }, []);
 
 
-const handleBuy = async (ticket_id: any, e: any) => {
-  e.preventDefault();
-
-  const requestOptions = {
-      method: "PUT",
-      headers: {
-       "Content-type": "application/json",
-       Authorization: `Bearer ${token}`,
-     },
-    };
-    const response = await fetch(
-      "http://localhost:8080/api/flight/buyTicket/" + ticket_id + "_" + user_id,
-      requestOptions,
-    ); 
-
-    if (response.ok) {
-      toast.success('One ticket bought!', {
-        position: toast.POSITION.TOP_CENTER
-      });
-    } else {
-      toast.error('Sorry, no more tickets!', {
-        position: toast.POSITION.TOP_CENTER
-      });
-    }
-  };
   const filteredRows = rows.filter(row => {
     return (
       row.place_taking_off.toLowerCase().includes(search.toLowerCase()) &&
@@ -168,17 +141,8 @@ const handleBuy = async (ticket_id: any, e: any) => {
               <TableCell align="right">{row.number_of_tickets}</TableCell>
               <TableCell align="right">{row.price}</TableCell>
               <TableCell align="right">{row.price * number_of_tickets}</TableCell>
-              <TableCell>
-              <Button
-                onClick={e => handleBuy(row.id, e)}
-                  style={{ background: "#0d6efd", color: "white" }}
-              >
-                Buy
-              </Button>
-              </TableCell>
             </TableRow>
           ))}
-          <ToastContainer />
         </TableBody>
       </Table>
     </TableContainer></>)

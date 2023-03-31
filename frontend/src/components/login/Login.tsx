@@ -102,6 +102,10 @@ const Login: React.FC = (): JSX.Element => {
                       <Link style={{ textDecoration: "none" }} to={"/register"}>
                         Sign Up
                       </Link>
+                      {" "}or{" "}
+                      <Link style={{ textDecoration: "none" }} to={"/homeunregistered"}>
+                        Continue as guest
+                      </Link>
                     </p>
                   </div>
                 </form>

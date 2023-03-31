@@ -64,10 +64,12 @@ const handleDelete = async (id: any, e: any) => {
       "http://localhost:8080/api/flight/delete/" + id,
       requestOptions,
     ).then((response) => {
-      if (response.ok) console.log('success');
+      if (response.ok) {
+        setRows(rows.filter(row => row.id !== id))
+        console.log('success');
+      }
     });
-   
-  };
+};
 
 const filteredRows = rows.filter(row => {
   return (

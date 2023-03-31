@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import Button from "@mui/material/Button";
 import { useEffect, useState } from 'react';
 import Dialog from "@mui/material/Dialog";
+import "./ShowTickets.css";
 
 interface ShowTicketsProps {
   open: boolean;
