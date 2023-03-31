@@ -1,0 +1,41 @@
+[
+    {
+      "username": "johndoe",
+      "email": "johndoe@example.com",
+      "password": "$2a$10$vyJu.zq4wCkJFcRPgvZ6m.oXK6DUNmFz19.1c0DPpVlaQpgNFhI.W",
+      "roles": [
+        {
+          "$ref": "roles",
+          "$id": "6422fc147dc8781cc85cd43f"
+        }
+      ],
+      "flights": [],
+      "_class": "xws.model.User"
+    },
+    {
+      "username": "janedoe",
+      "email": "janedoe@example.com",
+      "password": "$2a$10$vyJu.zq4wCkJFcRPgvZ6m.oXK6DUNmFz19.1c0DPpVlaQpgNFhI.W",
+      
+      "roles": [
+        {
+          "$ref": "roles",
+          "$id": "6422fc127dc8781cc85cd43e"
+        }
+      ],
+      "flights": [
+        {
+          "$ref": "flights",
+          "$id": "1"
+        },
+        {
+          "$ref": "flights",
+          "$id": "2"
+        }
+      ],
+      "_class": "xws.model.User"
+      
+        
+    }
+  ]
+  
