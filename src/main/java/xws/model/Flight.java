@@ -14,7 +14,8 @@ public class Flight {
     private String place_taking_off;
     private Date date_and_time_landing;
     private String place_landing;
-    private Integer number_of_tickets;
+    private Integer number_of_seats; //maksimalan broj mesta
+    private Integer number_of_tickets; //ostalo karata
     private Integer price;
 
     public Flight(){}
@@ -29,11 +30,12 @@ public class Flight {
         this.price = price;
     }
 
-    public Flight(Date date_and_time_taking_off, String place_taking_off, Date date_and_time_landing, String place_landing, Integer number_of_tickets, Integer price) {
+    public Flight(Date date_and_time_taking_off, String place_taking_off, Date date_and_time_landing, String place_landing, Integer number_of_tickets, Integer number_of_seats, Integer price) {
         this.date_and_time_taking_off = date_and_time_taking_off;
         this.place_taking_off = place_taking_off;
         this.date_and_time_landing = date_and_time_landing;
         this.place_landing = place_landing;
+        this.number_of_seats = number_of_seats;
         this.number_of_tickets = number_of_tickets;
         this.price = price;
     }
@@ -92,5 +94,13 @@ public class Flight {
 
     public void setPrice(Integer price) {
         this.price = price;
+    }
+
+    public Integer getNumber_of_seats() {
+        return number_of_seats;
+    }
+
+    public void setNumber_of_seats(Integer number_of_seats) {
+        this.number_of_seats = number_of_seats;
     }
 }

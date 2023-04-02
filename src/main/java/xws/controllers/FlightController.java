@@ -36,7 +36,7 @@ public class FlightController {
 
         Flight new_flight = new Flight(flight.getDate_and_time_taking_off(),
                 flight.getPlace_taking_off(), flight.getDate_and_time_landing(),
-                flight.getPlace_landing(), flight.getNumber_of_tickets(), flight.getPrice());
+                flight.getPlace_landing(), flight.getNumber_of_seats(), flight.getNumber_of_tickets(), flight.getPrice());
 
         flightRepository.save(new_flight);
 

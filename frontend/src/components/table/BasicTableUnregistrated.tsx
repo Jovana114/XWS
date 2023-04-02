@@ -121,8 +121,9 @@ useEffect(() => {
             <TableCell align="right">Date and Time of Landing</TableCell>
             <TableCell align="right">Destination</TableCell>
             <TableCell align="right">Tickets available</TableCell>
+            <TableCell align="right">Number of seats</TableCell>
             <TableCell align="right">Price</TableCell>
-            <TableCell align="right">Price for {number_of_tickets}</TableCell>
+            <TableCell align="right">Price for bought tickets</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -136,11 +137,11 @@ useEffect(() => {
               </TableCell>
               <TableCell align="right">{row.place_taking_off}</TableCell>
               <TableCell align="right">{row.date_and_time_landing}</TableCell>
-
               <TableCell align="right">{row.place_landing}</TableCell>
               <TableCell align="right">{row.number_of_tickets}</TableCell>
+              <TableCell align="right">{row.number_of_seats}</TableCell>
               <TableCell align="right">{row.price}</TableCell>
-              <TableCell align="right">{row.price * number_of_tickets}</TableCell>
+              <TableCell align="right">{row.price * (row.number_of_seats - row.number_of_tickets)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
