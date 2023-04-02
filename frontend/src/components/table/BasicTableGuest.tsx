@@ -55,7 +55,7 @@ useEffect(() => {
 }, []);
 
 
-const handleBuy = async (ticket_id: any, e: any) => {
+const handleBuy = async (ticket_id: any,e: any) => {
   e.preventDefault();
 
   const requestOptions = {
@@ -68,8 +68,7 @@ const handleBuy = async (ticket_id: any, e: any) => {
     const response = await fetch(
       "http://localhost:8080/api/flight/buyTicket/" + ticket_id + "_" + user_id + "_" + number_of_tickets,
       requestOptions,
-    ); 
-
+    );
     if (response.ok) {
       toast.success(`Number of tickets bought: ${number_of_tickets}!`, {
         position: toast.POSITION.TOP_CENTER

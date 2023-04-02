@@ -16,6 +16,7 @@ export default function CreateFlight({ open, onClose }: CreateFlightProps) {
   const [date_and_time_landing, setDate_and_time_landing] = useState("");
   const [place_landing, setPlace_landing] = useState("");
   const [number_of_tickets, setNumber_of_tickets] = useState(0);
+  const [number_of_seats, setNumber_of_seats] = useState(0);
   const [price, setPrice] = useState(0);
 
   
@@ -25,6 +26,7 @@ export default function CreateFlight({ open, onClose }: CreateFlightProps) {
     date_and_time_landing: date_and_time_landing,
     place_landing: place_landing,
     number_of_tickets: number_of_tickets,
+    number_of_seats: number_of_seats,
     price: price
   };
   
@@ -122,6 +124,17 @@ export default function CreateFlight({ open, onClose }: CreateFlightProps) {
                     />
                   </div>
                 <div className="form-group mt-3 divSize50L">
+                    <label style={{ textTransform: "capitalize" }}>Number of seats</label>
+                    <input
+                      value={number_of_seats}
+                      onChange={(e) => setNumber_of_seats(Number(e.target.value))}
+                      required
+                      type="number"
+                      className="form-control mt-1"
+                      placeholder={""}
+                    />
+                  </div>
+                  <div className="form-group mt-3 divSize50L">
                     <label style={{ textTransform: "capitalize" }}>Price</label>
                     <input
                       value={price}

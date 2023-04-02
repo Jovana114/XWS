@@ -96,9 +96,8 @@ public class FlightController {
                 User _user = user.get();
 
                 if(_flight.getNumber_of_tickets() != 0 && _flight.getNumber_of_tickets() - number_of_tickets >= 0) {
-
                     _user.getFlights().add(_flight);
-                    userRepository.save(_user);
+                        userRepository.save(_user);
 
                     _flight.setNumber_of_tickets(_flight.getNumber_of_tickets() - number_of_tickets);
                     flightRepository.save(_flight);
