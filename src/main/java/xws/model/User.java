@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,7 +36,7 @@ public class User {
 
   // karte:
   @DBRef
-  private Set<Flight> flights = new HashSet<>();
+  private ArrayList<Flight> flights = new ArrayList<>();
 
   public User() {
   }
@@ -85,11 +87,11 @@ public class User {
     this.roles = roles;
   }
 
-  public Set<Flight> getFlights() {
+  public ArrayList<Flight> getFlights() {
     return flights;
   }
 
-  public void setFlights(Set flights) {
+  public void setFlights(ArrayList<Flight> flights) {
     this.flights = flights;
   }
 }
