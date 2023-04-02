@@ -69,6 +69,10 @@ const handleBuy = async (ticket_id: any,e: any) => {
       "http://localhost:8080/api/flight/buyTicket/" + ticket_id + "_" + user_id + "_" + number_of_tickets,
       requestOptions,
     );
+    for (let i=0; i<number_of_tickets-1;i++){
+      await fetch("http://localhost:8080/api/flight/buyTicket/" + ticket_id + "_" + user_id + "_" + 0,
+      requestOptions,);
+    }
     if (response.ok) {
       toast.success(`Number of tickets bought: ${number_of_tickets}!`, {
         position: toast.POSITION.TOP_CENTER
