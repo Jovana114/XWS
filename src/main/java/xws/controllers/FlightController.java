@@ -85,9 +85,9 @@ public class FlightController {
 
     // karte:
 
-    @PutMapping("/buyTicket/{tiket_id}_{user_id}")
+    @PutMapping("/buyTicket/{tiket_id}_{user_id}_{num_of_baught_tic}")
     @PreAuthorize("hasRole('GUEST')")
-    public ResponseEntity<?> buyTicket(@PathVariable("tiket_id") String tiket_id, @PathVariable("user_id") String user_id) {
+    public ResponseEntity<?> buyTicket(@PathVariable("tiket_id") String tiket_id, @PathVariable("user_id") String user_id, @PathVariable("num_of_baught_tic") Integer num_of_baught_tic) {
         try {
             Optional<Flight> flight = flightRepository.findById(tiket_id);
             Optional<User> user = userRepository.findById(user_id);
@@ -95,11 +95,11 @@ public class FlightController {
                 Flight _flight = flight.get();
                 User _user = user.get();
 
-                if(_flight.getNumber_of_tickets() != 0) {
+                if(_flight.getNumber_of_tickets() != 0 && _flight.getNumber_of_tickets() - num_of_baught_tic >= 0) {
                     _user.getFlights().add(_flight);
                     userRepository.save(_user);
 
-                    _flight.setNumber_of_tickets(_flight.getNumber_of_tickets() - 1);
+                    _flight.setNumber_of_tickets(_flight.getNumber_of_tickets() - num_of_baught_tic);
                     flightRepository.save(_flight);
 
                     return new ResponseEntity<>(_user.getFlights(), HttpStatus.OK);

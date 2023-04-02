@@ -103,4 +103,5 @@ public class Flight {
     public void setNumber_of_seats(Integer number_of_seats) {
         this.number_of_seats = number_of_seats;
     }
+
 }
