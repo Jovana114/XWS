@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package common;
+
+import "google/protobuf/timestamp.proto";
+
+option java_multiple_files = true;
+option java_package = "com.xws.common";
+
+message Reservation {
+  string id = 1;
+  string source_user = 2;
+  string accommodation_id = 3;
+  google.protobuf.Timestamp start_date = 4;
+  google.protobuf.Timestamp end_date = 5;
+  int32 num_guests = 6;
+  bool approved = 7;
+  string user_owner_id = 8;
+}

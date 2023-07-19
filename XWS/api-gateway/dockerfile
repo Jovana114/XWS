@@ -1,0 +1,4 @@
+FROM openjdk:19
+EXPOSE 8085
+ADD target/api-gateway.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]

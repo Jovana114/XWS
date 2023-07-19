@@ -1,0 +1,80 @@
+version: "3"
+
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb-container
+    ports:
+      - "27017:27017"
+    expose:
+      - "27017"
+
+  reservation-service:
+    image: reservation-service
+    container_name: reservation-service-container
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=mongodb://localhost:27017/reservations
+    depends_on:
+      - mongodb
+      - discovery-server
+      - api-gateway
+
+  user-service:
+    image: user-service
+    container_name: user-service-container
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=mongodb://localhost:27017/users
+    depends_on:
+      - mongodb
+      - discovery-server
+      - api-gateway
+
+  accommodation-service:
+    image: accommodation-service
+    container_name: accommodation-service-container
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=mongodb://localhost:27017/accommodations
+    depends_on:
+      - mongodb
+      - discovery-server
+      - api-gateway
+
+  api-gateway:
+    image: api-gateway
+    container_name: api-gateway-container
+    ports:
+      - "8085:8085"
+    depends_on:
+      - discovery-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  discovery-server:
+      image: discovery-server
+      container_name: discovery-server-container
+      ports:
+        - "8761:8761"
+      environment:
+        - SPRING_PROFILES_ACTIVE=docker
+#  nginx:
+#    image: nginx
+#    container_name: nginx
+#    ports:
+#      - 80:80
+#    volumes:
+#      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+#    depends_on:
+#      - reservation-service
+#      - user-service
+#      - accommodation-service
+#    networks:
+#      - mongodb_network_3

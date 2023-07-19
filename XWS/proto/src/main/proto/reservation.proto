@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.xws.reservation";
+
+import "google/protobuf/empty.proto";
+import "common.proto";
+
+message CreateReservationRequest {
+  string accommodation_id = 1;
+  common.Reservation reservation = 2;
+}
+
+service ReservationService {
+  rpc CreateReservation(CreateReservationRequest) returns (google.protobuf.Empty);
+}
