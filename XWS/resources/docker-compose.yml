@@ -3,68 +3,70 @@ version: "3"
 services:
   mongodb:
     image: mongo
-    container_name: mongodb-container
+    container_name: mongodb
     ports:
       - "27017:27017"
-    expose:
-      - "27017"
+    restart: on-failure
 
   reservation-service:
     image: reservation-service
-    container_name: reservation-service-container
+    container_name: reservation-service
     ports:
       - "8081:8081"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=mongodb://localhost:27017/reservations
     depends_on:
       - mongodb
       - discovery-server
       - api-gateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    restart: on-failure
 
   user-service:
     image: user-service
-    container_name: user-service-container
+    container_name: user-service
     ports:
       - "8082:8082"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=mongodb://localhost:27017/users
     depends_on:
       - mongodb
       - discovery-server
       - api-gateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    restart: on-failure
 
   accommodation-service:
     image: accommodation-service
-    container_name: accommodation-service-container
+    container_name: accommodation-service
     ports:
       - "8080:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=mongodb://localhost:27017/accommodations
     depends_on:
       - mongodb
       - discovery-server
       - api-gateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    restart: on-failure
 
   api-gateway:
     image: api-gateway
-    container_name: api-gateway-container
+    container_name: api-gateway
     ports:
       - "8085:8085"
     depends_on:
       - discovery-server
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
+    restart: on-failure
 
   discovery-server:
-      image: discovery-server
-      container_name: discovery-server-container
-      ports:
-        - "8761:8761"
-      environment:
-        - SPRING_PROFILES_ACTIVE=docker
+    image: discovery-server
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    depends_on:
+      - mongodb
+
 #  nginx:
 #    image: nginx
 #    container_name: nginx
