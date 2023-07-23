@@ -1,54 +1,51 @@
 package com.xws.reservation.config;
 
-import com.xws.accommodation.AccommodationServiceGrpc;
-import com.xws.reservation.ReservationServiceGrpc;
+
+import com.xws.proto.HelloRequest;
+import com.xws.proto.HelloResponse;
+import com.xws.proto.HelloServiceGrpc;
 import com.xws.reservation.repository.ReservationRepository;
 import com.xws.reservation.service.ReservationService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.IOException;
+
 @Configuration
 public class GrpcConfiguration {
 
-    //@Autowired
-//    @GrpcClient("accommodation-service")
-//    private AccommodationServiceGrpc.AccommodationServiceBlockingStub accommodationServiceBlockingStub;
-//
-//    @GrpcClient("reservation-service")
-//    private ReservationServiceGrpc.ReservationServiceBlockingStub reservationServiceBlockingStub;
 
-    @Autowired
-    private ReservationRepository reservationRepository;
-//
 //    @Bean
-//    public ManagedChannel managedChannel() {
-//        // Create and return the ManagedChannel bean
-//        return ManagedChannelBuilder.forAddress("localhost", 7575)
-//                .usePlaintext()
+//    public Server grpcServer() throws IOException {
+//        Server server = ServerBuilder.forPort(6565)
+//                .addService(new AccommodationServiceGrpc(accommodationRepository))
 //                .build();
+//        server.start();
+//        return server;
 //    }
-
-//    @Bean
-//    @GrpcClient("reservation-service")
-//    public ReservationServiceGrpc.ReservationServiceBlockingStub reservationServiceStub(ManagedChannel managedChannel) {
-//        // Create and return the ReservationServiceBlockingStub bean
-//        return ReservationServiceGrpc.newBlockingStub(managedChannel);
-//    }
+//}
 //
-//    @Bean
-//    @GrpcClient("accommodation-service")
-//    public AccommodationServiceGrpc.AccommodationServiceBlockingStub accommodationServiceBlockingStub(ManagedChannel managedChannel) {
-//        return AccommodationServiceGrpc.newBlockingStub(managedChannel);
-//    }
+//
+//    ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 6565)
+//            .usePlaintext()
+//            .build();
+//
+//    HelloServiceGrpc.HelloServiceBlockingStub stub
+//            = HelloServiceGrpc.newBlockingStub(channel);
+//
+//    HelloResponse helloResponse = stub.hello(HelloRequest.newBuilder()
+//            .setFirstName("Baeldung")
+//            .setLastName("gRPC")
+//            .build());
+//
+//
+//        System.out.println(helloResponse.toString());
+//                channel.shutdown();
 
-
-//    @Bean
-//    public ReservationService reservationService() {
-//        // Create and return the ReservationService bean
-//        return new ReservationService(reservationRepository, accommodationServiceBlockingStub);
-//    }
 }

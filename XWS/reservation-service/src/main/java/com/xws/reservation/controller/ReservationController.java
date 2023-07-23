@@ -2,9 +2,16 @@ package com.xws.reservation.controller;
 
 import java.util.List;
 
+import com.xws.proto.HelloRequest;
+import com.xws.proto.HelloResponse;
+import com.xws.proto.HelloServiceGrpc;
 import com.xws.reservation.entity.Reservation;
 import com.xws.reservation.repository.ReservationRepository;
+import com.xws.reservation.service.ReservationService;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,6 +28,29 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReservationController {
     @Autowired
     ReservationRepository reservationRepository;
+
+    @Autowired
+    ReservationService reservationService;
+
+    @PostMapping("/test")
+    public void test(){
+
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("user-service", 6565)
+                .usePlaintext()
+                .build();
+
+        HelloServiceGrpc.HelloServiceBlockingStub stub
+                = HelloServiceGrpc.newBlockingStub(channel);
+
+        HelloResponse helloResponse = stub.hello(HelloRequest.newBuilder()
+                .setFirstName("Baeldung")
+                .setLastName("gRPC")
+                .build());
+
+
+        System.out.println(helloResponse.toString());
+        channel.shutdown();
+    }
 
     @PostMapping()
     public ResponseEntity<?> create(@RequestBody Reservation reservation) {

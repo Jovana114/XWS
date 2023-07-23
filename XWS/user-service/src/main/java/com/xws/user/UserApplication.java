@@ -5,6 +5,9 @@ import com.xws.user.entity.Role;
 import com.xws.user.entity.User;
 import com.xws.user.repo.RoleRepository;
 import com.xws.user.repo.UserRepository;
+import com.xws.user.service.HelloServiceImpl;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -62,5 +65,12 @@ public class UserApplication implements CommandLineRunner {
 
         admin.setRoles(roles);
         userRepository.save(admin);
+
+        Server server= ServerBuilder
+                .forPort(6565)
+                .addService(new HelloServiceImpl()).build();
+
+        server.start();
+        server.awaitTermination();
     }
 }
