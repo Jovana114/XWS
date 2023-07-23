@@ -1,10 +1,16 @@
 package com.xws.reservation.controller;
 
+import java.util.Date;
 import java.util.List;
 
+import com.google.protobuf.Timestamp;
+import com.xws.reservation.CreateReservationRequest;
+import com.xws.reservation.ReservationServiceGrpc;
 import com.xws.reservation.entity.Reservation;
 import com.xws.reservation.repository.ReservationRepository;
+import io.grpc.StatusRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,18 +24,47 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/reservation")
+@EnableMongoRepositories(basePackages = "com.xws.reservation.repository")
 public class ReservationController {
     @Autowired
-    ReservationRepository reservationRepository;
+    private ReservationRepository reservationRepository;
 
-    @PostMapping()
-    public ResponseEntity<?> create(@RequestBody Reservation reservation) {
-        Reservation newReservation = new Reservation(reservation.getSourceUser(), reservation.getIdAccommodation(),
-                reservation.getStartDate(), reservation.getEndDate(), reservation.getNumGuests());
+    @Autowired
+    private ReservationServiceGrpc.ReservationServiceBlockingStub reservationServiceStub;
 
-        reservationRepository.save(newReservation);
+    @PostMapping("/create_reservation/{accommodation_id}/{source_user}")
+    public ResponseEntity<?> create(@PathVariable("accommodation_id") String accomodation_id, @PathVariable("source_user") String source_user, @RequestBody Reservation reservation) {
 
-        return ResponseEntity.ok("Reservation request sent");
+        Timestamp startDateTimestamp = convertToTimestamp(reservation.getStartDate());
+        Timestamp endDateTimestamp = convertToTimestamp(reservation.getEndDate());
+
+        com.xws.common.Reservation grpcReservation = com.xws.common.Reservation.newBuilder()
+                .setSourceUser(source_user)
+                .setAccommodationId(accomodation_id)
+                .setStartDate(startDateTimestamp)
+                .setEndDate(endDateTimestamp)
+                .setNumGuests(reservation.getNumGuests())
+                .setApproved(reservation.getApproved())
+                .build();
+
+        CreateReservationRequest request = CreateReservationRequest.newBuilder()
+                .setAccommodationId(accomodation_id)
+                .setReservation(grpcReservation)
+                .build();
+
+        try {
+            reservationServiceStub.createReservation(request);
+            return ResponseEntity.ok().body("{\"message\": \"Reservation request sent\"}");
+        } catch (StatusRuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Failed to create reservation\"}");
+        }
+    }
+
+    // Helper method to convert Date to Timestamp
+    private Timestamp convertToTimestamp(Date date) {
+        long seconds = date.getTime() / 1000;
+        int nanos = (int) ((date.getTime() % 1000) * 1000000);
+        return Timestamp.newBuilder().setSeconds(seconds).setNanos(nanos).build();
     }
 
     @GetMapping()
@@ -54,13 +89,14 @@ public class ReservationController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
     }
+
     @PutMapping("/{suser}+{idacc}")
     public ResponseEntity<?> accept(@PathVariable("suser") String suser, @PathVariable("idacc") String idacc)
     {
         List<Reservation> reqList = reservationRepository.findBySourceUserAndIdAccommodation(suser, idacc);
         if(!reqList.isEmpty()){
             Reservation newReservation = reqList.get(0);
-            newReservation.setState("Accepted");
+            newReservation.setApproved(true);
             reservationRepository.save(newReservation);
             return new ResponseEntity<>(newReservation ,HttpStatus.OK);
         }
