@@ -1,11 +1,11 @@
 package com.xws.user.entity;
 
-import jakarta.validation.constraints.Email;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.Email;
 import java.util.HashSet;
 import java.util.Set;
 

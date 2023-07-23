@@ -11,7 +11,6 @@ import com.xws.user.repo.RoleRepository;
 import com.xws.user.repo.UserRepository;
 import com.xws.user.security.jwt.JwtUtils;
 import com.xws.user.security.services.UserDetailsImpl;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -61,11 +61,6 @@ public class AuthController {
 
 		return ResponseEntity.ok(new JwtResponse(jwt,
 												 userDetails.getId(),
-				userDetails.getFirst_name(),
-				userDetails.getLast_name(),
-				userDetails.getAddress(),
-												 userDetails.getUsername(), 
-												 userDetails.getEmail(),
 												 roles));
 	}
 
