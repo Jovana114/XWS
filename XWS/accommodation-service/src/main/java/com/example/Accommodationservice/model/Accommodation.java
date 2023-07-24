@@ -1,12 +1,9 @@
 package com.example.Accommodationservice.model;
 
-import org.bson.types.Binary;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 @Document(collection = "accommodation")
@@ -23,10 +20,22 @@ public class Accommodation {
     @DBRef
     private List<Appointments> appointments;
     private String user_id;
+    @DBRef
+    private List<Reservation> reservations;
 
     public Accommodation(){}
 
-    public Accommodation(String name, String location, String benefits, Integer min_guests, Integer max_guests, List<Appointments> appointments, String user_id) {
+    public Accommodation(String name, String location, String benefits, Integer min_guests, Integer max_guests, List<Appointments> appointments, List<Reservation> reservations) {
+        this.name = name;
+        this.location = location;
+        this.benefits = benefits;
+        this.min_guests = min_guests;
+        this.max_guests = max_guests;
+        this.appointments = appointments;
+        this.reservations = reservations;
+    }
+
+    public Accommodation(String name, String location, String benefits, Integer min_guests, Integer max_guests, List<Appointments> appointments, String user_id, List<Reservation> reservations) {
 
         this.name = name;
         this.location = location;
@@ -35,6 +44,15 @@ public class Accommodation {
         this.max_guests = max_guests;
         this.appointments = appointments;
         this.user_id = user_id;
+        this.reservations = reservations;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
     }
 
     public String getUser_id() {

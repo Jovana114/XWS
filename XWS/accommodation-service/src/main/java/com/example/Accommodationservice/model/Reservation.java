@@ -1,4 +1,4 @@
-package com.xws.reservation.entity;
+package com.example.Accommodationservice.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
@@ -36,12 +36,6 @@ public class Reservation {
         this.endDate = endDate;
         this.numGuests = numGuests;
         this.approved = approved;
-    }
-
-    public Reservation(Date startDate, Date endDate, int numGuests) {
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.numGuests = numGuests;
     }
 
     public void setSourceUser(String sourceUser) {

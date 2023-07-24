@@ -13,6 +13,7 @@ services:
     container_name: reservation-service
     ports:
       - "8081:8081"
+      - "7575:7575"
     depends_on:
       - mongodb
       - discovery-server
@@ -43,6 +44,7 @@ services:
     container_name: accommodation-service
     ports:
       - "8080:8080"
+      - "8585:8585"
     depends_on:
       - mongodb
       - discovery-server

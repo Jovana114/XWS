@@ -1,15 +1,20 @@
 package com.xws.reservation.controller;
 
+import java.util.Date;
 import java.util.List;
 
+import com.google.protobuf.Timestamp;
 import com.xws.proto.HelloRequest;
 import com.xws.proto.HelloResponse;
 import com.xws.proto.HelloServiceGrpc;
+import com.xws.reservation.CreateReservationRequest;
+import com.xws.reservation.ReservationServiceGrpc;
 import com.xws.reservation.entity.Reservation;
 import com.xws.reservation.repository.ReservationRepository;
 import com.xws.reservation.service.ReservationService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -52,14 +57,44 @@ public class ReservationController {
         channel.shutdown();
     }
 
-    @PostMapping()
-    public ResponseEntity<?> create(@RequestBody Reservation reservation) {
-        Reservation newReservation = new Reservation(reservation.getSourceUser(), reservation.getIdAccommodation(),
-                reservation.getStartDate(), reservation.getEndDate(), reservation.getNumGuests());
+    @PostMapping("/create_reservation/{accommodation_id}/{source_user}")
+    public ResponseEntity<?> create(@PathVariable("accommodation_id") String accomodation_id, @PathVariable("source_user") String source_user, @RequestBody Reservation reservation) {
 
-        reservationRepository.save(newReservation);
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("reservation-service", 7575)
+                .usePlaintext()
+                .build();
 
-        return ResponseEntity.ok("Reservation request sent");
+        ReservationServiceGrpc.ReservationServiceBlockingStub stub = ReservationServiceGrpc.newBlockingStub(channel);
+
+        Timestamp startDateTimestamp = convertToTimestamp(reservation.getStartDate());
+        Timestamp endDateTimestamp = convertToTimestamp(reservation.getEndDate());
+
+        com.xws.common.Reservation grpcReservation = com.xws.common.Reservation.newBuilder()
+                .setSourceUser(source_user)
+                .setAccommodationId(accomodation_id)
+                .setStartDate(startDateTimestamp)
+                .setEndDate(endDateTimestamp)
+                .setNumGuests(reservation.getNumGuests())
+                .setApproved(reservation.getApproved())
+                .build();
+
+        CreateReservationRequest request = CreateReservationRequest.newBuilder()
+                .setAccommodationId(accomodation_id)
+                .setReservation(grpcReservation)
+                .build();
+
+        try {
+            stub.createReservation(request);
+            return ResponseEntity.ok().body("{\"message\": \"Reservation request sent\"}");
+        } catch (StatusRuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Failed to create reservation\"}");
+        }
+    }
+
+    private Timestamp convertToTimestamp(Date date) {
+        long seconds = date.getTime() / 1000;
+        int nanos = (int) ((date.getTime() % 1000) * 1000000);
+        return Timestamp.newBuilder().setSeconds(seconds).setNanos(nanos).build();
     }
 
     @GetMapping()
@@ -90,7 +125,7 @@ public class ReservationController {
         List<Reservation> reqList = reservationRepository.findBySourceUserAndIdAccommodation(suser, idacc);
         if(!reqList.isEmpty()){
             Reservation newReservation = reqList.get(0);
-            newReservation.setState("Accepted");
+            //newReservation.setState("Accepted");
             reservationRepository.save(newReservation);
             return new ResponseEntity<>(newReservation ,HttpStatus.OK);
         }
