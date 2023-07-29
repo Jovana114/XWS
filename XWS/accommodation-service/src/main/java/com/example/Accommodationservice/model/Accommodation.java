@@ -17,6 +17,8 @@ public class Accommodation {
     private byte[] pic;
     private Integer min_guests;
     private Integer max_guests;
+
+    private Boolean auto;
     @DBRef
     private List<Appointments> appointments;
     private String user_id;
@@ -25,7 +27,7 @@ public class Accommodation {
 
     public Accommodation(){}
 
-    public Accommodation(String name, String location, String benefits, Integer min_guests, Integer max_guests, List<Appointments> appointments, List<Reservation> reservations) {
+    public Accommodation(String name, String location, String benefits, Integer min_guests, Integer max_guests, List<Appointments> appointments, List<Reservation> reservations, Boolean auto) {
         this.name = name;
         this.location = location;
         this.benefits = benefits;
@@ -33,9 +35,10 @@ public class Accommodation {
         this.max_guests = max_guests;
         this.appointments = appointments;
         this.reservations = reservations;
+        this.auto = auto;
     }
 
-    public Accommodation(String name, String location, String benefits, Integer min_guests, Integer max_guests, List<Appointments> appointments, String user_id, List<Reservation> reservations) {
+    public Accommodation(String name, String location, String benefits, Integer min_guests, Integer max_guests, List<Appointments> appointments, String user_id, List<Reservation> reservations, Boolean auto) {
 
         this.name = name;
         this.location = location;
@@ -45,6 +48,7 @@ public class Accommodation {
         this.appointments = appointments;
         this.user_id = user_id;
         this.reservations = reservations;
+        this.auto = auto;
     }
 
     public List<Reservation> getReservations() {
@@ -131,6 +135,14 @@ public class Accommodation {
 
     public Integer getMax_guests() {
         return max_guests;
+    }
+
+    public Boolean getAuto() {
+        return auto;
+    }
+
+    public void setAuto(Boolean auto) {
+        this.auto = auto;
     }
 
     public void setMax_guests(Integer max_guests) {

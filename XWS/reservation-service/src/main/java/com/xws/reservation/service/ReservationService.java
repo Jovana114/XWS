@@ -25,7 +25,6 @@ import java.util.Date;
 public class ReservationService extends ReservationServiceGrpc.ReservationServiceImplBase {
 
     private final ReservationRepository reservationRepository;
-    //private final AccommodationServiceGrpc.AccommodationServiceBlockingStub accommodationServiceBlockingStub;
 
     public ReservationService(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
