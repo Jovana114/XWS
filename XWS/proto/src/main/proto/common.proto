@@ -15,5 +15,4 @@ message Reservation {
   google.protobuf.Timestamp end_date = 5;
   int32 num_guests = 6;
   bool approved = 7;
-  string user_owner_id = 8;
 }

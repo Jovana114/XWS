@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @ToString
@@ -23,6 +24,8 @@ public class User {
     private String password;
     @DBRef
     private Set<Role> roles = new HashSet<>();
+    @DBRef
+    private List<Reservation> reservations;
 
     public User() {
     }
@@ -100,5 +103,11 @@ public class User {
         this.roles = roles;
     }
 
-}
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
 
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
+}

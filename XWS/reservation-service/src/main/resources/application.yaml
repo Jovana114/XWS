@@ -6,3 +6,6 @@ grpc:
     reservation-service:
       address: static://localhost:7575
       negotiationType: plaintext
+    user-service:
+      address: static://localhost:6565
+      negotiationType: plaintext

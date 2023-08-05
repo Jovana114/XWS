@@ -81,6 +81,7 @@ public class ReservationController {
         CreateReservationRequest request = CreateReservationRequest.newBuilder()
                 .setAccommodationId(accomodation_id)
                 .setReservation(grpcReservation)
+                .setSourceUser(source_user)
                 .build();
 
         try {

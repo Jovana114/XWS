@@ -34,7 +34,18 @@ service AccommodationService {
   rpc AddReservationToAccommodation(AddReservationToAccommodationRequest) returns (google.protobuf.Empty);
 }
 
+service UserService {
+  rpc AddReservationToUser(AddReservationToUserRequest) returns (google.protobuf.Empty);
+}
+
 message AddReservationToAccommodationRequest {
   string accommodation_id = 1;
   common.Reservation reservation = 2;
+  string source_user = 3;
+}
+
+message AddReservationToUserRequest {
+  string accommodation_id = 1;
+  common.Reservation reservation = 2;
+  string source_user = 3;
 }

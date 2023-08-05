@@ -9,6 +9,7 @@ import "common.proto";
 message CreateReservationRequest {
   string accommodation_id = 1;
   common.Reservation reservation = 2;
+  string source_user = 3;
 }
 
 service ReservationService {

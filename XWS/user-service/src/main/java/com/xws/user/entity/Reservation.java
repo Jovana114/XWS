@@ -1,5 +1,6 @@
-package com.example.Accommodationservice.model;
+package com.xws.user.entity;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
@@ -7,7 +8,8 @@ import java.util.Date;
 
 @Document(collection = "reservation")
 public class Reservation {
-    @MongoId
+
+    @Id
     private String id;
     private String sourceUser;
     private String idAccommodation;

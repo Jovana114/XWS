@@ -3,9 +3,11 @@ package com.xws.user;
 import com.xws.user.entity.ERole;
 import com.xws.user.entity.Role;
 import com.xws.user.entity.User;
+import com.xws.user.repo.ReservationRepository;
 import com.xws.user.repo.RoleRepository;
 import com.xws.user.repo.UserRepository;
 import com.xws.user.service.HelloServiceImpl;
+import com.xws.user.service.UserSerGrpc;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,9 @@ public class UserApplication implements CommandLineRunner {
     private UserRepository userRepository;
 
     @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
     PasswordEncoder encoder;
 
     @Override
@@ -53,9 +58,9 @@ public class UserApplication implements CommandLineRunner {
                 "admin",
                 "admin",
                 "admin_address",
-                "adminUserService",
+                "adminadmin",
                 "admin@gmail.com",
-                encoder.encode("123456789"));
+                encoder.encode("adminadmin"));
 
         Set<Role> roles = new HashSet<>();
 
@@ -68,7 +73,7 @@ public class UserApplication implements CommandLineRunner {
 
         Server server= ServerBuilder
                 .forPort(6565)
-                .addService(new HelloServiceImpl()).build();
+                .addService(new UserSerGrpc(reservationRepository, userRepository)).build();
 
         server.start();
         server.awaitTermination();

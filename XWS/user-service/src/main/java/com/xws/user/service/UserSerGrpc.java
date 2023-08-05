@@ -1,13 +1,13 @@
-package com.example.Accommodationservice.service;
+package com.xws.user.service;
 
-import com.example.Accommodationservice.model.Accommodation;
-import com.example.Accommodationservice.model.Reservation;
-import com.example.Accommodationservice.repository.AccommodationRepository;
-import com.example.Accommodationservice.repository.ReservationRepository;
 import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
-import com.xws.accommodation.AccommodationServiceGrpc;
-import com.xws.accommodation.AddReservationToAccommodationRequest;
+import com.xws.accommodation.AddReservationToUserRequest;
+import com.xws.accommodation.UserServiceGrpc;
+import com.xws.user.entity.Reservation;
+import com.xws.user.entity.User;
+import com.xws.user.repo.ReservationRepository;
+import com.xws.user.repo.UserRepository;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,21 +18,21 @@ import java.util.Date;
 import java.util.Optional;
 
 @GrpcService
-@ComponentScan(basePackages = "com.example.Accommodationservice.repository")
-public class AccommodationService extends AccommodationServiceGrpc.AccommodationServiceImplBase {
-
-    private final AccommodationRepository accommodationRepository;
+@ComponentScan(basePackages = "com.xws.user.repository")
+public class UserSerGrpc extends UserServiceGrpc.UserServiceImplBase {
 
     private final ReservationRepository reservationRepository;
 
+    private final UserRepository userRepository;
+
     @Autowired
-    public AccommodationService(AccommodationRepository accommodationRepository, ReservationRepository reservationRepository) {
-        this.accommodationRepository = accommodationRepository;
+    public UserSerGrpc(ReservationRepository reservationRepository, UserRepository userRepository){
         this.reservationRepository = reservationRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public void addReservationToAccommodation(AddReservationToAccommodationRequest request, StreamObserver<Empty> responseObserver) {
+    public void addReservationToUser(AddReservationToUserRequest request, StreamObserver<Empty> responseObserver) {
         String accommodationId = request.getAccommodationId();
         com.xws.common.Reservation grpcReservation = request.getReservation();
         String source_user  = request.getSourceUser();
@@ -52,27 +52,25 @@ public class AccommodationService extends AccommodationServiceGrpc.Accommodation
         reservationRepository.save(reservation);
 
         // Retrieve the user from the database based on userOwnerId
-        Optional<Accommodation> _accommodation = accommodationRepository.findById(accommodationId);
+        Optional<User> _user = userRepository.findById(source_user);
 
         // Add the reservation to the user's list of reservations
-        if (_accommodation.isPresent()) {
-            Accommodation accommodation = _accommodation.get();
+        if (_user.isPresent()) {
+            User user = _user.get();
 
             // Check if reservations list is null, if so, initialize it to an empty ArrayList
-            if (accommodation.getReservations() == null) {
-                accommodation.setReservations(new ArrayList<>());
+            if (user.getReservations() == null) {
+                user.setReservations(new ArrayList<>());
             }
 
-            accommodation.getReservations().add(reservation);
+            user.getReservations().add(reservation);
 
             // Save the updated user to the database
-            accommodationRepository.save(accommodation);
+            userRepository.save(user);
         }
 
         // Send an empty response
         responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();
     }
-
 }
-
