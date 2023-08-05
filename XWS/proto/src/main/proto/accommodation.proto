@@ -6,36 +6,33 @@ option java_package = "com.xws.accommodation";
 import "google/protobuf/empty.proto";
 
 import "common.proto";
-import "appointment.proto";
 
 message Accommodation {
   string id = 1;
   string name = 2;
-  string location = 3;
-  string benefits = 4;
-  bytes pic = 5;
-  int32 min_guests = 6;
-  int32 max_guests = 7;
-  repeated appointment.Appointment appointments = 8;
-  string user_id = 9;
-  repeated common.Reservation reservations = 10;
 }
 
-message GetReservationsByAccommodationIdRequest {
-  string accommodation_id = 1;
+message CheckIfAccommodationHasActiveReservationsRequest {
+  Accommodation accommodation = 1;
 }
 
-message GetReservationsByAccommodationIdResponse {
-  repeated common.Reservation reservations = 1;
+message CheckIfAccommodationHasActiveReservationsResponse {
+  bool accommodation_has_active_reservations = 1;
+}
+
+message AddAccommodationToUserOwner {
+  Accommodation accommodation = 1;
+  string user_owner_id = 2;
 }
 
 service AccommodationService {
-  rpc GetReservationsByAccommodationId(GetReservationsByAccommodationIdRequest) returns (GetReservationsByAccommodationIdResponse);
   rpc AddReservationToAccommodation(AddReservationToAccommodationRequest) returns (google.protobuf.Empty);
+  rpc CheckIfAccommodationHasActiveReservations(CheckIfAccommodationHasActiveReservationsRequest) returns (CheckIfAccommodationHasActiveReservationsResponse);
 }
 
 service UserService {
   rpc AddReservationToUser(AddReservationToUserRequest) returns (google.protobuf.Empty);
+  rpc AddAccommodationToUser(AddAccommodationToUserOwner) returns (google.protobuf.Empty);
 }
 
 message AddReservationToAccommodationRequest {

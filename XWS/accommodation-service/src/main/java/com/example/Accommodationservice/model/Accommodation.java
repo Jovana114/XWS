@@ -14,7 +14,7 @@ public class Accommodation {
     private String name;
     private String location;
     private String benefits;
-    private byte[] pic;
+    private String image;
     private Integer min_guests;
     private Integer max_guests;
     @DBRef
@@ -25,7 +25,8 @@ public class Accommodation {
 
     public Accommodation(){}
 
-    public Accommodation(String name, String location, String benefits, Integer min_guests, Integer max_guests, List<Appointments> appointments, List<Reservation> reservations) {
+    public Accommodation(String id, String name, String location, String benefits, Integer min_guests, Integer max_guests, List<Appointments> appointments, List<Reservation> reservations) {
+        this.id = id;
         this.name = name;
         this.location = location;
         this.benefits = benefits;
@@ -81,12 +82,12 @@ public class Accommodation {
         this.max_guests = max_guests;
     }
 
-    public byte[] getPic() {
-        return pic;
+    public String getPic() {
+        return image;
     }
 
-    public void setPic(byte[] pic) {
-        this.pic = pic;
+    public void setPic(String image) {
+        this.image = image;
     }
 
     public String getId() {

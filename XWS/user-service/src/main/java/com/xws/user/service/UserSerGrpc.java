@@ -2,10 +2,13 @@ package com.xws.user.service;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
+import com.xws.accommodation.AddAccommodationToUserOwner;
 import com.xws.accommodation.AddReservationToUserRequest;
 import com.xws.accommodation.UserServiceGrpc;
+import com.xws.user.entity.Accommodation;
 import com.xws.user.entity.Reservation;
 import com.xws.user.entity.User;
+import com.xws.user.repo.AccommodationRepository;
 import com.xws.user.repo.ReservationRepository;
 import com.xws.user.repo.UserRepository;
 import io.grpc.stub.StreamObserver;
@@ -25,10 +28,13 @@ public class UserSerGrpc extends UserServiceGrpc.UserServiceImplBase {
 
     private final UserRepository userRepository;
 
+    private final AccommodationRepository accommodationRepository;
+
     @Autowired
-    public UserSerGrpc(ReservationRepository reservationRepository, UserRepository userRepository){
+    public UserSerGrpc(ReservationRepository reservationRepository, UserRepository userRepository, AccommodationRepository accommodationRepository){
         this.reservationRepository = reservationRepository;
         this.userRepository = userRepository;
+        this.accommodationRepository = accommodationRepository;
     }
 
     @Override
@@ -70,6 +76,30 @@ public class UserSerGrpc extends UserServiceGrpc.UserServiceImplBase {
         }
 
         // Send an empty response
+        responseObserver.onNext(Empty.getDefaultInstance());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void addAccommodationToUser(AddAccommodationToUserOwner request, StreamObserver<Empty> responseObserver) {
+        com.xws.accommodation.Accommodation grpcAccommodation = request.getAccommodation();
+        String user_owner_id = request.getUserOwnerId();
+
+        Accommodation accommodation = new Accommodation(grpcAccommodation.getId(), grpcAccommodation.getName());
+        accommodationRepository.save(accommodation);
+
+        Optional<User> user = userRepository.findById(user_owner_id);
+
+        if(user.isPresent()){
+            User user_found = user.get();
+
+            if(user_found.getAccommodations() == null){
+                user_found.setAccommodations(new ArrayList<>());
+            }
+
+            user_found.getAccommodations().add(accommodation);
+            userRepository.save(user_found);
+        }
         responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();
     }

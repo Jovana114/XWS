@@ -26,6 +26,8 @@ public class User {
     private Set<Role> roles = new HashSet<>();
     @DBRef
     private List<Reservation> reservations;
+    @DBRef
+    private List<Accommodation> accommodations;
 
     public User() {
     }
@@ -109,5 +111,13 @@ public class User {
 
     public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
+    }
+
+    public List<Accommodation> getAccommodations() {
+        return accommodations;
+    }
+
+    public void setAccommodations(List<Accommodation> accommodations) {
+        this.accommodations = accommodations;
     }
 }

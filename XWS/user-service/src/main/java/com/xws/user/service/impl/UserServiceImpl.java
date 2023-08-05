@@ -44,14 +44,4 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-    @Override
-    public void deleteUser(String userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-
-        if (!userOptional.isPresent()) {
-            throw new RuntimeException("User not found!");
-        }
-
-        userRepository.deleteById(userId);
-    }
 }

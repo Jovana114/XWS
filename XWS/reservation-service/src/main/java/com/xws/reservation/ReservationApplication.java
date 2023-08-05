@@ -1,13 +1,7 @@
 package com.xws.reservation;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
-import com.xws.proto.HelloRequest;
-import com.xws.proto.HelloResponse;
-import com.xws.proto.HelloServiceGrpc;
 import com.xws.reservation.repository.ReservationRepository;
 import com.xws.reservation.service.ReservationService;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;

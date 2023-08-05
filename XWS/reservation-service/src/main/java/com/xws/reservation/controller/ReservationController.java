@@ -4,9 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.google.protobuf.Timestamp;
-import com.xws.proto.HelloRequest;
-import com.xws.proto.HelloResponse;
-import com.xws.proto.HelloServiceGrpc;
 import com.xws.reservation.CreateReservationRequest;
 import com.xws.reservation.ReservationServiceGrpc;
 import com.xws.reservation.entity.Reservation;
@@ -36,26 +33,6 @@ public class ReservationController {
 
     @Autowired
     ReservationService reservationService;
-
-    @PostMapping("/test")
-    public void test(){
-
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("user-service", 6565)
-                .usePlaintext()
-                .build();
-
-        HelloServiceGrpc.HelloServiceBlockingStub stub
-                = HelloServiceGrpc.newBlockingStub(channel);
-
-        HelloResponse helloResponse = stub.hello(HelloRequest.newBuilder()
-                .setFirstName("Baeldung")
-                .setLastName("gRPC")
-                .build());
-
-
-        System.out.println(helloResponse.toString());
-        channel.shutdown();
-    }
 
     @PostMapping("/create_reservation/{accommodation_id}/{source_user}")
     public ResponseEntity<?> create(@PathVariable("accommodation_id") String accomodation_id, @PathVariable("source_user") String source_user, @RequestBody Reservation reservation) {

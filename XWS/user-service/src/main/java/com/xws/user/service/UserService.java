@@ -9,5 +9,4 @@ public interface UserService {
 
     User updateUser(String userId, User updatedUser);
 
-    void deleteUser(String userId);
 }

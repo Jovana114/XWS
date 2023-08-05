@@ -6,13 +6,17 @@ import com.example.Accommodationservice.repository.AccommodationRepository;
 import com.example.Accommodationservice.repository.ReservationRepository;
 import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
-import com.xws.accommodation.AccommodationServiceGrpc;
-import com.xws.accommodation.AddReservationToAccommodationRequest;
+import com.xws.accommodation.*;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
@@ -35,7 +39,7 @@ public class AccommodationService extends AccommodationServiceGrpc.Accommodation
     public void addReservationToAccommodation(AddReservationToAccommodationRequest request, StreamObserver<Empty> responseObserver) {
         String accommodationId = request.getAccommodationId();
         com.xws.common.Reservation grpcReservation = request.getReservation();
-        String source_user  = request.getSourceUser();
+        String source_user = request.getSourceUser();
 
         Timestamp timestamp = grpcReservation.getStartDate();
         long milliseconds = timestamp.getSeconds() * 1000 + timestamp.getNanos() / 1000000;
@@ -74,5 +78,32 @@ public class AccommodationService extends AccommodationServiceGrpc.Accommodation
         responseObserver.onCompleted();
     }
 
-}
+    @Override
+    public void checkIfAccommodationHasActiveReservations(CheckIfAccommodationHasActiveReservationsRequest request, StreamObserver<CheckIfAccommodationHasActiveReservationsResponse> responseObserver) {
+        com.xws.accommodation.Accommodation grpcAccommodation = request.getAccommodation();
 
+        Optional<Accommodation> accommodation = accommodationRepository.findById(grpcAccommodation.getId());
+
+        boolean hasActiveReservation = false;
+
+        if(accommodation.isPresent()){
+            Accommodation accommodation_found = accommodation.get();
+
+            for(Reservation reservation: accommodation_found.getReservations()){
+                if(reservation.getApproved() && reservation.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(LocalDate.now())){
+                    hasActiveReservation = true;
+                    break;
+                }
+            }
+
+        }
+
+        CheckIfAccommodationHasActiveReservationsResponse response = CheckIfAccommodationHasActiveReservationsResponse.newBuilder()
+                .setAccommodationHasActiveReservations(hasActiveReservation)
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+
+    }
+}
