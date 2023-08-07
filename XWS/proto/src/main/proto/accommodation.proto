@@ -26,7 +26,7 @@ message AddAccommodationToUserOwner {
 }
 
 service AccommodationService {
-  rpc AddReservationToAccommodation(AddReservationToAccommodationRequest) returns (google.protobuf.Empty);
+  rpc AddReservationToAppointment(AddReservationToAppointmentRequest) returns (google.protobuf.Empty);
   rpc CheckIfAccommodationHasActiveReservations(CheckIfAccommodationHasActiveReservationsRequest) returns (CheckIfAccommodationHasActiveReservationsResponse);
 }
 
@@ -35,14 +35,14 @@ service UserService {
   rpc AddAccommodationToUser(AddAccommodationToUserOwner) returns (google.protobuf.Empty);
 }
 
-message AddReservationToAccommodationRequest {
-  string accommodation_id = 1;
+message AddReservationToAppointmentRequest {
+  string appointment_id = 1;
   common.Reservation reservation = 2;
   string source_user = 3;
 }
 
 message AddReservationToUserRequest {
-  string accommodation_id = 1;
+  string appointment_id = 1;
   common.Reservation reservation = 2;
   string source_user = 3;
 }

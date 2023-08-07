@@ -39,7 +39,6 @@ public class UserSerGrpc extends UserServiceGrpc.UserServiceImplBase {
 
     @Override
     public void addReservationToUser(AddReservationToUserRequest request, StreamObserver<Empty> responseObserver) {
-        String accommodationId = request.getAccommodationId();
         com.xws.common.Reservation grpcReservation = request.getReservation();
         String source_user  = request.getSourceUser();
 
@@ -47,35 +46,30 @@ public class UserSerGrpc extends UserServiceGrpc.UserServiceImplBase {
         long milliseconds = timestamp.getSeconds() * 1000 + timestamp.getNanos() / 1000000;
         Date startDate = new Date(milliseconds);
 
-        Timestamp timestamp2 = grpcReservation.getEndDate(); // Changed to getEndDate() instead of getStartDate()
+        Timestamp timestamp2 = grpcReservation.getEndDate();
         long milliseconds2 = timestamp2.getSeconds() * 1000 + timestamp2.getNanos() / 1000000;
         Date endDate = new Date(milliseconds2);
 
         Reservation reservation = new Reservation(grpcReservation.getId(), grpcReservation.getSourceUser(),
-                grpcReservation.getAccommodationId(), startDate, endDate,
+                grpcReservation.getAppointmentId(), startDate, endDate,
                 grpcReservation.getNumGuests(), grpcReservation.getApproved());
 
         reservationRepository.save(reservation);
 
-        // Retrieve the user from the database based on userOwnerId
         Optional<User> _user = userRepository.findById(source_user);
 
-        // Add the reservation to the user's list of reservations
         if (_user.isPresent()) {
             User user = _user.get();
 
-            // Check if reservations list is null, if so, initialize it to an empty ArrayList
             if (user.getReservations() == null) {
                 user.setReservations(new ArrayList<>());
             }
 
             user.getReservations().add(reservation);
 
-            // Save the updated user to the database
             userRepository.save(user);
         }
 
-        // Send an empty response
         responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();
     }

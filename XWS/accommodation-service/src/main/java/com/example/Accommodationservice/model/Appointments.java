@@ -1,9 +1,11 @@
 package com.example.Accommodationservice.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.List;
 
 @Document(collection = "appointments")
 public class Appointments {
@@ -15,15 +17,18 @@ public class Appointments {
     private Boolean reserved;
     private EPrice price;
     private EPricePer price_per;
+    @DBRef
+    private List<Reservation> reservations;
 
     public Appointments(){}
 
-    public Appointments(Date start, Date end, Boolean reserved, EPrice price, EPricePer price_per) {
+    public Appointments(Date start, Date end, Boolean reserved, EPrice price, EPricePer price_per, List<Reservation> reservations) {
         this.start = start;
         this.end = end;
         this.reserved = reserved;
         this.price = price;
         this.price_per = price_per;
+        this.reservations = reservations;
     }
 
     public String getId() {
@@ -73,4 +78,13 @@ public class Appointments {
     public void setPrice_per(EPricePer price_per) {
         this.price_per = price_per;
     }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
+
 }

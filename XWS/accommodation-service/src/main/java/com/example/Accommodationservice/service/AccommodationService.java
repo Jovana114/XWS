@@ -1,15 +1,14 @@
 package com.example.Accommodationservice.service;
 
 import com.example.Accommodationservice.model.Accommodation;
+import com.example.Accommodationservice.model.Appointments;
 import com.example.Accommodationservice.model.Reservation;
 import com.example.Accommodationservice.repository.AccommodationRepository;
+import com.example.Accommodationservice.repository.AppointmentRepository;
 import com.example.Accommodationservice.repository.ReservationRepository;
 import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
 import com.xws.accommodation.*;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,51 +28,51 @@ public class AccommodationService extends AccommodationServiceGrpc.Accommodation
 
     private final ReservationRepository reservationRepository;
 
+    private final AppointmentRepository appointmentRepository;
+
     @Autowired
-    public AccommodationService(AccommodationRepository accommodationRepository, ReservationRepository reservationRepository) {
+    public AccommodationService(AccommodationRepository accommodationRepository, ReservationRepository reservationRepository, AppointmentRepository appointmentRepository) {
         this.accommodationRepository = accommodationRepository;
         this.reservationRepository = reservationRepository;
+        this.appointmentRepository = appointmentRepository;
     }
 
     @Override
-    public void addReservationToAccommodation(AddReservationToAccommodationRequest request, StreamObserver<Empty> responseObserver) {
-        String accommodationId = request.getAccommodationId();
+    public void addReservationToAppointment(AddReservationToAppointmentRequest request, StreamObserver<Empty> responseObserver) {
+        String appointmentId = request.getAppointmentId();
         com.xws.common.Reservation grpcReservation = request.getReservation();
-        String source_user = request.getSourceUser();
 
         Timestamp timestamp = grpcReservation.getStartDate();
         long milliseconds = timestamp.getSeconds() * 1000 + timestamp.getNanos() / 1000000;
         Date startDate = new Date(milliseconds);
 
-        Timestamp timestamp2 = grpcReservation.getEndDate(); // Changed to getEndDate() instead of getStartDate()
+        Timestamp timestamp2 = grpcReservation.getEndDate();
         long milliseconds2 = timestamp2.getSeconds() * 1000 + timestamp2.getNanos() / 1000000;
         Date endDate = new Date(milliseconds2);
 
         Reservation reservation = new Reservation(grpcReservation.getId(), grpcReservation.getSourceUser(),
-                grpcReservation.getAccommodationId(), startDate, endDate,
+                grpcReservation.getAppointmentId(), startDate, endDate,
                 grpcReservation.getNumGuests(), grpcReservation.getApproved());
 
         reservationRepository.save(reservation);
 
-        // Retrieve the user from the database based on userOwnerId
-        Optional<Accommodation> _accommodation = accommodationRepository.findById(accommodationId);
+        for(Accommodation accommodation: accommodationRepository.findAll()){
+            for(Appointments appointment: accommodation.getAppointments()){
+                if(appointment.getId().equals(appointmentId)){
 
-        // Add the reservation to the user's list of reservations
-        if (_accommodation.isPresent()) {
-            Accommodation accommodation = _accommodation.get();
+                    if (appointment.getReservations() == null) {
+                        appointment.setReservations(new ArrayList<>());
+                    }
 
-            // Check if reservations list is null, if so, initialize it to an empty ArrayList
-            if (accommodation.getReservations() == null) {
-                accommodation.setReservations(new ArrayList<>());
+                    appointment.getReservations().add(reservation);
+
+                    appointmentRepository.save(appointment);
+                    accommodationRepository.save(accommodation);
+
+                }
             }
-
-            accommodation.getReservations().add(reservation);
-
-            // Save the updated user to the database
-            accommodationRepository.save(accommodation);
         }
 
-        // Send an empty response
         responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();
     }
@@ -89,10 +88,13 @@ public class AccommodationService extends AccommodationServiceGrpc.Accommodation
         if(accommodation.isPresent()){
             Accommodation accommodation_found = accommodation.get();
 
-            for(Reservation reservation: accommodation_found.getReservations()){
-                if(reservation.getApproved() && reservation.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(LocalDate.now())){
-                    hasActiveReservation = true;
-                    break;
+            for(Appointments appointment: accommodation_found.getAppointments()) {
+
+                for (Reservation reservation : appointment.getReservations()) {
+                    if (reservation.getApproved() && reservation.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(LocalDate.now())) {
+                        hasActiveReservation = true;
+                        break;
+                    }
                 }
             }
 

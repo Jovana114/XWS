@@ -34,8 +34,8 @@ public class ReservationController {
     @Autowired
     ReservationService reservationService;
 
-    @PostMapping("/create_reservation/{accommodation_id}/{source_user}")
-    public ResponseEntity<?> create(@PathVariable("accommodation_id") String accomodation_id, @PathVariable("source_user") String source_user, @RequestBody Reservation reservation) {
+    @PostMapping("/create_reservation/{appointment_id}/{source_user}")
+    public ResponseEntity<?> create(@PathVariable("appointment_id") String appointment_id, @PathVariable("source_user") String source_user, @RequestBody Reservation reservation) {
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress("reservation-service", 7575)
                 .usePlaintext()
@@ -48,7 +48,7 @@ public class ReservationController {
 
         com.xws.common.Reservation grpcReservation = com.xws.common.Reservation.newBuilder()
                 .setSourceUser(source_user)
-                .setAccommodationId(accomodation_id)
+                .setAppointmentId(appointment_id)
                 .setStartDate(startDateTimestamp)
                 .setEndDate(endDateTimestamp)
                 .setNumGuests(reservation.getNumGuests())
@@ -56,7 +56,7 @@ public class ReservationController {
                 .build();
 
         CreateReservationRequest request = CreateReservationRequest.newBuilder()
-                .setAccommodationId(accomodation_id)
+                .setAppointmentId(appointment_id)
                 .setReservation(grpcReservation)
                 .setSourceUser(source_user)
                 .build();

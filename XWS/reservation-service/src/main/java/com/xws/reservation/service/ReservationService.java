@@ -3,7 +3,7 @@ package com.xws.reservation.service;
 
 import com.google.protobuf.Empty;
 import com.xws.accommodation.AccommodationServiceGrpc;
-import com.xws.accommodation.AddReservationToAccommodationRequest;
+import com.xws.accommodation.AddReservationToAppointmentRequest;
 import com.xws.accommodation.AddReservationToUserRequest;
 import com.xws.accommodation.UserServiceGrpc;
 import com.xws.reservation.CreateReservationRequest;
@@ -46,7 +46,7 @@ public class ReservationService extends ReservationServiceGrpc.ReservationServic
         UserServiceGrpc.UserServiceBlockingStub stub1 =
                 UserServiceGrpc.newBlockingStub(channel1);
 
-        String accommodationId = request.getAccommodationId();
+        String appointmentId = request.getAppointmentId();
         com.xws.common.Reservation grpcReservation = request.getReservation();
         String source_user = request.getSourceUser();
 
@@ -54,7 +54,7 @@ public class ReservationService extends ReservationServiceGrpc.ReservationServic
         Reservation reservation = new Reservation(
                 grpcReservation.getId(),
                 grpcReservation.getSourceUser(),
-                grpcReservation.getAccommodationId(),
+                grpcReservation.getAppointmentId(),
                 new Date(grpcReservation.getStartDate().getSeconds() * 1000),
                 new Date(grpcReservation.getEndDate().getSeconds() * 1000),
                 grpcReservation.getNumGuests(),
@@ -65,27 +65,26 @@ public class ReservationService extends ReservationServiceGrpc.ReservationServic
         reservationRepository.save(reservation);
 
         // Add the reservation to the user's list of reservations in the Service
-        AddReservationToAccommodationRequest grpcRequest = AddReservationToAccommodationRequest.newBuilder()
-                .setAccommodationId(accommodationId)
+        AddReservationToAppointmentRequest grpcRequest = AddReservationToAppointmentRequest.newBuilder()
+                .setAppointmentId(appointmentId)
                 .setReservation(grpcReservation)
                 .setSourceUser(source_user)
                 .build();
 
         AddReservationToUserRequest grpcRequest1 = AddReservationToUserRequest.newBuilder()
-                .setAccommodationId(accommodationId)
+                .setAppointmentId(appointmentId)
                 .setReservation(grpcReservation)
                 .setSourceUser(source_user)
                 .build();
 
         try {
-            stub.addReservationToAccommodation(grpcRequest);
+            stub.addReservationToAppointment(grpcRequest);
             stub1.addReservationToUser(grpcRequest1);
         } catch (StatusRuntimeException e) {
             // Handle any errors or exceptions that occur while calling the User Service
             // You can choose to retry, log, or handle the error based on your application's requirements
         }
 
-        // Send an empty response
         responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();
     }

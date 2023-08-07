@@ -49,7 +49,7 @@ public class AccommodationControler {
         Accommodation new_accommodation = new Accommodation(accommodation.getId(), accommodation.getName(),
                 accommodation.getLocation(), accommodation.getBenefits(),
                 accommodation.getMin_guests(), accommodation.getMax_guests(),
-                accommodation.getAppointments(), accommodation.getReservations());
+                accommodation.getAppointments());
 
         new_accommodation.setUser_id(user_id);
         accommodationRepository.save(new_accommodation);

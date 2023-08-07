@@ -5,12 +5,12 @@ import com.example.Accommodationservice.model.Accommodation;
 import com.example.Accommodationservice.model.Appointments;
 import com.example.Accommodationservice.repository.AccommodationRepository;
 import com.example.Accommodationservice.repository.AppointmentRepository;
-import com.sun.source.tree.OpensTree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -34,7 +34,7 @@ public class AppointmentsController {
 
                 Appointments new_appointment = new Appointments(appointments.getStart(),
                         appointments.getEnd(), appointments.getReserved(), appointments.getPrice(),
-                        appointments.getPrice_per());
+                        appointments.getPrice_per(), appointments.getReservations());
 
                 appointmentRepository.save(new_appointment);
 
@@ -64,6 +64,11 @@ public class AppointmentsController {
             } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/all_appointemnts")
+    public List<Appointments> getAllAppointments(){
+        return appointmentRepository.findAll();
     }
 
 }

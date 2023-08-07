@@ -2,6 +2,7 @@ package com.example.Accommodationservice;
 
 import com.example.Accommodationservice.model.Accommodation;
 import com.example.Accommodationservice.repository.AccommodationRepository;
+import com.example.Accommodationservice.repository.AppointmentRepository;
 import com.example.Accommodationservice.repository.ReservationRepository;
 import com.example.Accommodationservice.service.AccommodationService;
 import io.grpc.Server;
@@ -31,12 +32,15 @@ public class AccommodationServiceApplication implements CommandLineRunner {
 	@Autowired
 	ReservationRepository reservationRepository;
 
+	@Autowired
+	AppointmentRepository appointmentRepository;
+
 	@Override
 	public void run(String... args) throws Exception {
 
 		Server server= ServerBuilder
 				.forPort(8585)
-				.addService(new AccommodationService(accommodationRepository, reservationRepository)).build();
+				.addService(new AccommodationService(accommodationRepository, reservationRepository, appointmentRepository)).build();
 
 		server.start();
 		server.awaitTermination();
