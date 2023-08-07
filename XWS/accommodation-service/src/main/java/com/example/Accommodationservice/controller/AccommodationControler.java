@@ -13,6 +13,11 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +39,9 @@ public class AccommodationControler {
 
     @Autowired
     AccommodationRepository accommodationRepository;
+
+    @Autowired
+    MongoOperations mongoOperations;
 
     @PostMapping("/create/{user_id}")
     public ResponseEntity<?> create(@PathVariable("user_id") String user_id, @RequestBody Accommodation accommodation) {
@@ -130,5 +140,40 @@ public class AccommodationControler {
 
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+
+    @GetMapping("/search/accommodations")
+    public List<Accommodation> searchAccommodations(@RequestParam String location, @RequestParam int numGuests,
+                                                    @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") Date start,
+                                                    @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") Date end) {
+
+        List<Accommodation> filtered = new ArrayList<>();
+
+        for (Accommodation accommodation : accommodationRepository.findAll()) {
+            if (accommodation.getLocation().equals(location)
+                    && accommodation.getMin_guests() <= numGuests
+                    && accommodation.getMax_guests() >= numGuests
+                    && isWithinAppointmentTime(accommodation, start, end)) {
+                filtered.add(accommodation);
+            }
+        }
+
+        return filtered;
+    }
+
+    private boolean isWithinAppointmentTime(Accommodation accommodation, Date start, Date end) {
+        for (Appointments appointment : accommodation.getAppointments()) {
+            Date appointmentStart = appointment.getStart();
+            Date appointmentEnd = appointment.getEnd();
+
+            if (start.compareTo(appointmentEnd) < 0 && end.compareTo(appointmentStart) > 0 &&
+                    end.compareTo(appointmentEnd) <= 0 && start.compareTo(appointmentStart) >= 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
 
 }
