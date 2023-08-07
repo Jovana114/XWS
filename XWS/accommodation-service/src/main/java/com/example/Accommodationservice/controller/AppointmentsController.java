@@ -33,8 +33,8 @@ public class AppointmentsController {
                 Accommodation _accommodation = accommodation.get();
 
                 Appointments new_appointment = new Appointments(appointments.getStart(),
-                        appointments.getEnd(), appointments.getReserved(), appointments.getPrice_per_guest(),
-                        appointments.getPrice_per_accommodation());
+                        appointments.getEnd(), appointments.getReserved(), appointments.getPrice(),
+                        appointments.getPrice_per());
 
                 appointmentRepository.save(new_appointment);
 
@@ -57,8 +57,8 @@ public class AppointmentsController {
                 _appointment.setStart(appointment.getStart());
                 _appointment.setEnd(appointment.getEnd());
                 _appointment.setReserved(appointment.getReserved());
-                _appointment.setPrice_per_guest(appointment.getPrice_per_guest());
-                _appointment.setPrice_per_accommodation(appointment.getPrice_per_accommodation());
+                _appointment.setPrice(appointment.getPrice());
+                _appointment.setPrice(appointment.getPrice());
                 return new ResponseEntity<>(appointmentRepository.save(_appointment), HttpStatus.OK);
             } return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             } else {
