@@ -4,6 +4,10 @@ import java.util.Date;
 import java.util.List;
 
 import com.google.protobuf.Timestamp;
+import com.xws.accommodation.AccommodationServiceGrpc;
+import com.xws.accommodation.CheckIfAccommodationHasActiveReservationsResponse;
+import com.xws.accommodation.CheckIfAppointmentHasAutoApprovalRequest;
+import com.xws.accommodation.CheckIfAppointmentHasAutoApprovalRequestResponse;
 import com.xws.reservation.CreateReservationRequest;
 import com.xws.reservation.ReservationServiceGrpc;
 import com.xws.reservation.entity.Reservation;
@@ -13,7 +17,6 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,27 +46,76 @@ public class ReservationController {
 
         ReservationServiceGrpc.ReservationServiceBlockingStub stub = ReservationServiceGrpc.newBlockingStub(channel);
 
-        Timestamp startDateTimestamp = convertToTimestamp(reservation.getStartDate());
-        Timestamp endDateTimestamp = convertToTimestamp(reservation.getEndDate());
-
-        com.xws.common.Reservation grpcReservation = com.xws.common.Reservation.newBuilder()
-                .setSourceUser(source_user)
-                .setAppointmentId(appointment_id)
-                .setStartDate(startDateTimestamp)
-                .setEndDate(endDateTimestamp)
-                .setNumGuests(reservation.getNumGuests())
-                .setApproved(reservation.getApproved())
+        ManagedChannel channel1 = ManagedChannelBuilder.forAddress("accommodation-service", 8585)
+                .usePlaintext()
                 .build();
 
-        CreateReservationRequest request = CreateReservationRequest.newBuilder()
+        AccommodationServiceGrpc.AccommodationServiceBlockingStub stub1 =
+                AccommodationServiceGrpc.newBlockingStub(channel1);
+
+        CheckIfAppointmentHasAutoApprovalRequest request1 = CheckIfAppointmentHasAutoApprovalRequest.newBuilder()
                 .setAppointmentId(appointment_id)
-                .setReservation(grpcReservation)
-                .setSourceUser(source_user)
                 .build();
 
         try {
-            stub.createReservation(request);
-            return ResponseEntity.ok().body("{\"message\": \"Reservation request sent\"}");
+
+            CheckIfAppointmentHasAutoApprovalRequestResponse response = stub1.checkIfAppointmentHasAutoApproval(request1);
+
+            if (!response.getAppointmentHasAutoApproval()) {
+
+                Timestamp startDateTimestamp = convertToTimestamp(reservation.getStartDate());
+                Timestamp endDateTimestamp = convertToTimestamp(reservation.getEndDate());
+
+                com.xws.common.Reservation grpcReservation = com.xws.common.Reservation.newBuilder()
+                        .setSourceUser(source_user)
+                        .setAppointmentId(appointment_id)
+                        .setStartDate(startDateTimestamp)
+                        .setEndDate(endDateTimestamp)
+                        .setNumGuests(reservation.getNumGuests())
+                        .setApproved(false)
+                        .setId(reservation.getId())
+                        .build();
+
+                CreateReservationRequest request = CreateReservationRequest.newBuilder()
+                        .setAppointmentId(appointment_id)
+                        .setReservation(grpcReservation)
+                        .setSourceUser(source_user)
+                        .build();
+
+                try {
+                    stub.createReservation(request);
+                    return ResponseEntity.ok().body("{\"message\": \"Reservation request sent\"}");
+                } catch (StatusRuntimeException e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Failed to create reservation\"}");
+                }
+            } else {
+
+                Timestamp startDateTimestamp = convertToTimestamp(reservation.getStartDate());
+                Timestamp endDateTimestamp = convertToTimestamp(reservation.getEndDate());
+
+                com.xws.common.Reservation grpcReservation = com.xws.common.Reservation.newBuilder()
+                        .setSourceUser(source_user)
+                        .setAppointmentId(appointment_id)
+                        .setStartDate(startDateTimestamp)
+                        .setEndDate(endDateTimestamp)
+                        .setNumGuests(reservation.getNumGuests())
+                        .setApproved(true)
+                        .setId(reservation.getId())
+                        .build();
+
+                CreateReservationRequest request = CreateReservationRequest.newBuilder()
+                        .setAppointmentId(appointment_id)
+                        .setReservation(grpcReservation)
+                        .setSourceUser(source_user)
+                        .build();
+
+                try {
+                    stub.createReservation(request);
+                    return ResponseEntity.ok().body("{\"message\": \"Reservation request sent\"}");
+                } catch (StatusRuntimeException e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Failed to create reservation\"}");
+                }
+            }
         } catch (StatusRuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Failed to create reservation\"}");
         }
@@ -75,7 +127,7 @@ public class ReservationController {
         return Timestamp.newBuilder().setSeconds(seconds).setNanos(nanos).build();
     }
 
-    @GetMapping()
+    @GetMapping("/all")
     public ResponseEntity<?> allReservations()
     {
         List<Reservation> requests = reservationRepository.findAll();
@@ -87,7 +139,7 @@ public class ReservationController {
     @DeleteMapping("/{suser}+{idacc}")
     public ResponseEntity<?> delete(@PathVariable("suser") String suser, @PathVariable("idacc") String idacc)
     {
-        List<Reservation> reqList = reservationRepository.findBySourceUserAndIdAccommodation(suser, idacc);
+        List<Reservation> reqList = reservationRepository.findBySourceUserAndIdAppointment(suser, idacc);
         if(!reqList.isEmpty()){
             Reservation newReservation = reqList.get(0);
             reservationRepository.deleteById(newReservation.getId());
@@ -100,7 +152,7 @@ public class ReservationController {
     @PutMapping("/{suser}+{idacc}")
     public ResponseEntity<?> accept(@PathVariable("suser") String suser, @PathVariable("idacc") String idacc)
     {
-        List<Reservation> reqList = reservationRepository.findBySourceUserAndIdAccommodation(suser, idacc);
+        List<Reservation> reqList = reservationRepository.findBySourceUserAndIdAppointment(suser, idacc);
         if(!reqList.isEmpty()){
             Reservation newReservation = reqList.get(0);
             //newReservation.setState("Accepted");

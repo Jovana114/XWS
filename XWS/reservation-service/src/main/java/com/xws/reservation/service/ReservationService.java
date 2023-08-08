@@ -6,6 +6,7 @@ import com.xws.accommodation.AccommodationServiceGrpc;
 import com.xws.accommodation.AddReservationToAppointmentRequest;
 import com.xws.accommodation.AddReservationToUserRequest;
 import com.xws.accommodation.UserServiceGrpc;
+import com.xws.reservation.ApprovingReservationRequest;
 import com.xws.reservation.CreateReservationRequest;
 import com.xws.reservation.entity.Reservation;
 import com.xws.reservation.ReservationServiceGrpc;
@@ -18,6 +19,7 @@ import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.util.Date;
+import java.util.Optional;
 
 @GrpcService
 @ComponentScan("com.xws.reservation.repository")
@@ -50,7 +52,6 @@ public class ReservationService extends ReservationServiceGrpc.ReservationServic
         com.xws.common.Reservation grpcReservation = request.getReservation();
         String source_user = request.getSourceUser();
 
-        // Create a Reservation object from the received gRPC Reservation
         Reservation reservation = new Reservation(
                 grpcReservation.getId(),
                 grpcReservation.getSourceUser(),
@@ -61,10 +62,8 @@ public class ReservationService extends ReservationServiceGrpc.ReservationServic
                 grpcReservation.getApproved()
         );
 
-        // Save the reservation to the database using the ReservationRepository
         reservationRepository.save(reservation);
 
-        // Add the reservation to the user's list of reservations in the Service
         AddReservationToAppointmentRequest grpcRequest = AddReservationToAppointmentRequest.newBuilder()
                 .setAppointmentId(appointmentId)
                 .setReservation(grpcReservation)
@@ -87,5 +86,32 @@ public class ReservationService extends ReservationServiceGrpc.ReservationServic
 
         responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public void approvingReservation(ApprovingReservationRequest request, StreamObserver<Empty> responseObserver) {
+        String reservationId = request.getReservationId();
+
+        Optional<Reservation> reservationOptional = reservationRepository.findById(reservationId);
+
+        if (reservationOptional.isPresent()) {
+            Reservation reservation = reservationOptional.get();
+            reservation.setApproved(true);
+            reservationRepository.save(reservation);
+
+            String appointment_id = reservation.getIdAppointment();
+
+            for(Reservation reservation1: reservationRepository.findAll()){
+                if(!reservation1.getApproved() && reservation1.getIdAppointment().equals(appointment_id)){
+                    reservationRepository.delete(reservation1);
+                }
+            }
+
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+        } else {
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+        }
     }
 }

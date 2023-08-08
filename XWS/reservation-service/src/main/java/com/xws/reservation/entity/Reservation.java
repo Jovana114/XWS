@@ -30,16 +30,8 @@ public class Reservation {
         this.approved = approved;
     }
 
-    public Reservation(String sourceUser, String idAppointment, Date startDate, Date endDate, int numGuests, Boolean approved) {
-        this.sourceUser = sourceUser;
-        this.idAppointment = idAppointment;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.numGuests = numGuests;
-        this.approved = approved;
-    }
-
-    public Reservation(Date startDate, Date endDate, int numGuests) {
+    public Reservation(String id, Date startDate, Date endDate, int numGuests) {
+        this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
         this.numGuests = numGuests;
@@ -49,9 +41,6 @@ public class Reservation {
         this.sourceUser = sourceUser;
     }
 
-    public void setIdAccommodation(String idAccommodation) {
-        this.idAppointment = idAccommodation;
-    }
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
@@ -85,10 +74,6 @@ public class Reservation {
         return sourceUser;
     }
 
-    public String getIdAccommodation() {
-        return idAppointment;
-    }
-
     public Date getStartDate() {
         return startDate;
     }
@@ -99,5 +84,13 @@ public class Reservation {
 
     public int getNumGuests() {
         return numGuests;
+    }
+
+    public String getIdAppointment() {
+        return idAppointment;
+    }
+
+    public void setIdAppointment(String idAppointment) {
+        this.idAppointment = idAppointment;
     }
 }

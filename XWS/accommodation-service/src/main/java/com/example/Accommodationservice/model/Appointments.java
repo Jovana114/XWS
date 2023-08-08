@@ -19,16 +19,18 @@ public class Appointments {
     private EPricePer price_per;
     @DBRef
     private List<Reservation> reservations;
+    private boolean auto_reservation;
 
     public Appointments(){}
 
-    public Appointments(Date start, Date end, Boolean reserved, EPrice price, EPricePer price_per, List<Reservation> reservations) {
+    public Appointments(Date start, Date end, Boolean reserved, EPrice price, EPricePer price_per, List<Reservation> reservations, boolean auto_reservation) {
         this.start = start;
         this.end = end;
         this.reserved = reserved;
         this.price = price;
         this.price_per = price_per;
         this.reservations = reservations;
+        this.auto_reservation = auto_reservation;
     }
 
     public String getId() {
@@ -87,4 +89,11 @@ public class Appointments {
         this.reservations = reservations;
     }
 
+    public boolean isAuto_reservation() {
+        return auto_reservation;
+    }
+
+    public void setAuto_reservation(boolean auto_reservation) {
+        this.auto_reservation = auto_reservation;
+    }
 }

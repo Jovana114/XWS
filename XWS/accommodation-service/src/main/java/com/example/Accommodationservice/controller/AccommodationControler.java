@@ -3,14 +3,21 @@ package com.example.Accommodationservice.controller;
 import com.example.Accommodationservice.Response.MessageResponse;
 import com.example.Accommodationservice.model.Accommodation;
 import com.example.Accommodationservice.model.Appointments;
+import com.example.Accommodationservice.model.Reservation;
 import com.example.Accommodationservice.repository.AccommodationRepository;
+import com.example.Accommodationservice.repository.AppointmentRepository;
+import com.example.Accommodationservice.repository.ReservationRepository;
 import com.example.Accommodationservice.service.AccommodationService;
 import com.xws.accommodation.AccommodationServiceGrpc;
 import com.xws.accommodation.AddAccommodationToUserOwner;
+import com.xws.accommodation.ApprovingReservationChangeForUserRequest;
 import com.xws.accommodation.UserServiceGrpc;
+import com.xws.reservation.ApprovingReservationRequest;
+import com.xws.reservation.ReservationServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -42,6 +49,12 @@ public class AccommodationControler {
 
     @Autowired
     MongoOperations mongoOperations;
+
+    @Autowired
+    AppointmentRepository appointmentRepository;
+
+    @Autowired
+    ReservationRepository reservationRepository;
 
     @PostMapping("/create/{user_id}")
     public ResponseEntity<?> create(@PathVariable("user_id") String user_id, @RequestBody Accommodation accommodation) {
@@ -162,18 +175,89 @@ public class AccommodationControler {
 
     private boolean isWithinAppointmentTime(Accommodation accommodation, Date start, Date end) {
         for (Appointments appointment : accommodation.getAppointments()) {
-            Date appointmentStart = appointment.getStart();
-            Date appointmentEnd = appointment.getEnd();
+            if(!appointment.getReserved()) {
+                Date appointmentStart = appointment.getStart();
+                Date appointmentEnd = appointment.getEnd();
 
-            if (start.compareTo(appointmentEnd) < 0 && end.compareTo(appointmentStart) > 0 &&
-                    end.compareTo(appointmentEnd) <= 0 && start.compareTo(appointmentStart) >= 0) {
-                return true;
+                if (start.compareTo(appointmentEnd) < 0 && end.compareTo(appointmentStart) > 0 &&
+                        end.compareTo(appointmentEnd) <= 0 && start.compareTo(appointmentStart) >= 0) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
+    @PutMapping("/approvingRequests/{app_id}_{res_id}")
+    public ResponseEntity<Accommodation> approvingRequests(@PathVariable("app_id") String app_id, @PathVariable("res_id") String res_id) {
+        Optional<Appointments> appointment = appointmentRepository.findById(app_id);
+
+        if (appointment.isPresent()) {
+            Appointments appointment_found = appointment.get();
+
+            if(!appointment_found.isAuto_reservation()) {
+
+                List<Reservation> reservations = appointment_found.getReservations();
+                Optional<Reservation> chosenReservationOptional = reservations.stream()
+                        .filter(reservation -> reservation.getId().equals(res_id))
+                        .findFirst();
+
+                if (chosenReservationOptional.isPresent()) {
+                    Reservation chosenReservation = chosenReservationOptional.get();
+
+                    for (Reservation reservation : reservations) {
+                        if (!reservation.getId().equals(res_id)) {
+                            appointment_found.getReservations().remove(reservation);
+                            reservationRepository.delete(reservation);
+                        }
+                    }
+
+                    chosenReservation.setApproved(true);
+                    reservationRepository.save(chosenReservation);
+
+                    appointment_found.setReserved(true);
+                    appointmentRepository.save(appointment_found);
+
+                    ManagedChannel channel = ManagedChannelBuilder.forAddress("user-service", 6565)
+                            .usePlaintext()
+                            .build();
+
+                    ManagedChannel channel1 = ManagedChannelBuilder.forAddress("reservation-service", 7575)
+                            .usePlaintext()
+                            .build();
+
+                    ReservationServiceGrpc.ReservationServiceBlockingStub stub1 =
+                            ReservationServiceGrpc.newBlockingStub(channel1);
+
+                    UserServiceGrpc.UserServiceBlockingStub stub =
+                            UserServiceGrpc.newBlockingStub(channel);
 
 
+                    ApprovingReservationRequest request1 = ApprovingReservationRequest.newBuilder()
+                            .setReservationId(res_id)
+                            .build();
+
+                    ApprovingReservationChangeForUserRequest request = ApprovingReservationChangeForUserRequest.newBuilder()
+                            .setReservationId(res_id)
+                            .build();
+
+                    try {
+                        stub.approvingReservationChangeForUser(request);
+                        stub1.approvingReservation(request1);
+                    } catch (StatusRuntimeException e) {
+                        // Handle any errors or exceptions that occur while calling the User Service
+                        // You can choose to retry, log, or handle the error based on your application's requirements
+                    }
+
+                    return new ResponseEntity<>(HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
 }

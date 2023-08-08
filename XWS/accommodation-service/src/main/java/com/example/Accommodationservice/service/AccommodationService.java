@@ -11,6 +11,7 @@ import com.google.protobuf.Timestamp;
 import com.xws.accommodation.*;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 
@@ -83,6 +84,7 @@ public class AccommodationService extends AccommodationServiceGrpc.Accommodation
 
         Optional<Accommodation> accommodation = accommodationRepository.findById(grpcAccommodation.getId());
 
+
         boolean hasActiveReservation = false;
 
         if(accommodation.isPresent()){
@@ -107,5 +109,32 @@ public class AccommodationService extends AccommodationServiceGrpc.Accommodation
         responseObserver.onNext(response);
         responseObserver.onCompleted();
 
+    }
+
+    @Override
+    public void checkIfAppointmentHasAutoApproval(CheckIfAppointmentHasAutoApprovalRequest request, StreamObserver<CheckIfAppointmentHasAutoApprovalRequestResponse> responseObserver) {
+        String appointment_id = request.getAppointmentId();
+
+        Optional<Appointments> appointment = appointmentRepository.findById(appointment_id);
+
+        boolean has_auto_approval = false;
+
+        if(appointment.isPresent()){
+            Appointments appointment_found = appointment.get();
+            if(appointment_found.isAuto_reservation()){
+                has_auto_approval = true;
+
+                appointment_found.setReserved(true);
+                appointmentRepository.save(appointment_found);
+
+            }
+        }
+
+        CheckIfAppointmentHasAutoApprovalRequestResponse response = CheckIfAppointmentHasAutoApprovalRequestResponse.newBuilder()
+                .setAppointmentHasAutoApproval(has_auto_approval)
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 }

@@ -14,4 +14,9 @@ message CreateReservationRequest {
 
 service ReservationService {
   rpc CreateReservation(CreateReservationRequest) returns (google.protobuf.Empty);
+  rpc ApprovingReservation(ApprovingReservationRequest) returns (google.protobuf.Empty);
+}
+
+message ApprovingReservationRequest {
+  string reservation_id = 1;
 }

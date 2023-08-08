@@ -20,6 +20,14 @@ message CheckIfAccommodationHasActiveReservationsResponse {
   bool accommodation_has_active_reservations = 1;
 }
 
+message CheckIfAppointmentHasAutoApprovalRequest {
+  string appointment_id = 1;
+}
+
+message CheckIfAppointmentHasAutoApprovalRequestResponse {
+  bool appointment_has_auto_approval = 1;
+}
+
 message AddAccommodationToUserOwner {
   Accommodation accommodation = 1;
   string user_owner_id = 2;
@@ -28,11 +36,14 @@ message AddAccommodationToUserOwner {
 service AccommodationService {
   rpc AddReservationToAppointment(AddReservationToAppointmentRequest) returns (google.protobuf.Empty);
   rpc CheckIfAccommodationHasActiveReservations(CheckIfAccommodationHasActiveReservationsRequest) returns (CheckIfAccommodationHasActiveReservationsResponse);
+  rpc CheckIfAppointmentHasAutoApproval(CheckIfAppointmentHasAutoApprovalRequest) returns (CheckIfAppointmentHasAutoApprovalRequestResponse);
 }
+
 
 service UserService {
   rpc AddReservationToUser(AddReservationToUserRequest) returns (google.protobuf.Empty);
   rpc AddAccommodationToUser(AddAccommodationToUserOwner) returns (google.protobuf.Empty);
+  rpc ApprovingReservationChangeForUser(ApprovingReservationChangeForUserRequest) returns (google.protobuf.Empty);
 }
 
 message AddReservationToAppointmentRequest {
@@ -45,4 +56,8 @@ message AddReservationToUserRequest {
   string appointment_id = 1;
   common.Reservation reservation = 2;
   string source_user = 3;
+}
+
+message ApprovingReservationChangeForUserRequest {
+  string reservation_id = 1;
 }

@@ -4,6 +4,7 @@ import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
 import com.xws.accommodation.AddAccommodationToUserOwner;
 import com.xws.accommodation.AddReservationToUserRequest;
+import com.xws.accommodation.ApprovingReservationChangeForUserRequest;
 import com.xws.accommodation.UserServiceGrpc;
 import com.xws.user.entity.Accommodation;
 import com.xws.user.entity.Reservation;
@@ -96,5 +97,32 @@ public class UserSerGrpc extends UserServiceGrpc.UserServiceImplBase {
         }
         responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public void approvingReservationChangeForUser(ApprovingReservationChangeForUserRequest request, StreamObserver<Empty> responseObserver) {
+        String reservationId = request.getReservationId();
+
+        Optional<Reservation> reservationOptional = reservationRepository.findById(reservationId);
+
+        if (reservationOptional.isPresent()) {
+            Reservation reservation = reservationOptional.get();
+            reservation.setApproved(true);
+            reservationRepository.save(reservation);
+
+            String appointment_id = reservation.getIdAppointment();
+
+            for(Reservation reservation1: reservationRepository.findAll()){
+                if(!reservation1.getApproved() && reservation1.getIdAppointment().equals(appointment_id)){
+                    reservationRepository.delete(reservation1);
+                }
+            }
+
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+        } else {
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+        }
     }
 }

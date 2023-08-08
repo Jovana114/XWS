@@ -34,7 +34,7 @@ public class AppointmentsController {
 
                 Appointments new_appointment = new Appointments(appointments.getStart(),
                         appointments.getEnd(), appointments.getReserved(), appointments.getPrice(),
-                        appointments.getPrice_per(), appointments.getReservations());
+                        appointments.getPrice_per(), appointments.getReservations(), appointments.isAuto_reservation());
 
                 appointmentRepository.save(new_appointment);
 
