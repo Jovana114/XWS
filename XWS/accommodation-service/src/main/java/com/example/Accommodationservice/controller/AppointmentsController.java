@@ -53,12 +53,13 @@ public class AppointmentsController {
 
         if (appointment1.isPresent()) {
             Appointments _appointment = appointment1.get();
-            if(_appointment.getReserved() == false) {
+            if(!_appointment.getReserved()) {
                 _appointment.setStart(appointment.getStart());
                 _appointment.setEnd(appointment.getEnd());
                 _appointment.setReserved(appointment.getReserved());
                 _appointment.setPrice(appointment.getPrice());
-                _appointment.setPrice(appointment.getPrice());
+                _appointment.setPrice_per(_appointment.getPrice_per());
+                _appointment.setAuto_reservation(_appointment.isAuto_reservation());
                 return new ResponseEntity<>(appointmentRepository.save(_appointment), HttpStatus.OK);
             } return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             } else {
