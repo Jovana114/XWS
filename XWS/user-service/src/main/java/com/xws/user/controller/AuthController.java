@@ -90,8 +90,8 @@ public class AuthController {
 				signUpRequest.getAddress(),
 				signUpRequest.getUsername(),
 							 signUpRequest.getEmail(),
-							 encoder.encode(signUpRequest.getPassword())
-							 );
+							 encoder.encode(signUpRequest.getPassword()),
+							 0);
 
 		Set<String> strRoles = signUpRequest.getRoles();
 		Set<Role> roles = new HashSet<>();
@@ -144,7 +144,8 @@ public class AuthController {
 				signUpRequest.getAddress(),
 				signUpRequest.getUsername(),
 				signUpRequest.getEmail(),
-				encoder.encode(signUpRequest.getPassword()));
+				encoder.encode(signUpRequest.getPassword()),
+				0);
 
 		Set<Role> roles = new HashSet<>();
 

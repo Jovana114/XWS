@@ -28,17 +28,19 @@ public class User {
     private List<Reservation> reservations;
     @DBRef
     private List<Accommodation> accommodations;
+    private Integer cancellation_number;
 
     public User() {
     }
 
-    public User(String first_name, String last_name, String address, String username, String email, String password) {
+    public User(String first_name, String last_name, String address, String username, String email, String password, Integer cancellation_number) {
         this.first_name = first_name;
         this.last_name = last_name;
         this.address = address;
         this.username = username;
         this.email = email;
         this.password = password;
+        this.cancellation_number = cancellation_number;
     }
 
     public String getFirst_name() {
@@ -119,5 +121,13 @@ public class User {
 
     public void setAccommodations(List<Accommodation> accommodations) {
         this.accommodations = accommodations;
+    }
+
+    public Integer getCancellation_number() {
+        return cancellation_number;
+    }
+
+    public void setCancellation_number(Integer cancellation_number) {
+        this.cancellation_number = cancellation_number;
     }
 }

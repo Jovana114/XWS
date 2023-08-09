@@ -137,4 +137,45 @@ public class AccommodationService extends AccommodationServiceGrpc.Accommodation
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
+
+    @Override
+    public void removeReservation(RemoveReservationRequest request, StreamObserver<Empty> responseObserver) {
+        String reservation_id = request.getReservationId();
+        String appointment_id = request.getAppointmentId();
+        Optional<Appointments> appointments = appointmentRepository.findById(appointment_id);
+        Optional<Reservation> reservation = reservationRepository.findById(reservation_id);
+        if(reservation.isPresent() && appointments.isPresent()){
+
+            Reservation reservation_found = reservation.get();
+            Appointments appointments_found = appointments.get();
+
+            appointments_found.getReservations().remove(reservation_found);
+            appointmentRepository.save(appointments_found);
+
+            reservationRepository.delete(reservation_found);
+        }
+        responseObserver.onNext(Empty.getDefaultInstance());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void removeApprovedReservation(RemoveApprovedReservationRequest request, StreamObserver<Empty> responseObserver) {
+        String reservation_id = request.getReservationId();
+        String appointment_id = request.getAppointmentId();
+        Optional<Appointments> appointments = appointmentRepository.findById(appointment_id);
+        Optional<Reservation> reservation = reservationRepository.findById(reservation_id);
+        if(reservation.isPresent() && appointments.isPresent()){
+
+            Reservation reservation_found = reservation.get();
+            Appointments appointment_found = appointments.get();
+
+            appointment_found.setReserved(false);
+            appointment_found.getReservations().remove(reservation_found);
+            appointmentRepository.save(appointment_found);
+
+            reservationRepository.delete(reservation_found);
+        }
+        responseObserver.onNext(Empty.getDefaultInstance());
+        responseObserver.onCompleted();
+    }
 }

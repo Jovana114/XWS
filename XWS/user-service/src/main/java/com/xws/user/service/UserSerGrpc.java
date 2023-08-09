@@ -2,10 +2,7 @@ package com.xws.user.service;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
-import com.xws.accommodation.AddAccommodationToUserOwner;
-import com.xws.accommodation.AddReservationToUserRequest;
-import com.xws.accommodation.ApprovingReservationChangeForUserRequest;
-import com.xws.accommodation.UserServiceGrpc;
+import com.xws.accommodation.*;
 import com.xws.user.entity.Accommodation;
 import com.xws.user.entity.Reservation;
 import com.xws.user.entity.User;
@@ -124,5 +121,50 @@ public class UserSerGrpc extends UserServiceGrpc.UserServiceImplBase {
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
         }
+    }
+
+    @Override
+    public void removeReservationUser(RemoveReservationRequestUser request, StreamObserver<Empty> responseObserver) {
+        String reservation_id = request.getReservationId();
+        String source_user = request.getSourceUser();
+
+        Optional<User> user = userRepository.findById(source_user);
+        Optional<Reservation> reservation = reservationRepository.findById(reservation_id);
+
+        if (reservation.isPresent() && user.isPresent()) {
+            Reservation reservation_found = reservation.get();
+            User user_found = user.get();
+
+            user_found.getReservations().remove(reservation_found);
+            userRepository.save(user_found);
+
+            reservationRepository.delete(reservation_found);
+        }
+
+        responseObserver.onNext(Empty.getDefaultInstance());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void removeApprovedReservationRequest(RemoveApprovedReservationRequestUser request, StreamObserver<Empty> responseObserver) {
+        String reservation_id = request.getReservationId();
+        String source_user = request.getSourceUser();
+
+        Optional<User> user = userRepository.findById(source_user);
+        Optional<Reservation> reservation = reservationRepository.findById(reservation_id);
+
+        if (reservation.isPresent() && user.isPresent()) {
+            Reservation reservation_found = reservation.get();
+            User user_found = user.get();
+
+            user_found.setCancellation_number(user_found.getCancellation_number() + 1);
+            user_found.getReservations().remove(reservation_found);
+            userRepository.save(user_found);
+
+            reservationRepository.delete(reservation_found);
+        }
+
+        responseObserver.onNext(Empty.getDefaultInstance());
+        responseObserver.onCompleted();
     }
 }

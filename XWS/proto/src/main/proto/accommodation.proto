@@ -33,17 +33,40 @@ message AddAccommodationToUserOwner {
   string user_owner_id = 2;
 }
 
+message RemoveReservationRequest {
+  string reservation_id = 1;
+  string appointment_id = 2;
+}
+
+message RemoveReservationRequestUser {
+  string reservation_id = 1;
+  string source_user = 2;
+}
+
+message RemoveApprovedReservationRequest {
+  string reservation_id = 1;
+  string appointment_id = 2;
+}
+
+message RemoveApprovedReservationRequestUser {
+  string reservation_id = 1;
+  string source_user = 2;
+}
+
 service AccommodationService {
   rpc AddReservationToAppointment(AddReservationToAppointmentRequest) returns (google.protobuf.Empty);
   rpc CheckIfAccommodationHasActiveReservations(CheckIfAccommodationHasActiveReservationsRequest) returns (CheckIfAccommodationHasActiveReservationsResponse);
   rpc CheckIfAppointmentHasAutoApproval(CheckIfAppointmentHasAutoApprovalRequest) returns (CheckIfAppointmentHasAutoApprovalRequestResponse);
+  rpc RemoveReservation(RemoveReservationRequest) returns (google.protobuf.Empty);
+  rpc RemoveApprovedReservation(RemoveApprovedReservationRequest) returns (google.protobuf.Empty);
 }
-
 
 service UserService {
   rpc AddReservationToUser(AddReservationToUserRequest) returns (google.protobuf.Empty);
   rpc AddAccommodationToUser(AddAccommodationToUserOwner) returns (google.protobuf.Empty);
   rpc ApprovingReservationChangeForUser(ApprovingReservationChangeForUserRequest) returns (google.protobuf.Empty);
+  rpc RemoveReservationUser(RemoveReservationRequestUser) returns (google.protobuf.Empty);
+  rpc RemoveApprovedReservationRequest(RemoveApprovedReservationRequestUser) returns (google.protobuf.Empty);
 }
 
 message AddReservationToAppointmentRequest {

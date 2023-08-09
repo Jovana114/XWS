@@ -2,12 +2,10 @@ package com.xws.reservation.controller;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import com.google.protobuf.Timestamp;
-import com.xws.accommodation.AccommodationServiceGrpc;
-import com.xws.accommodation.CheckIfAccommodationHasActiveReservationsResponse;
-import com.xws.accommodation.CheckIfAppointmentHasAutoApprovalRequest;
-import com.xws.accommodation.CheckIfAppointmentHasAutoApprovalRequestResponse;
+import com.xws.accommodation.*;
 import com.xws.reservation.CreateReservationRequest;
 import com.xws.reservation.ReservationServiceGrpc;
 import com.xws.reservation.entity.Reservation;
@@ -136,19 +134,97 @@ public class ReservationController {
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    @DeleteMapping("/{suser}+{idacc}")
-    public ResponseEntity<?> delete(@PathVariable("suser") String suser, @PathVariable("idacc") String idacc)
-    {
-        List<Reservation> reqList = reservationRepository.findBySourceUserAndIdAppointment(suser, idacc);
-        if(!reqList.isEmpty()){
-            Reservation newReservation = reqList.get(0);
-            reservationRepository.deleteById(newReservation.getId());
-            return new ResponseEntity<>(newReservation ,HttpStatus.OK);
-        }
-        else
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @PutMapping("/remove_request/{res_id}")
+    public ResponseEntity<String> delete(@PathVariable("res_id") String res_id) {
+        Optional<Reservation> reservation = reservationRepository.findById(res_id);
 
+        if (reservation.isPresent()) {
+            Reservation reservation_found = reservation.get();
+
+            if (!reservation_found.getApproved()) {
+                try {
+                    removeReservationFromServices(reservation_found);
+                    reservationRepository.delete(reservation_found);
+                    return ResponseEntity.ok("{\"message\": \"Reservation request removed\"}");
+                } catch (Exception e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Failed to remove reservation\"}");
+                }
+            } else if (reservation_found.getApproved() && java.time.Duration.between(java.time.LocalDateTime.now(), reservation_found.getStartDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime()).toHours() < 24) {
+                return new ResponseEntity<>("You cannot cancel 24h before the start date", HttpStatus.NOT_FOUND);
+            } else if (reservation_found.getApproved() && java.time.Duration.between(java.time.LocalDateTime.now(), reservation_found.getStartDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime()).toHours() > 24){
+                try {
+                    removeApprovedReservationFromServices(reservation_found);
+                    reservationRepository.delete(reservation_found);
+                    return ResponseEntity.ok("{\"message\": \"Reservation request removed\"}");
+                } catch (Exception e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Failed to remove reservation\"}");
+                }
+            }
+        }
+
+        return ResponseEntity.notFound().build();
     }
+
+    private void removeReservationFromServices(Reservation reservation) {
+        ManagedChannel channel1 = ManagedChannelBuilder.forAddress("accommodation-service", 8585)
+                .usePlaintext()
+                .build();
+        AccommodationServiceGrpc.AccommodationServiceBlockingStub stub1 =
+                AccommodationServiceGrpc.newBlockingStub(channel1);
+
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("user-service", 6565)
+                .usePlaintext()
+                .build();
+        UserServiceGrpc.UserServiceBlockingStub stub =
+                UserServiceGrpc.newBlockingStub(channel);
+
+        RemoveReservationRequest request = RemoveReservationRequest.newBuilder()
+                .setReservationId(reservation.getId())
+                .setAppointmentId(reservation.getIdAppointment())
+                .build();
+
+        RemoveReservationRequestUser request1 = RemoveReservationRequestUser.newBuilder()
+                .setReservationId(reservation.getId())
+                .setSourceUser(reservation.getSourceUser())
+                .build();
+
+        stub1.removeReservation(request);
+        stub.removeReservationUser(request1);
+
+        channel1.shutdown();
+        channel.shutdown();
+    }
+
+    private void removeApprovedReservationFromServices(Reservation reservation) {
+        ManagedChannel channel1 = ManagedChannelBuilder.forAddress("accommodation-service", 8585)
+                .usePlaintext()
+                .build();
+        AccommodationServiceGrpc.AccommodationServiceBlockingStub stub1 =
+                AccommodationServiceGrpc.newBlockingStub(channel1);
+
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("user-service", 6565)
+                .usePlaintext()
+                .build();
+        UserServiceGrpc.UserServiceBlockingStub stub =
+                UserServiceGrpc.newBlockingStub(channel);
+
+        RemoveApprovedReservationRequest request = RemoveApprovedReservationRequest.newBuilder()
+                .setReservationId(reservation.getId())
+                .setAppointmentId(reservation.getIdAppointment())
+                .build();
+
+        RemoveApprovedReservationRequestUser request1 = RemoveApprovedReservationRequestUser.newBuilder()
+                .setReservationId(reservation.getId())
+                .setSourceUser(reservation.getSourceUser())
+                .build();
+
+        stub1.removeApprovedReservation(request);
+        stub.removeApprovedReservationRequest(request1);
+
+        channel1.shutdown();
+        channel.shutdown();
+    }
+
     @PutMapping("/{suser}+{idacc}")
     public ResponseEntity<?> accept(@PathVariable("suser") String suser, @PathVariable("idacc") String idacc)
     {

@@ -63,7 +63,8 @@ public class UserApplication implements CommandLineRunner {
                 "admin_address",
                 "adminadmin",
                 "admin@gmail.com",
-                encoder.encode("adminadmin"));
+                encoder.encode("adminadmin"),
+                0);
 
         Set<Role> roles = new HashSet<>();
 
@@ -80,7 +81,8 @@ public class UserApplication implements CommandLineRunner {
                 "user_address",
                 "useruser",
                 "user@gmail.com",
-                encoder.encode("useruser"));
+                encoder.encode("useruser"),
+                0);
 
         Set<Role> roles1 = new HashSet<>();
 
