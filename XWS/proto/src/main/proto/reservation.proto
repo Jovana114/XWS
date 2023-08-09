@@ -7,10 +7,16 @@ import "google/protobuf/empty.proto";
 import "common.proto";
 
 message CreateReservationRequest {
-  string accommodation_id = 1;
+  string appointment_id = 1;
   common.Reservation reservation = 2;
+  string source_user = 3;
 }
 
 service ReservationService {
   rpc CreateReservation(CreateReservationRequest) returns (google.protobuf.Empty);
+  rpc ApprovingReservation(ApprovingReservationRequest) returns (google.protobuf.Empty);
+}
+
+message ApprovingReservationRequest {
+  string reservation_id = 1;
 }

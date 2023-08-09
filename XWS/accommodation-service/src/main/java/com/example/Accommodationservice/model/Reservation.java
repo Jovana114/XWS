@@ -1,16 +1,17 @@
 package com.example.Accommodationservice.model;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.util.Date;
 
 @Document(collection = "reservation")
 public class Reservation {
-    @MongoId
+
+    @Id
     private String id;
     private String sourceUser;
-    private String idAccommodation;
+    private String idAppointment;
     private Date startDate;
     private Date endDate;
     private int numGuests;
@@ -19,31 +20,25 @@ public class Reservation {
     public Reservation() {
     }
 
-    public Reservation(String id, String sourceUser, String idAccommodation, Date startDate, Date endDate, int numGuests, Boolean approved) {
+    public Reservation(String id, String sourceUser, String idAppointment, Date startDate, Date endDate, int numGuests, Boolean approved) {
         this.id = id;
         this.sourceUser = sourceUser;
-        this.idAccommodation = idAccommodation;
+        this.idAppointment = idAppointment;
         this.startDate = startDate;
         this.endDate = endDate;
         this.numGuests = numGuests;
         this.approved = approved;
     }
 
-    public Reservation(String sourceUser, String idAccommodation, Date startDate, Date endDate, int numGuests, Boolean approved) {
-        this.sourceUser = sourceUser;
-        this.idAccommodation = idAccommodation;
+    public Reservation(String id, Date startDate, Date endDate, int numGuests) {
+        this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
         this.numGuests = numGuests;
-        this.approved = approved;
     }
 
     public void setSourceUser(String sourceUser) {
         this.sourceUser = sourceUser;
-    }
-
-    public void setIdAccommodation(String idAccommodation) {
-        this.idAccommodation = idAccommodation;
     }
 
     public void setStartDate(Date startDate) {
@@ -78,10 +73,6 @@ public class Reservation {
         return sourceUser;
     }
 
-    public String getIdAccommodation() {
-        return idAccommodation;
-    }
-
     public Date getStartDate() {
         return startDate;
     }
@@ -92,5 +83,13 @@ public class Reservation {
 
     public int getNumGuests() {
         return numGuests;
+    }
+
+    public String getIdAppointment() {
+        return idAppointment;
+    }
+
+    public void setIdAppointment(String idAppointment) {
+        this.idAppointment = idAppointment;
     }
 }

@@ -13,10 +13,12 @@ services:
     container_name: reservation-service
     ports:
       - "8081:8081"
+      - "7575:7575"
     depends_on:
       - mongodb
       - discovery-server
       - api-gateway
+      - user-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - ME_CONFIG_MONGODB_SERVER=mongodb
@@ -27,6 +29,7 @@ services:
     container_name: user-service
     ports:
       - "8082:8082"
+      - "6565:6565"
     depends_on:
       - mongodb
       - discovery-server
@@ -41,6 +44,7 @@ services:
     container_name: accommodation-service
     ports:
       - "8080:8080"
+      - "8585:8585"
     depends_on:
       - mongodb
       - discovery-server

@@ -1,8 +1,0 @@
-#grpc:
-#  client:
-#    accommodation-service:
-#      address: static://localhost:8585
-#      negotiationType: plaintext
-#    reservation-service:
-#      address: static://localhost:7575
-#      negotiationType: plaintext

@@ -1,12 +1,9 @@
 package com.example.Accommodationservice.model;
 
-import org.bson.types.Binary;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 @Document(collection = "accommodation")
@@ -17,7 +14,7 @@ public class Accommodation {
     private String name;
     private String location;
     private String benefits;
-    private byte[] pic;
+    private String image;
     private Integer min_guests;
     private Integer max_guests;
     @DBRef
@@ -25,6 +22,16 @@ public class Accommodation {
     private String user_id;
 
     public Accommodation(){}
+
+    public Accommodation(String id, String name, String location, String benefits, Integer min_guests, Integer max_guests, List<Appointments> appointments) {
+        this.id = id;
+        this.name = name;
+        this.location = location;
+        this.benefits = benefits;
+        this.min_guests = min_guests;
+        this.max_guests = max_guests;
+        this.appointments = appointments;
+    }
 
     public Accommodation(String name, String location, String benefits, Integer min_guests, Integer max_guests, List<Appointments> appointments, String user_id) {
 
@@ -63,12 +70,12 @@ public class Accommodation {
         this.max_guests = max_guests;
     }
 
-    public byte[] getPic() {
-        return pic;
+    public String getPic() {
+        return image;
     }
 
-    public void setPic(byte[] pic) {
-        this.pic = pic;
+    public void setPic(String image) {
+        this.image = image;
     }
 
     public String getId() {

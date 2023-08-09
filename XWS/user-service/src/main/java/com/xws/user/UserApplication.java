@@ -3,8 +3,13 @@ package com.xws.user;
 import com.xws.user.entity.ERole;
 import com.xws.user.entity.Role;
 import com.xws.user.entity.User;
+import com.xws.user.repo.AccommodationRepository;
+import com.xws.user.repo.ReservationRepository;
 import com.xws.user.repo.RoleRepository;
 import com.xws.user.repo.UserRepository;
+import com.xws.user.service.UserSerGrpc;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -26,6 +31,12 @@ public class UserApplication implements CommandLineRunner {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private AccommodationRepository accommodationRepository;
 
     @Autowired
     PasswordEncoder encoder;
@@ -50,9 +61,10 @@ public class UserApplication implements CommandLineRunner {
                 "admin",
                 "admin",
                 "admin_address",
-                "adminUserService",
+                "adminadmin",
                 "admin@gmail.com",
-                encoder.encode("123456789"));
+                encoder.encode("adminadmin"),
+                0);
 
         Set<Role> roles = new HashSet<>();
 
@@ -62,5 +74,30 @@ public class UserApplication implements CommandLineRunner {
 
         admin.setRoles(roles);
         userRepository.save(admin);
+
+        User user = new User(
+                "user",
+                "user",
+                "user_address",
+                "useruser",
+                "user@gmail.com",
+                encoder.encode("useruser"),
+                0);
+
+        Set<Role> roles1 = new HashSet<>();
+
+        Role modRole1 = roleRepository.findByName(ERole.ROLE_GUEST)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roles1.add(modRole1);
+
+        user.setRoles(roles1);
+        userRepository.save(user);
+
+        Server server= ServerBuilder
+                .forPort(6565)
+                .addService(new UserSerGrpc(reservationRepository, userRepository, accommodationRepository)).build();
+
+        server.start();
+        server.awaitTermination();
     }
 }

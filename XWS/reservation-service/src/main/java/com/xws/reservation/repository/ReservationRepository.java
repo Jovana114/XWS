@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ReservationRepository extends MongoRepository<Reservation, String> {
 
-    List<Reservation> findBySourceUserAndIdAccommodation(String suser, String idacc);
+    List<Reservation> findBySourceUserAndIdAppointment(String suser, String idacc);
 
 }

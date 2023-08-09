@@ -1,7 +1,8 @@
-package com.xws.reservation.entity;
+package com.xws.user.entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.util.Date;
 
@@ -40,7 +41,6 @@ public class Reservation {
     public void setSourceUser(String sourceUser) {
         this.sourceUser = sourceUser;
     }
-
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;

@@ -5,12 +5,12 @@ import com.example.Accommodationservice.model.Accommodation;
 import com.example.Accommodationservice.model.Appointments;
 import com.example.Accommodationservice.repository.AccommodationRepository;
 import com.example.Accommodationservice.repository.AppointmentRepository;
-import com.sun.source.tree.OpensTree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -33,8 +33,8 @@ public class AppointmentsController {
                 Accommodation _accommodation = accommodation.get();
 
                 Appointments new_appointment = new Appointments(appointments.getStart(),
-                        appointments.getEnd(), appointments.getReserved(), appointments.getPrice_per_guest(),
-                        appointments.getPrice_per_accommodation());
+                        appointments.getEnd(), appointments.getReserved(), appointments.getPrice(),
+                        appointments.getPrice_per(), appointments.getReservations(), appointments.isAuto_reservation());
 
                 appointmentRepository.save(new_appointment);
 
@@ -53,17 +53,23 @@ public class AppointmentsController {
 
         if (appointment1.isPresent()) {
             Appointments _appointment = appointment1.get();
-            if(_appointment.getReserved() == false) {
+            if(!_appointment.getReserved()) {
                 _appointment.setStart(appointment.getStart());
                 _appointment.setEnd(appointment.getEnd());
                 _appointment.setReserved(appointment.getReserved());
-                _appointment.setPrice_per_guest(appointment.getPrice_per_guest());
-                _appointment.setPrice_per_accommodation(appointment.getPrice_per_accommodation());
+                _appointment.setPrice(appointment.getPrice());
+                _appointment.setPrice_per(_appointment.getPrice_per());
+                _appointment.setAuto_reservation(_appointment.isAuto_reservation());
                 return new ResponseEntity<>(appointmentRepository.save(_appointment), HttpStatus.OK);
             } return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/all_appointemnts")
+    public List<Appointments> getAllAppointments(){
+        return appointmentRepository.findAll();
     }
 
 }

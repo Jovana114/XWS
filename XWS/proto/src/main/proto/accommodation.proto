@@ -6,35 +6,81 @@ option java_package = "com.xws.accommodation";
 import "google/protobuf/empty.proto";
 
 import "common.proto";
-import "appointment.proto";
 
 message Accommodation {
   string id = 1;
   string name = 2;
-  string location = 3;
-  string benefits = 4;
-  bytes pic = 5;
-  int32 min_guests = 6;
-  int32 max_guests = 7;
-  repeated appointment.Appointment appointments = 8;
-  string user_id = 9;
-  repeated common.Reservation reservations = 10;
 }
 
-message GetReservationsByAccommodationIdRequest {
-  string accommodation_id = 1;
+message CheckIfAccommodationHasActiveReservationsRequest {
+  Accommodation accommodation = 1;
 }
 
-message GetReservationsByAccommodationIdResponse {
-  repeated common.Reservation reservations = 1;
+message CheckIfAccommodationHasActiveReservationsResponse {
+  bool accommodation_has_active_reservations = 1;
+}
+
+message CheckIfAppointmentHasAutoApprovalRequest {
+  string appointment_id = 1;
+}
+
+message CheckIfAppointmentHasAutoApprovalRequestResponse {
+  bool appointment_has_auto_approval = 1;
+}
+
+message AddAccommodationToUserOwner {
+  Accommodation accommodation = 1;
+  string user_owner_id = 2;
+}
+
+message RemoveReservationRequest {
+  string reservation_id = 1;
+  string appointment_id = 2;
+}
+
+message RemoveReservationRequestUser {
+  string reservation_id = 1;
+  string source_user = 2;
+}
+
+message RemoveApprovedReservationRequest {
+  string reservation_id = 1;
+  string appointment_id = 2;
+}
+
+message RemoveApprovedReservationRequestUser {
+  string reservation_id = 1;
+  string source_user = 2;
 }
 
 service AccommodationService {
-  rpc GetReservationsByAccommodationId(GetReservationsByAccommodationIdRequest) returns (GetReservationsByAccommodationIdResponse);
-  rpc AddReservationToAccommodation(AddReservationToAccommodationRequest) returns (google.protobuf.Empty);
+  rpc AddReservationToAppointment(AddReservationToAppointmentRequest) returns (google.protobuf.Empty);
+  rpc CheckIfAccommodationHasActiveReservations(CheckIfAccommodationHasActiveReservationsRequest) returns (CheckIfAccommodationHasActiveReservationsResponse);
+  rpc CheckIfAppointmentHasAutoApproval(CheckIfAppointmentHasAutoApprovalRequest) returns (CheckIfAppointmentHasAutoApprovalRequestResponse);
+  rpc RemoveReservation(RemoveReservationRequest) returns (google.protobuf.Empty);
+  rpc RemoveApprovedReservation(RemoveApprovedReservationRequest) returns (google.protobuf.Empty);
 }
 
-message AddReservationToAccommodationRequest {
-  string accommodation_id = 1;
+service UserService {
+  rpc AddReservationToUser(AddReservationToUserRequest) returns (google.protobuf.Empty);
+  rpc AddAccommodationToUser(AddAccommodationToUserOwner) returns (google.protobuf.Empty);
+  rpc ApprovingReservationChangeForUser(ApprovingReservationChangeForUserRequest) returns (google.protobuf.Empty);
+  rpc RemoveReservationUser(RemoveReservationRequestUser) returns (google.protobuf.Empty);
+  rpc RemoveApprovedReservationRequest(RemoveApprovedReservationRequestUser) returns (google.protobuf.Empty);
+}
+
+message AddReservationToAppointmentRequest {
+  string appointment_id = 1;
   common.Reservation reservation = 2;
+  string source_user = 3;
+}
+
+message AddReservationToUserRequest {
+  string appointment_id = 1;
+  common.Reservation reservation = 2;
+  string source_user = 3;
+}
+
+message ApprovingReservationChangeForUserRequest {
+  string reservation_id = 1;
 }

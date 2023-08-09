@@ -1,9 +1,11 @@
 package com.example.Accommodationservice.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.List;
 
 @Document(collection = "appointments")
 public class Appointments {
@@ -13,26 +15,22 @@ public class Appointments {
     private Date start;
     private Date end;
     private Boolean reserved;
-    private Integer price_per_guest;
-    private Integer price_per_accommodation;
+    private EPrice price;
+    private EPricePer price_per;
+    @DBRef
+    private List<Reservation> reservations;
+    private boolean auto_reservation;
 
     public Appointments(){}
 
-    public Appointments(String id, Date start, Date end, Boolean reserved, Integer price_per_guest, Integer price_per_accommodation) {
-        this.id = id;
+    public Appointments(Date start, Date end, Boolean reserved, EPrice price, EPricePer price_per, List<Reservation> reservations, boolean auto_reservation) {
         this.start = start;
         this.end = end;
         this.reserved = reserved;
-        this.price_per_guest = price_per_guest;
-        this.price_per_accommodation = price_per_accommodation;
-    }
-
-    public Appointments(Date start, Date end, Boolean reserved, Integer price_per_guest, Integer price_per_accommodation) {
-        this.start = start;
-        this.end = end;
-        this.reserved = reserved;
-        this.price_per_guest = price_per_guest;
-        this.price_per_accommodation = price_per_accommodation;
+        this.price = price;
+        this.price_per = price_per;
+        this.reservations = reservations;
+        this.auto_reservation = auto_reservation;
     }
 
     public String getId() {
@@ -67,19 +65,35 @@ public class Appointments {
         this.reserved = reserved;
     }
 
-    public Integer getPrice_per_guest() {
-        return price_per_guest;
+    public EPrice getPrice() {
+        return price;
     }
 
-    public void setPrice_per_guest(Integer price_per_guest) {
-        this.price_per_guest = price_per_guest;
+    public void setPrice(EPrice price) {
+        this.price = price;
     }
 
-    public Integer getPrice_per_accommodation() {
-        return price_per_accommodation;
+    public EPricePer getPrice_per() {
+        return price_per;
     }
 
-    public void setPrice_per_accommodation(Integer price_per_accommodation) {
-        this.price_per_accommodation = price_per_accommodation;
+    public void setPrice_per(EPricePer price_per) {
+        this.price_per = price_per;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
+
+    public boolean isAuto_reservation() {
+        return auto_reservation;
+    }
+
+    public void setAuto_reservation(boolean auto_reservation) {
+        this.auto_reservation = auto_reservation;
     }
 }
