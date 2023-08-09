@@ -1,25 +1,107 @@
-import React from 'react';
-import Login from "./components/login/Login";
-import SignUp from "./components/signup/SignUp";
-import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
-import HomeHost from "./components/home/HomeHost";
-import HomeUnregistered from "./components/home/HomeUnregistered";
-import HomeGuest from "./components/home/HomeGuest";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Register from "./components/pages/Register";
+import Login from "./components/pages/Login";
+import Missing from "./components/pages/Missing";
+import Unauthorized from "./components/pages/Unauthorized";
+import RequireAuth from "./auth/RequireAuth";
+import { useContext } from "react";
+import { AuthContext } from "./auth/AuthContext";
+import Home from "./components/pages/Home";
+import Default from "./components/pages/Default";
+import Host from "./components/pages/Host";
+import Layout from "./components/pages/Layout";
+import Users from "./components/pages/Users";
+import "./style/App.css";
+import Profile from "./components/pages/Profile";
 
-function App() {
+const App: React.FC = () => {
+  const { auth } = useContext(AuthContext);
+
   return (
-      <BrowserRouter>
-      <Routes>
-        
-        <Route index element={<Navigate to="/login" />}/>
-        <Route path="/login" Component={Login}/>
-        <Route path="/register" Component={SignUp} />
-        <Route path="/homehost" Component={HomeHost} />
-        <Route path="/homeguest" Component={HomeGuest} />
-        <Route path="/homeunregistered" Component={HomeUnregistered} />
-        </Routes>
-    </BrowserRouter>
+    <Routes>
+      {/* public routes */}
+      <Route
+        path="/signin"
+        element={
+          !auth.accessToken ? (
+            <Layout>
+              <Login />
+            </Layout>
+          ) : (
+            <Navigate to="/" />
+          )
+        }
+      />
+      <Route
+        path="/signup"
+        element={
+          <Layout>
+            <Register />
+          </Layout>
+        }
+      />
+      <Route
+        path="/unauthorized"
+        element={
+          <Layout>
+            <Unauthorized />
+          </Layout>
+        }
+      />
+
+      {/* Default/Home routes */}
+      <Route
+        path="/"
+        element={<Layout>{auth.accessToken ? <Home /> : <Default />}</Layout>}
+      />
+
+      {/* protected routes */}
+      <Route element={<RequireAuth allowedRoles={["ROLE_GUEST"]} />}>
+        <Route
+          path="/users"
+          element={
+            <Layout>
+              <Users />
+            </Layout>
+          }
+        />
+      </Route>
+
+      <Route element={<RequireAuth allowedRoles={["ROLE_HOST"]} />}>
+        <Route
+          path="/host"
+          element={
+            <Layout>
+              <Host />
+            </Layout>
+          }
+        />
+      </Route>
+
+      <Route
+        element={<RequireAuth allowedRoles={["ROLE_GUEST", "ROLE_HOST"]} />}
+      >
+        <Route
+          path="/profile"
+          element={
+            <Layout>
+              <Profile />
+            </Layout>
+          }
+        />
+      </Route>
+
+      {/* catch all */}
+      <Route
+        path="*"
+        element={
+          <Layout>
+            <Missing />
+          </Layout>
+        }
+      />
+    </Routes>
   );
-}
+};
 
 export default App;

@@ -16,6 +16,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableGlobalMethodSecurity(
@@ -56,16 +59,33 @@ public class WebSecurityConfig {
 	
 	@Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.cors().and().csrf().disable()
-        .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-        .authorizeRequests().requestMatchers("/api/auth/**").permitAll()
-        .anyRequest().authenticated();
+    http.csrf().disable()
+        .exceptionHandling()
+		.authenticationEntryPoint(unauthorizedHandler)
+		.and()
+        .sessionManagement()
+		.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+		.and()
+        .authorizeRequests().requestMatchers("/api/**")
+		.permitAll()
+        .anyRequest()
+		.authenticated();
     
     http.authenticationProvider(authenticationProvider());
 
-    http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-    
-    return http.build();
+    http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
+		.addFilterBefore(corsFilter(), AuthTokenFilter.class); // Add the CorsFilter before JwtAuthenticationFilter
+
+		return http.build();
   }
+	@Bean
+	public CorsFilter corsFilter() {
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		CorsConfiguration config = new CorsConfiguration();
+		config.addAllowedOrigin("http://localhost:5173"); // Replace with your frontend URL
+		config.addAllowedHeader("*");
+		config.addAllowedMethod("*");
+		source.registerCorsConfiguration("/api/**", config);
+		return new CorsFilter(source);
+	}
 }
