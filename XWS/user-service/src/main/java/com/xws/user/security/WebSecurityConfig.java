@@ -73,19 +73,20 @@ public class WebSecurityConfig {
     
     http.authenticationProvider(authenticationProvider());
 
-    http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
-		.addFilterBefore(corsFilter(), AuthTokenFilter.class); // Add the CorsFilter before JwtAuthenticationFilter
+    http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+		//.addFilterBefore(corsFilter(), AuthTokenFilter.class); // Add the CorsFilter before JwtAuthenticationFilter
+
 
 		return http.build();
   }
-	@Bean
-	public CorsFilter corsFilter() {
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		CorsConfiguration config = new CorsConfiguration();
-		config.addAllowedOrigin("http://localhost:5173"); // Replace with your frontend URL
-		config.addAllowedHeader("*");
-		config.addAllowedMethod("*");
-		source.registerCorsConfiguration("/api/**", config);
-		return new CorsFilter(source);
-	}
+//	@Bean
+//	public CorsFilter corsFilter() {
+//		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//		CorsConfiguration config = new CorsConfiguration();
+//		config.addAllowedOrigin("http://localhost:5173"); // Replace with your frontend URL
+//		config.addAllowedHeader("*");
+//		config.addAllowedMethod("*");
+//		source.registerCorsConfiguration("/api/**", config);
+//		return new CorsFilter(source);
+//	}
 }
