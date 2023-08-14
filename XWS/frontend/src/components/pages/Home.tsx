@@ -7,16 +7,7 @@ document.title = "Home";
 const Home = () => {
   const auth = useAuth();
 
-  return (
-    <section>
-      <h1>Home</h1>
-      <br />
-      {auth.roles?.includes("ROLE_HOST") ? <Host /> : <Guest />}
-      <br />
-      <p>You are logged in!</p>
-      <br />
-    </section>
-  );
+  return <>{auth.auth.roles?.includes("ROLE_HOST") ? <Host /> : <Guest />}</>;
 };
 
 export default Home;

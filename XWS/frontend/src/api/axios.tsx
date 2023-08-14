@@ -1,12 +1,10 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8085/api";
+import { BASE_URL } from "../constants/contsnts";
 
 const axiosInstance = axios.create({
+  headers: { "Content-Type": "application/json" },
   baseURL: BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
   withCredentials: false,
 });
 
@@ -20,14 +18,5 @@ axiosInstance.interceptors.request.use((config) => {
   }
   return config;
 });
-
-// Log the request details before making the API call
-// axiosInstance.interceptors.request.use((config) => {
-//   console.log("Request Method:", config.method);
-//   console.log("Request URL:", config.url);
-//   console.log("Request Headers:", config.headers);
-//   console.log("Request Body:", config.data);
-//   return config;
-// });
 
 export default axiosInstance;

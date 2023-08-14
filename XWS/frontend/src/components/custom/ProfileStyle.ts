@@ -4,7 +4,7 @@ export const ParentContainerStyles = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100vh;
+  height: auto;
   width: 100%;
   margin: 0 auto;
 `;

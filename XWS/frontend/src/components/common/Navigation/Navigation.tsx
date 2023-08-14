@@ -48,8 +48,8 @@ function Navigation() {
   const auth = useAuth();
   const navigate = useNavigate();
 
-  const userLinks = auth.accessToken
-    ? auth.roles?.includes("ROLE_HOST")
+  const userLinks = auth.auth.accessToken
+    ? auth.auth.roles?.includes("ROLE_HOST")
       ? hostLinks
       : guestLinks
     : unauthenticatedLinks;
@@ -93,7 +93,7 @@ function Navigation() {
 
   return (
     <ThemeProvider theme={theme}>
-      <AppBar position="static">
+      <AppBar position="fixed">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -155,7 +155,7 @@ function Navigation() {
                 </Link>
               ))}
             </Box>
-            {auth.accessToken && (
+            {auth.auth.accessToken && (
               <Box sx={{ flexGrow: 0 }}>
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

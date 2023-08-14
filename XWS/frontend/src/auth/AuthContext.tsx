@@ -6,43 +6,50 @@ import React, {
   useEffect,
   SetStateAction,
 } from "react";
+import Loader from "../components/common/Loader/Loader";
 
-interface AuthData {
+export interface AuthData {
+  id?: string;
+  email?: string;
+  username?: string;
   accessToken?: string;
   roles?: string[];
-  id?: string;
 }
 
-interface AuthContextValue {
-  auth: AuthData & { loading: boolean }; // Add loading property to auth
+export interface AuthContextValue {
+  auth: AuthData;
+  loading: boolean;
+  setLoading: (data: boolean) => void;
   setAuth: React.Dispatch<SetStateAction<AuthData>>;
   logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextValue>({
-  auth: { loading: true }, // Set loading to true initially
+  auth: {},
+  loading: true,
+  setLoading: () => {},
   setAuth: () => {},
   logout: () => {},
 });
 
-export const AuthProvider: React.FC = ({ children }: any) => {
+type AuthProps = {
+  children: React.ReactNode;
+};
+
+export const AuthProvider = (props: AuthProps) => {
   const storedAuthData = localStorage.getItem("authData");
   const initialAuthData: AuthData = storedAuthData
     ? JSON.parse(storedAuthData)
     : {};
 
-  const [auth, setAuth] = useState<AuthData & { loading: boolean }>({
+  const [auth, setAuth] = useState<AuthData>({
     ...initialAuthData,
-    loading: true, // Set loading to true initially
   });
+  const [loading, setLoading] = useState<boolean>(!initialAuthData.accessToken);
 
   useEffect(() => {
     // Perform additional validation or expiration checks if needed
-    const expirationDate = localStorage.getItem("expirationDate");
-    if (
-      !storedAuthData ||
-      (expirationDate && new Date() > new Date(expirationDate))
-    ) {
+    if (!storedAuthData) {
       logout(); // Clear auth data if not valid
     } else {
       setAuth((prevAuth) => ({ ...prevAuth, loading: false })); // Set loading to false when id is found
@@ -58,20 +65,30 @@ export const AuthProvider: React.FC = ({ children }: any) => {
     }
   };
 
+  const updateLoading = (data: boolean) => {
+    setLoading(data);
+  };
+
   const logout = () => {
-    setAuth((prevAuth) => ({ ...prevAuth, loading: true })); // Set loading to true when logging out
+    setAuth({});
+    setLoading(false);
     localStorage.removeItem("authData");
   };
 
   const authContextValue: AuthContextValue = {
     auth,
+    loading,
+    setLoading: updateLoading,
     setAuth: updateAuthData,
-    logout, // Include the logout function in the context value
+    logout,
   };
 
   return (
     <AuthContext.Provider value={authContextValue}>
-      {children}
+      {!loading && props.children}
+      {/* Only render the children when auth.loading is false */}
+      {loading && <Loader />}
+      {/* Render the Loader component when loading is true */}
     </AuthContext.Provider>
   );
 };
