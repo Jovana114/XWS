@@ -1,9 +1,5 @@
 const Host = () => {
-  return (
-    <section>
-      <h1>Host Page</h1>
-    </section>
-  );
+  return <h1>Host Page</h1>;
 };
 
 export default Host;

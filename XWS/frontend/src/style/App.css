@@ -52,14 +52,13 @@ section {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin: 0 auto;
 }
 
 
 .center-content {
   padding: 30px;
-  margin: auto;
   border-radius: 8px;
   background-color: #fff;
-  width: 100%;
   max-width: 1488px;
 }

@@ -1,11 +1,22 @@
+import { Link } from "react-router-dom";
+import AccommodationsWithAppointments from "./AccommodationsWithAppointments";
+import Typography from "@mui/material/Typography";
 const Default = () => {
   document.title = "Home";
   return (
-    <section>
-      <h1>Default</h1>
-      <br />
-      <p>You are not logged in!</p>
-    </section>
+    <>
+      <AccommodationsWithAppointments />
+      <Typography align="center">
+        For more detailed information, please{" "}
+        <Link
+          style={{ textDecoration: "none", color: "#2b79ff" }}
+          to={"/signin"}
+        >
+          SIGN IN
+        </Link>{" "}
+        here
+      </Typography>
+    </>
   );
 };
 

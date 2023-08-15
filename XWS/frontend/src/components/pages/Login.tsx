@@ -40,6 +40,7 @@ const Login = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
+          width: "fit-content",
           "& .MuiTextField-root": { my: 1, width: "300px" },
         }}
         noValidate

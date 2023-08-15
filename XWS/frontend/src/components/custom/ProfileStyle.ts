@@ -7,6 +7,7 @@ export const ParentContainerStyles = styled.div`
   height: auto;
   width: 100%;
   margin: 0 auto;
+  overflow-x: scroll;
 `;
 
 export const UpperRowStyles = styled.div`

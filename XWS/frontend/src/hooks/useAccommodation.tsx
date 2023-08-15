@@ -9,7 +9,7 @@ const useAccomodation = () => {
   const { setLoading } = useContext(AuthContext);
   const [data, setData] = useState([]);
 
-  const fetchUserData = async () => {
+  const fetchAccommodationData = async () => {
     try {
       const response = await axiosPrivate.get(ACCOMMODATIONS_URL + "all");
       setData(response.data);
@@ -21,10 +21,36 @@ const useAccomodation = () => {
     }
   };
 
+  const fetchFilteredAccommodationData = async (
+    location: string,
+    numGuests: number,
+    start: string,
+    end: string
+  ) => {
+    try {
+      const response = await axiosPrivate.get(
+        ACCOMMODATIONS_URL + "search/accommodations",
+        {
+          params: {
+            location,
+            numGuests,
+            start, // Convert to 'yyyy-MM-dd'T'HH:mm:ss' format
+            end, // Convert to 'yyyy-MM-dd'T'HH:mm:ss' format
+          },
+        }
+      );
+      setData(response.data);
+      setLoading(false);
+    } catch (error) {
+      toast.error("Failed to fetch accommodation data");
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    fetchUserData();
+    fetchAccommodationData();
   }, []);
 
-  return data;
+  return { data, fetchFilteredAccommodationData };
 };
 export default useAccomodation;
