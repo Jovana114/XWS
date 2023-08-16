@@ -3,6 +3,12 @@ import { useNavigate } from "react-router-dom";
 import axiosPrivate from "../api/axios";
 import { AuthContext } from "../auth/AuthContext";
 import { toast } from "react-toastify";
+import {
+  LOGIN_URL,
+  USER_REGEX,
+  EMAIL_REGEX,
+  REGISTER_URL,
+} from "../constants/contsnts";
 
 interface LoginResponseData {
   id: string;
@@ -11,12 +17,6 @@ interface LoginResponseData {
   accessToken: string;
   roles: string[];
 }
-
-const LOGIN_URL = "/auth/signin";
-const REGISTER_URL = "/auth/signup";
-
-const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
-const EMAIL_REGEX = /^\w+(\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
 
 const useAuthForm = () => {
   const { auth, setAuth } = useContext(AuthContext);

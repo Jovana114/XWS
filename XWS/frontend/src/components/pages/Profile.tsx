@@ -26,11 +26,17 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import VerticalLine from "../custom/VerticalLine";
 import useUser from "../../hooks/useUser";
+import { VisibilityOff, Visibility } from "@mui/icons-material";
+import {
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 
 const Profile = () => {
   const {
     handleUpdateProfile,
-    handleUpdateUsername,
     handleUpdatePassword,
     handleDelete,
     fetchUserData,
@@ -57,8 +63,12 @@ const Profile = () => {
   const [address, setAddress] = useState("");
   const [username, setUsername] = useState("");
 
+  const [showPassword, setShowPassword] = useState(false);
+  const handleClickShowPassword = () => {
+    setShowPassword((show) => !show);
+  };
+
   // New state variables for password update
-  const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -104,6 +114,18 @@ const Profile = () => {
                 <FormControl variant="outlined">
                   <TextField
                     type="text"
+                    id="username"
+                    label="Username"
+                    value={username}
+                    required
+                    onChange={(e) => setUsername(e.target.value)}
+                    autoComplete="off"
+                  />
+                </FormControl>
+
+                <FormControl variant="outlined">
+                  <TextField
+                    type="text"
                     id="first_name"
                     label="First Name"
                     value={first_name}
@@ -141,7 +163,13 @@ const Profile = () => {
                 color="primary"
                 fullWidth
                 onClick={() =>
-                  handleUpdateProfile(email, first_name, last_name, address)
+                  handleUpdateProfile(
+                    email,
+                    first_name,
+                    last_name,
+                    address,
+                    username
+                  )
                 }
               >
                 Update Profile
@@ -149,48 +177,6 @@ const Profile = () => {
             </Footer>
           </ColumnStyles>
           <VerticalLine />
-          <ColumnStyles>
-            <Header>
-              <Typography align="center" variant="h4">
-                Update Username
-              </Typography>
-            </Header>
-            <Main>
-              {" "}
-              <Box
-                component="form"
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  "& .MuiTextField-root": { my: 1, width: "300px" },
-                }}
-                noValidate
-                autoComplete="off"
-              >
-                <FormControl variant="outlined">
-                  <TextField
-                    type="text"
-                    id="username"
-                    label="Username"
-                    value={username}
-                    required
-                    onChange={(e) => setUsername(e.target.value)}
-                    autoComplete="off"
-                  />
-                </FormControl>
-              </Box>
-            </Main>
-            <Footer>
-              <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                onClick={() => handleUpdateUsername(username)}
-              >
-                Update Username
-              </Button>
-            </Footer>
-          </ColumnStyles>
           <VerticalLine />
           <ColumnStyles>
             <Header>
@@ -209,39 +195,63 @@ const Profile = () => {
                 noValidate
                 autoComplete="off"
               >
-                <FormControl variant="outlined">
-                  <TextField
-                    type="password"
-                    id="old_password"
-                    label="Enter Old Password"
-                    value={oldPassword}
-                    required
-                    onChange={(e) => setOldPassword(e.target.value)}
-                    autoComplete="off"
-                  />
-                </FormControl>
-
-                <FormControl variant="outlined">
-                  <TextField
-                    type="password"
+                <FormControl
+                  variant="outlined"
+                  sx={{ margin: "8px 0" }}
+                  required
+                >
+                  <InputLabel htmlFor="new_password">
+                    Enter New Password
+                  </InputLabel>
+                  <OutlinedInput
                     id="new_password"
-                    label="Enter New Password"
+                    type={showPassword ? "text" : "password"}
                     value={newPassword}
                     required
                     onChange={(e) => setNewPassword(e.target.value)}
                     autoComplete="off"
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Confirm Password"
                   />
                 </FormControl>
 
-                <FormControl variant="outlined">
-                  <TextField
-                    type="password"
+                <FormControl
+                  variant="outlined"
+                  sx={{ margin: "8px 0" }}
+                  required
+                >
+                  <InputLabel htmlFor="confirm_password">
+                    Confirm New Password
+                  </InputLabel>
+                  <OutlinedInput
                     id="confirm_password"
-                    label="Confirm New Password"
+                    type={showPassword ? "text" : "password"}
                     value={confirmPassword}
                     required
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     autoComplete="off"
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Confirm Password"
                   />
                 </FormControl>
               </Box>
@@ -252,11 +262,7 @@ const Profile = () => {
                 color="primary"
                 fullWidth
                 onClick={() =>
-                  handleUpdatePassword(
-                    oldPassword,
-                    newPassword,
-                    confirmPassword
-                  )
+                  handleUpdatePassword(newPassword, confirmPassword)
                 }
               >
                 Update Password

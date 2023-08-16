@@ -43,6 +43,13 @@ public class UserController {
         return ResponseEntity.ok(new MessageResponse("User updated successfully!"));
     }
 
+    @PutMapping("/password/{userId}/{password}")
+    public ResponseEntity<?> updatePassword(@PathVariable String userId, @PathVariable String password) {
+        userService.updatePassword(userId, password);
+        return ResponseEntity.ok(new MessageResponse("Password updated successfully!"));
+    }
+
+
     @DeleteMapping("/delete_user/{userId}")
     public ResponseEntity<?> deleteUser(@PathVariable String userId) {
         Optional<User> user = userRepository.findById(userId);

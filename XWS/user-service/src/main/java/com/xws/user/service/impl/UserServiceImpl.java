@@ -38,8 +38,23 @@ public class UserServiceImpl implements UserService {
         user.setLast_name(updatedUser.getLast_name());
         user.setUsername(updatedUser.getUsername());
         user.setEmail(updatedUser.getEmail());
-        user.setPassword(encoder.encode(updatedUser.getPassword()));
         user.setAddress(updatedUser.getAddress());
+
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User updatePassword(String userId, String password) {
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (!userOptional.isPresent()) {
+            throw new RuntimeException("User not found!");
+        }
+
+        User user = userOptional.get();
+
+        // Update user's information
+        user.setPassword(encoder.encode(password));
 
         return userRepository.save(user);
     }

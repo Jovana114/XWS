@@ -30,6 +30,7 @@ const AccommodationsWithAppointments = () => {
       formatDateTime(end)
     );
   };
+  const disableForm = location !== "" && numGuests > 0 && start && end;
 
   const formatDateTime = (dateTimeString: string): string => {
     const date = new Date(dateTimeString);
@@ -90,7 +91,9 @@ const AccommodationsWithAppointments = () => {
             }}
           />
 
-          <Button onClick={handleFilters}>Filter Search</Button>
+          <Button disabled={!disableForm} onClick={handleFilters}>
+            Filter Search
+          </Button>
         </FormControl>
       </div>
       <DoubleTable

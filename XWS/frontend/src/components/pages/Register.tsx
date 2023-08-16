@@ -7,6 +7,13 @@ import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import "react-toastify/dist/ReactToastify.css";
 import useAuthForm from "../../hooks/useAuthForm";
+import { VisibilityOff, Visibility } from "@mui/icons-material";
+import {
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 
 const Register = () => {
   const { handleRegister } = useAuthForm();
@@ -19,6 +26,8 @@ const Register = () => {
   const [last_name, setLastName] = useState("");
   const [address, setAddress] = useState("");
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     handleRegister(
@@ -30,6 +39,10 @@ const Register = () => {
       last_name,
       address
     );
+  };
+
+  const handleClickShowPassword = () => {
+    setShowPassword((show) => !show);
   };
 
   const isFormValid =
@@ -66,7 +79,6 @@ const Register = () => {
             autoComplete="off"
           />
         </FormControl>
-
         <FormControl variant="outlined">
           <TextField
             type="text"
@@ -78,30 +90,52 @@ const Register = () => {
             onChange={(e) => setUsername(e.target.value)}
           />
         </FormControl>
-
-        <FormControl variant="outlined">
-          <TextField
-            type="password"
+        <FormControl variant="outlined" sx={{ margin: "8px 0" }} required>
+          <InputLabel htmlFor="password">Password</InputLabel>
+          <OutlinedInput
             id="password"
-            label="Password"
+            type={showPassword ? "text" : "password"}
             value={password}
             required
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="off"
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
+            label="Password"
           />
-        </FormControl>
-
-        <FormControl variant="outlined">
-          <TextField
-            type="password"
+        </FormControl>{" "}
+        <FormControl variant="outlined" sx={{ margin: "8px 0" }} required>
+          <InputLabel htmlFor="password">Password</InputLabel>
+          <OutlinedInput
             id="confirm_pwd"
-            label="Confirm Password"
+            type={showPassword ? "text" : "password"}
             value={matchPwd}
             required
             onChange={(e) => setMatchPwd(e.target.value)}
+            autoComplete="off"
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
+            label="Confirm Password"
           />
         </FormControl>
-
         <FormControl variant="outlined">
           <TextField
             type="text"
@@ -112,7 +146,6 @@ const Register = () => {
             onChange={(e) => setFirstName(e.target.value)}
           />
         </FormControl>
-
         <FormControl variant="outlined">
           <TextField
             type="text"
@@ -123,7 +156,6 @@ const Register = () => {
             onChange={(e) => setLastName(e.target.value)}
           />
         </FormControl>
-
         <FormControl variant="outlined">
           <TextField
             type="text"
@@ -134,7 +166,6 @@ const Register = () => {
             onChange={(e) => setAddress(e.target.value)}
           />
         </FormControl>
-
         <Button
           type="submit"
           variant="contained"
