@@ -59,12 +59,12 @@ public class AccommodationControler {
     @PostMapping("/create/{user_id}")
     public ResponseEntity<?> create(@PathVariable("user_id") String user_id, @RequestBody Accommodation accommodation) {
 
-        Accommodation new_accommodation = new Accommodation(accommodation.getId(), accommodation.getName(),
+        Accommodation new_accommodation = new Accommodation(accommodation.getName(),
                 accommodation.getLocation(), accommodation.getBenefits(),
-                accommodation.getMin_guests(), accommodation.getMax_guests(),
-                accommodation.getAppointments());
+                accommodation.getMin_guests(), accommodation.getMax_guests());
 
         new_accommodation.setUser_id(user_id);
+        new_accommodation.setAppointments(new ArrayList<>());
         accommodationRepository.save(new_accommodation);
 
         ManagedChannel channel1 = ManagedChannelBuilder.forAddress("user-service", 6565)
@@ -74,21 +74,26 @@ public class AccommodationControler {
         UserServiceGrpc.UserServiceBlockingStub stub1 =
                 UserServiceGrpc.newBlockingStub(channel1);
 
-        com.xws.accommodation.Accommodation grpcAccommodation = com.xws.accommodation.Accommodation.newBuilder()
-                .setId(accommodation.getId())
-                .setName(accommodation.getName())
-                .build();
-
-        AddAccommodationToUserOwner grpcRequest = AddAccommodationToUserOwner.newBuilder()
-                .setAccommodation(grpcAccommodation)
-                .setUserOwnerId(user_id)
-                .build();
-
         try {
-            stub1.addAccommodationToUser(grpcRequest);
-            return ResponseEntity.ok().body("Accommodation created successfully!");
+
+            com.xws.accommodation.Accommodation grpcAccommodation = com.xws.accommodation.Accommodation.newBuilder()
+                    .setId(new_accommodation.getId())
+                    .setName(new_accommodation.getName())
+                    .build();
+
+            AddAccommodationToUserOwner grpcRequest = AddAccommodationToUserOwner.newBuilder()
+                    .setAccommodation(grpcAccommodation)
+                    .setUserOwnerId(user_id)
+                    .build();
+
+            try {
+                stub1.addAccommodationToUser(grpcRequest);
+                return ResponseEntity.ok().body("Accommodation created successfully!");
+            } catch (StatusRuntimeException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create accommodation");
+            }
         } catch (StatusRuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create accommodation");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create accommodation " + e.getMessage());
         }
     }
 
