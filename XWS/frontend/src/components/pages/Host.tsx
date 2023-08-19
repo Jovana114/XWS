@@ -1,5 +1,5 @@
 const Host = () => {
-  return <h1>Host Page</h1>;
+  return <></>;
 };
 
 export default Host;

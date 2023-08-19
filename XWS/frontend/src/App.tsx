@@ -13,6 +13,8 @@ import Layout from "./components/pages/Layout";
 import Users from "./components/pages/Users";
 import "./style/App.css";
 import Profile from "./components/pages/Profile";
+import Accommodation from "./components/pages/Accommodation";
+import Appointment from "./components/pages/Appointment";
 
 const App: React.FC = () => {
   const { auth } = useContext(AuthContext);
@@ -73,6 +75,22 @@ const App: React.FC = () => {
           element={
             <Layout>
               <Host />
+            </Layout>
+          }
+        />
+        <Route
+          path="/accommodation"
+          element={
+            <Layout>
+              <Accommodation />
+            </Layout>
+          }
+        />
+        <Route
+          path="/appointment"
+          element={
+            <Layout>
+              <Appointment />
             </Layout>
           }
         />

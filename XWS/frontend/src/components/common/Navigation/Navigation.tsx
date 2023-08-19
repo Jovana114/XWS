@@ -35,6 +35,8 @@ const guestLinks = [
 const hostLinks = [
   { to: "/", label: "Home" },
   { to: "/host", label: "Host" },
+  { to: "/accommodation", label: "Accommodation" },
+  { to: "/appointment", label: "Appointment" },
 ];
 
 styled(AppBar)(({ theme }) => ({
