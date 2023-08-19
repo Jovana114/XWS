@@ -75,6 +75,7 @@ function DoubleTable({
                 ))}
               </TableRow>
               {collapseColumn &&
+                (row[collapseColumn]?.length ?? 0) > 0 && // Check if the collapsible data exists and is not empty
                 openRows.includes(row.key || index.toString()) && (
                   <TableRow>
                     <TableCell

@@ -6,7 +6,7 @@ import { AuthContext } from "../auth/AuthContext";
 import { ACCOMMODATIONS_URL } from "../constants/contsnts";
 
 const useAccomodation = () => {
-  const { setLoading } = useContext(AuthContext);
+  const { auth, setLoading } = useContext(AuthContext);
   const [data, setData] = useState([]);
 
   const fetchAccommodationData = async () => {
@@ -47,10 +47,38 @@ const useAccomodation = () => {
       setLoading(false);
     }
   };
+
+  const createAccomodation = async (
+    name: string,
+    location: string,
+    benefits: string,
+    min_guests: number,
+    max_guests: number
+  ) => {
+    try {
+      const response = await axiosPrivate.post(
+        ACCOMMODATIONS_URL + "create/" + auth.id,
+        {
+          name,
+          location,
+          benefits,
+          min_guests,
+          max_guests,
+        }
+      );
+      toast.success("Successfully created accommodation");
+      setData(response.data);
+      setLoading(false);
+    } catch (error) {
+      toast.error("Failed to create accommodation");
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     fetchAccommodationData();
   }, []);
 
-  return { data, fetchFilteredAccommodationData };
+  return { data, fetchFilteredAccommodationData, createAccomodation };
 };
 export default useAccomodation;

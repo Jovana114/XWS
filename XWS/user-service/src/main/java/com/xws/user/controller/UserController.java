@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 
 //@CrossOrigin(origins = "*", maxAge = 3600)
@@ -36,6 +37,12 @@ public class UserController {
         Optional<User> user = userRepository.findById(user_id);
         return user.get();
     }
+    @GetMapping("/accommodations/{user_id}")
+    public List<Accommodation> getUserAccommodationsByUserId(@PathVariable("user_id") String user_id){
+        Optional<User> user = userRepository.findById(user_id);
+        return user.get().getAccommodations();
+    }
+
 
     @PutMapping("/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable String userId, @RequestBody User updatedUser) {

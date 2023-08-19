@@ -1,16 +1,20 @@
 import { useState } from "react";
 import { Box, FormControl, TextField, Button } from "@mui/material";
 import ImageUpload from "../common/ImageUpload/ImageUpload";
+import useAccomodation from "../../hooks/useAccommodation";
 
 const Accommodation = () => {
+  const { createAccomodation } = useAccomodation();
+
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
-  const [amenities, setAmenities] = useState("");
-  const [minGuests, setMinGuests] = useState("");
-  const [maxGuests, setMaxGuests] = useState("");
+  const [benefits, setBenefits] = useState("");
+  const [minGuests, setMinGuests] = useState(0);
+  const [maxGuests, setMaxGuests] = useState(0);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    createAccomodation(name, location, benefits, minGuests, maxGuests);
     // Implement your submit logic here
   };
 
@@ -53,11 +57,11 @@ const Accommodation = () => {
         <FormControl variant="outlined">
           <TextField
             type="text"
-            id="amenities"
-            label="Amenities"
-            value={amenities}
+            id="benefits"
+            label="benefits"
+            value={benefits}
             required
-            onChange={(e) => setAmenities(e.target.value)}
+            onChange={(e) => setBenefits(e.target.value)}
           />
         </FormControl>
         {/* Photo upload functionality */}
@@ -68,7 +72,7 @@ const Accommodation = () => {
             label="Min Guests"
             value={minGuests}
             required
-            onChange={(e) => setMinGuests(e.target.value)}
+            onChange={(e) => setMinGuests(parseInt(e.target.value))}
           />
         </FormControl>
         <FormControl variant="outlined">
@@ -78,7 +82,7 @@ const Accommodation = () => {
             label="Max Guests"
             value={maxGuests}
             required
-            onChange={(e) => setMaxGuests(e.target.value)}
+            onChange={(e) => setMaxGuests(parseInt(e.target.value))}
           />
         </FormControl>
 
