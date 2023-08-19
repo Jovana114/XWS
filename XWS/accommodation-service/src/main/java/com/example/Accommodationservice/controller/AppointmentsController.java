@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,8 +34,8 @@ public class AppointmentsController {
                 Accommodation _accommodation = accommodation.get();
 
                 Appointments new_appointment = new Appointments(appointments.getStart(),
-                        appointments.getEnd(), appointments.getReserved(), appointments.getPrice(),
-                        appointments.getPrice_per(), appointments.getReservations(), appointments.isAuto_reservation());
+                        appointments.getEnd(), false, appointments.getPrice(),
+                        appointments.getPrice_per(), new ArrayList<>(), appointments.isAuto_reservation());
 
                 appointmentRepository.save(new_appointment);
 
