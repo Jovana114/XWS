@@ -1,9 +1,20 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useContext } from "react";
 import { toast } from "react-toastify";
 import axiosPrivate from "../api/axios";
 import { AuthContext } from "../auth/AuthContext";
 import { APPOINTMENTS_URL } from "../constants/contsnts";
+
+enum EPrice {
+  Regular,
+  Holiday,
+  Weekend,
+  Summertime
+}
+
+enum EPricePer {
+  price_per_guest,
+  price_per_accommodation
+}
 
 const useAppointment = () => {
   const { setLoading } = useContext(AuthContext);
@@ -27,7 +38,6 @@ const useAppointment = () => {
         price
       });
       toast.success("Appointment created successfully");
-      // Handle the response as needed
       setLoading(false);
     } catch (error) {
       toast.error("Failed to create appointment");
