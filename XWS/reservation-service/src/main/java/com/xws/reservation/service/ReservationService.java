@@ -53,7 +53,6 @@ public class ReservationService extends ReservationServiceGrpc.ReservationServic
         String source_user = request.getSourceUser();
 
         Reservation reservation = new Reservation(
-                grpcReservation.getId(),
                 grpcReservation.getSourceUser(),
                 grpcReservation.getAppointmentId(),
                 new Date(grpcReservation.getStartDate().getSeconds() * 1000),
@@ -63,6 +62,8 @@ public class ReservationService extends ReservationServiceGrpc.ReservationServic
         );
 
         reservationRepository.save(reservation);
+
+        grpcReservation.newBuilderForType().setId(reservation.getId());
 
         AddReservationToAppointmentRequest grpcRequest = AddReservationToAppointmentRequest.newBuilder()
                 .setAppointmentId(appointmentId)

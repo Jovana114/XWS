@@ -4,18 +4,6 @@ import axiosPrivate from "../api/axios";
 import { AuthContext } from "../auth/AuthContext";
 import { APPOINTMENTS_URL } from "../constants/contsnts";
 
-enum EPrice {
-  Regular,
-  Holiday,
-  Weekend,
-  Summertime
-}
-
-enum EPricePer {
-  price_per_guest,
-  price_per_accommodation
-}
-
 const useAppointment = () => {
   const { setLoading } = useContext(AuthContext);
 

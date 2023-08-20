@@ -71,7 +71,6 @@ public class ReservationController {
                         .setEndDate(endDateTimestamp)
                         .setNumGuests(reservation.getNumGuests())
                         .setApproved(false)
-                        .setId(reservation.getId())
                         .build();
 
                 CreateReservationRequest request = CreateReservationRequest.newBuilder()
@@ -98,7 +97,6 @@ public class ReservationController {
                         .setEndDate(endDateTimestamp)
                         .setNumGuests(reservation.getNumGuests())
                         .setApproved(true)
-                        .setId(reservation.getId())
                         .build();
 
                 CreateReservationRequest request = CreateReservationRequest.newBuilder()
