@@ -19,19 +19,7 @@ const useAccomodation = (autoFetch: boolean) => {
       setLoading(false);
     }
   };
-
-  const fetchData = async () => {
-    try {
-      const response = await axiosPrivate.get(ACCOMMODATIONS_URL + "all");
-      setData(response.data);
-      setLoading(false);
-    } catch (error) {
-      toast.error("Failed to fetch accommodation data");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  
   const fetchFilteredAccommodationData = async (
     location: string,
     numGuests: number,
@@ -80,7 +68,7 @@ const useAccomodation = (autoFetch: boolean) => {
         }
       ).then((response: any) => {
         console.log("response:", response);
-        appendImage(response.data.id ,imageFile)
+        appendImage(response.data.id, imageFile)
       })
 
       toast.success("Successfully created accommodation");
@@ -109,7 +97,7 @@ const useAccomodation = (autoFetch: boolean) => {
         },
       });
 
-      
+
       setLoading(false);
     } catch (error) {
       toast.error("Appending image failed");
@@ -120,7 +108,7 @@ const useAccomodation = (autoFetch: boolean) => {
 
 
   useEffect(() => {
-    if(autoFetch)
+    if (autoFetch)
       fetchAccommodationData();
   }, []);
 

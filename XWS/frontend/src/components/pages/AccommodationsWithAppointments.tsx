@@ -20,7 +20,6 @@ const AccommodationsWithAppointments = () => {
   const collapseColumns = [
     { key: "start", text: "Start Date" },
     { key: "end", text: "End Date" },
-    { key: "end", text: "End Date" },
   ];
 
   const handleFilters = async () => {

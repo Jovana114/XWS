@@ -92,10 +92,4 @@ public class AppointmentsController {
         return appointmentRepository.findAll();
     }
 
-    @GetMapping("/get_reservations_where_auto_res_false/{appointment_id}")
-    public List<Reservation> get_reservations_where_auto_res_false(@PathVariable("appointment_id") String appointment_id){
-        Optional<Appointments> appointments = appointmentRepository.findById(appointment_id);
-        return appointments.map(Appointments::getReservations).orElse(null);
-    }
-
 }

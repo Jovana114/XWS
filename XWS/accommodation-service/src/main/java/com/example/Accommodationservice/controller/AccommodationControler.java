@@ -14,6 +14,7 @@ import com.xws.reservation.ReservationServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -261,6 +262,30 @@ public class AccommodationControler {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+
+    @GetMapping("/list_of_pending_reservations/{user_id}")
+    public ResponseEntity<?> pending_reservations(@PathVariable("user_id") String user_id){
+        List<Appointments> appointments_with_pending_reservation = new ArrayList<>();
+        List<Accommodation> accommodations = accommodationRepository.findAll();
+        List<Appointments> all_appointments = appointmentRepository.findAll();
+        if(!accommodations.isEmpty() && !all_appointments.isEmpty()) {
+            try {
+                for (Accommodation accommodation : accommodations) {
+                    if (accommodation.getUser_id().equals(user_id)) {
+                        for (Appointments appointments : all_appointments) {
+                            if (!appointments.isAuto_reservation() && !appointments.getReservations().isEmpty()) {
+                                appointments_with_pending_reservation.add(appointments);
+                            }
+                        }
+                    }
+                }
+                return ResponseEntity.ok(appointments_with_pending_reservation);
+            } catch (Exception e) {
+                return ResponseEntity.badRequest().body(e.getMessage());
+            }
+        } return ResponseEntity.badRequest().body("Error!");
     }
 
 }
