@@ -68,6 +68,15 @@ const App: React.FC = () => {
             </Layout>
           }
         />
+        
+        <Route
+          path="/reserve"
+          element={
+            <Layout>
+              <AppointmentReservation />
+            </Layout>
+          }
+        />
       </Route>
 
       <Route element={<RequireAuth allowedRoles={["ROLE_HOST"]} />}>
@@ -105,14 +114,6 @@ const App: React.FC = () => {
           element={
             <Layout>
               <Profile />
-            </Layout>
-          }
-        />
-        <Route
-          path="/reserve"
-          element={
-            <Layout>
-              <AppointmentReservation />
             </Layout>
           }
         />

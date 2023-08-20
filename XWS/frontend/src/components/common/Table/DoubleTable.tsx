@@ -11,12 +11,14 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { Button } from "@mui/material";
 
 interface CollapsibleTableProps {
   data: Array<{ [key: string]: any }>;
   columns: Array<{ key: string; text: string }>;
   collapseColumn?: string;
-  collapseColumns?: Array<{ key: string; text: string }>; // Add this prop for child table columns
+  collapseColumns?: Array<{ key: string; text: string; label?: string }>; // Add this prop for child table columns
+  onButtonClick?: (rowData: any) => void;
 }
 
 function DoubleTable({
@@ -24,6 +26,7 @@ function DoubleTable({
   columns,
   collapseColumn,
   collapseColumns,
+  onButtonClick,
 }: CollapsibleTableProps) {
   const [openRows, setOpenRows] = useState<string[]>([]);
 
@@ -35,10 +38,6 @@ function DoubleTable({
           : [...prevOpenRows, rowKey]
       );
     }
-  };
-
-  const hasEmptyLabelRow = (rowData: { [key: string]: any }) => {
-    return rowData["label"] === "" && rowData.hasOwnProperty("label");
   };
 
   return (
@@ -104,11 +103,12 @@ function DoubleTable({
                               }}
                             >
                               <TableRow>
-                                {collapseColumns && collapseColumns.map((column) => (
-                                  <TableCell key={column.key}>
-                                    {column.text}
-                                  </TableCell>
-                                ))}
+                                {collapseColumns &&
+                                  collapseColumns.map((column) => (
+                                    <TableCell key={column.key}>
+                                      {column.text}
+                                    </TableCell>
+                                  ))}
                               </TableRow>
                             </TableHead>
                             <TableBody>
@@ -120,20 +120,28 @@ function DoubleTable({
                                       borderTop: "1px solid rgba(0,0,0,0.1)",
                                     }}
                                   >
-                                    {collapseColumns && collapseColumns.map((column: any) => (
-                                      <TableCell
-                                        key={column.key}
-                                        style={{
-                                          border: "none",
-                                        }}
-                                      >
-                                        {column.key === "id" ? (
-                                          <button>{column.label}</button>
-                                        ) : (
-                                          item[column.key]
-                                        )}
-                                      </TableCell>
-                                    ))}
+                                    {collapseColumns &&
+                                      collapseColumns.map((column: any) => (
+                                        <TableCell
+                                          key={column.key}
+                                          style={{
+                                            border: "none",
+                                          }}
+                                        >
+                                          {column.key === "id" ? (
+                                            <Button
+                                              onClick={() =>
+                                                onButtonClick &&
+                                                onButtonClick(item)
+                                              }
+                                            >
+                                              {column.label}
+                                            </Button>
+                                          ) : (
+                                            item[column.key]
+                                          )}
+                                        </TableCell>
+                                      ))}
                                   </TableRow>
                                 )
                               )}

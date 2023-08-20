@@ -1,4 +1,4 @@
-import { Button, FormControl, TextField } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, TextField } from "@mui/material";
 import useAccomodation from "../../hooks/useAccommodation";
 import DoubleTable from "../common/Table/DoubleTable";
 import { useState } from "react";
@@ -10,6 +10,26 @@ const AppointmentReservation = () => {
   const [start, setStart] = useState<string>(new Date().toISOString());
   const [end, setEnd] = useState<string>(new Date().toISOString());
 
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleDialogSubmit = (e: any) => {
+    // Implement your account deletion logic here
+    // This function will be triggered when "Confirm Delete" button is clicked
+    // You can also close the dialog here
+    console.log('====================================');
+    console.log(e);
+    console.log('====================================');
+    setOpenDialog(false);
+  };
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
   const columns = [
     { key: "benefits", text: "Benefits" },
     { key: "location", text: "Location" },
@@ -20,6 +40,8 @@ const AppointmentReservation = () => {
   const collapseColumns = [
     { key: "start", text: "Start Date" },
     { key: "end", text: "End Date" },
+    { key: "price", text: "Price"},
+    { key: "price_per", text: "Price For"},
     { key: "id", text: "", label: "Reserve"}
   ];
 
@@ -40,6 +62,28 @@ const AppointmentReservation = () => {
 
   return (
     <>
+          <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Confirm Account Deletion"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete your account? This action is
+            irreversible and will delete all your data permanently.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Cancel</Button>
+          {/* <Button onClick={handleDelete} variant="contained" color="primary">
+            Confirm Delete
+          </Button> */}
+        </DialogActions>
+      </Dialog>
       <div>
         <FormControl
           variant="outlined"
@@ -102,6 +146,7 @@ const AppointmentReservation = () => {
         columns={columns}
         collapseColumn="appointments"
         collapseColumns={collapseColumns}
+        onButtonClick={handleOpenDialog}
       />
     </>
   );
