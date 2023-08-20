@@ -20,6 +20,7 @@ const useAccomodation = (autoFetch: boolean) => {
     }
   };
   
+
   const fetchFilteredAccommodationData = async (
     location: string,
     numGuests: number,

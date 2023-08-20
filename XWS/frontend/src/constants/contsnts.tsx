@@ -5,6 +5,7 @@ export const BASE_URL = "http://localhost:8085/api";
 export const USERS_URL = "/user/";
 export const ACCOMMODATIONS_URL = "/accommodation/";
 export const APPOINTMENTS_URL = "/appointments/";
+export const RESERVATION_URL = "/reservation/"
 
 // Add other endpoints as needed
 export const LOGIN_URL = "/auth/signin";
