@@ -1,5 +1,6 @@
 package com.xws.reservation.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +18,6 @@ import io.grpc.StatusRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -223,20 +223,5 @@ public class ReservationController {
 
         channel1.shutdown();
         channel.shutdown();
-    }
-
-    @PutMapping("/{suser}+{idacc}")
-    public ResponseEntity<?> accept(@PathVariable("suser") String suser, @PathVariable("idacc") String idacc)
-    {
-        List<Reservation> reqList = reservationRepository.findBySourceUserAndIdAppointment(suser, idacc);
-        if(!reqList.isEmpty()){
-            Reservation newReservation = reqList.get(0);
-            //newReservation.setState("Accepted");
-            reservationRepository.save(newReservation);
-            return new ResponseEntity<>(newReservation ,HttpStatus.OK);
-        }
-        else
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
     }
 }
