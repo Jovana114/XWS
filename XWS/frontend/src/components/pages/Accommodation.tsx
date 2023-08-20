@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Box, FormControl, TextField, Button } from "@mui/material";
-import ImageUpload from "../common/ImageUpload/ImageUpload";
 import useAccomodation from "../../hooks/useAccommodation";
 
 const Accommodation = () => {
@@ -11,11 +10,15 @@ const Accommodation = () => {
   const [benefits, setBenefits] = useState("");
   const [minGuests, setMinGuests] = useState(0);
   const [maxGuests, setMaxGuests] = useState(0);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    createAccomodation(name, location, benefits, minGuests, maxGuests);
-    // Implement your submit logic here
+    if (imageFile) {
+      createAccomodation(name, location, benefits, minGuests, maxGuests, imageFile);
+    } else {
+      console.error("Please select an image for the accommodation.");
+    }
   };
 
   return (
@@ -64,7 +67,6 @@ const Accommodation = () => {
             onChange={(e) => setBenefits(e.target.value)}
           />
         </FormControl>
-        {/* Photo upload functionality */}
         <FormControl variant="outlined">
           <TextField
             type="number"
@@ -87,7 +89,16 @@ const Accommodation = () => {
         </FormControl>
 
         <FormControl variant="outlined">
-          <ImageUpload />
+          <label>Image:</label>
+            <input
+              type="file"
+              onChange={(e) =>
+                e.target.files && e.target.files.length > 0
+                  ? setImageFile(e.target.files[0])
+                  : null
+              }
+              className="input"
+            />
         </FormControl>
         <Button type="submit" variant="contained" color="primary">
           Create Accommodation

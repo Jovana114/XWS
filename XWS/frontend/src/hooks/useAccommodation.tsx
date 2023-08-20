@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axiosPrivate from "../api/axios";
@@ -34,8 +33,8 @@ const useAccomodation = () => {
           params: {
             location,
             numGuests,
-            start, // Convert to 'yyyy-MM-dd'T'HH:mm:ss' format
-            end, // Convert to 'yyyy-MM-dd'T'HH:mm:ss' format
+            start,
+            end,
           },
         }
       );
@@ -53,10 +52,12 @@ const useAccomodation = () => {
     location: string,
     benefits: string,
     min_guests: number,
-    max_guests: number
+    max_guests: number,
+    imageFile: File
   ) => {
     try {
-      const response = await axiosPrivate.post(
+
+      await axiosPrivate.post(
         ACCOMMODATIONS_URL + "create/" + auth.id,
         {
           name,
@@ -65,20 +66,52 @@ const useAccomodation = () => {
           min_guests,
           max_guests,
         }
-      );
+      ).then((response: any) => {
+        console.log("response:", response);
+        appendImage(response.data.id ,imageFile)
+      })
+
       toast.success("Successfully created accommodation");
-      setData(response.data);
-      setLoading(false);
+      fetchAccommodationData();
+
     } catch (error) {
+      console.error("Error Creating Accommodation:", error);
       toast.error("Failed to create accommodation");
     } finally {
       setLoading(false);
     }
   };
+
+  const appendImage = async (url: string, imageFile: any) => {
+    try {
+      setLoading(true)
+      const setImageURL = ACCOMMODATIONS_URL + `add_image/${url}/image`
+      const formData = new FormData();
+      formData.append("file", imageFile);
+
+      console.log("formData:", formData.get("file"));
+
+      await axiosPrivate.put(setImageURL, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      
+      setLoading(false);
+    } catch (error) {
+      toast.error("Appending image failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   useEffect(() => {
     fetchAccommodationData();
   }, []);
 
   return { data, fetchFilteredAccommodationData, createAccomodation };
 };
+
 export default useAccomodation;

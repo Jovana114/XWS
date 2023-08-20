@@ -34,8 +34,9 @@ public class AppointmentsController {
                 Accommodation _accommodation = accommodation.get();
 
                 Appointments new_appointment = new Appointments(appointments.getStart(),
-                        appointments.getEnd(), false, appointments.getPrice(),
-                        appointments.getPrice_per(), new ArrayList<>(), appointments.isAuto_reservation());
+                        appointments.getEnd(), false, appointments.getPrice_type(),
+                        appointments.getPrice_per(), new ArrayList<>(), appointments.isAuto_reservation(),
+                        appointments.getPrice());
 
                 appointmentRepository.save(new_appointment);
 

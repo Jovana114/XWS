@@ -12,15 +12,19 @@ const useAppointment = () => {
     accommodationId: string,
     start: string,
     end: string,
-    price_per_guest: number,
-    price_per_accommodation: number
+    price_type: string,
+    price_per: string,
+    auto_reservation: boolean,
+    price: number
   ) => {
     try {
       await axiosPrivate.post(APPOINTMENTS_URL + "create/" + accommodationId, {
         start,
         end,
-        price_per_guest,
-        price_per_accommodation,
+        price_type,
+        price_per,
+        auto_reservation,
+        price
       });
       toast.success("Appointment created successfully");
       // Handle the response as needed

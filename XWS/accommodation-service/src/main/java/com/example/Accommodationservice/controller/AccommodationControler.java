@@ -1,14 +1,11 @@
 package com.example.Accommodationservice.controller;
 
-import com.example.Accommodationservice.Response.MessageResponse;
 import com.example.Accommodationservice.model.Accommodation;
 import com.example.Accommodationservice.model.Appointments;
 import com.example.Accommodationservice.model.Reservation;
 import com.example.Accommodationservice.repository.AccommodationRepository;
 import com.example.Accommodationservice.repository.AppointmentRepository;
 import com.example.Accommodationservice.repository.ReservationRepository;
-import com.example.Accommodationservice.service.AccommodationService;
-import com.xws.accommodation.AccommodationServiceGrpc;
 import com.xws.accommodation.AddAccommodationToUserOwner;
 import com.xws.accommodation.ApprovingReservationChangeForUserRequest;
 import com.xws.accommodation.UserServiceGrpc;
@@ -17,13 +14,9 @@ import com.xws.reservation.ReservationServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,7 +32,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-//@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/accommodation")
 public class AccommodationControler {
@@ -88,7 +80,7 @@ public class AccommodationControler {
 
             try {
                 stub1.addAccommodationToUser(grpcRequest);
-                return ResponseEntity.ok().body("Accommodation created successfully!");
+                return ResponseEntity.ok(new_accommodation);
             } catch (StatusRuntimeException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create accommodation");
             }
@@ -134,18 +126,23 @@ public class AccommodationControler {
     }
 
     @PutMapping(value = "/add_image/{id}/image")
-    public ResponseEntity<Accommodation> updateAccommdationImage(@PathVariable("id") String accommodation_id, @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<Accommodation> updateAccommodationImage(@PathVariable("id") String accommodation_id, @RequestParam("file") MultipartFile file) throws IOException {
         Optional<Accommodation> accommodationOptional = accommodationRepository.findById(accommodation_id);
+
         if (accommodationOptional.isPresent() && !file.isEmpty()) {
             Accommodation accommodation_found = accommodationOptional.get();
 
             String fileName = accommodation_id + ".jpg";
             String imagesDirectoryPath = "images";
 
-            Files.createDirectories(Paths.get(imagesDirectoryPath));
+            File imagesDirectory = new File(imagesDirectoryPath);
+            if (!imagesDirectory.exists()) {
+                imagesDirectory.mkdir();
+            }
 
             String filePath = imagesDirectoryPath + "/" + fileName;
             File newImage = new File(filePath);
+
             try (OutputStream outputStream = new FileOutputStream(newImage)) {
                 outputStream.write(file.getBytes());
             }
@@ -158,6 +155,7 @@ public class AccommodationControler {
 
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+
 
     @GetMapping("/search/accommodations")
     public List<Accommodation> searchAccommodations(@RequestParam String location, @RequestParam int numGuests,
