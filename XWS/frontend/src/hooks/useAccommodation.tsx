@@ -20,6 +20,18 @@ const useAccomodation = (autoFetch: boolean) => {
     }
   };
 
+  const fetchData = async () => {
+    try {
+      const response = await axiosPrivate.get(ACCOMMODATIONS_URL + "all");
+      setData(response.data);
+      setLoading(false);
+    } catch (error) {
+      toast.error("Failed to fetch accommodation data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchFilteredAccommodationData = async (
     location: string,
     numGuests: number,

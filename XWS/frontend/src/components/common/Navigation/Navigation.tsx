@@ -38,6 +38,7 @@ const hostLinks = [
   { to: "/host", label: "Host" },
   { to: "/accommodation", label: "Accommodation" },
   { to: "/appointment", label: "Appointment" },
+  { to: "/approve_reservation", label: "Approve reservation" },
 ];
 
 styled(AppBar)(({ theme }) => ({

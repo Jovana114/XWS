@@ -20,8 +20,7 @@ public class Reservation {
     public Reservation() {
     }
 
-    public Reservation(String id, String sourceUser, String idAppointment, Date startDate, Date endDate, int numGuests, Boolean approved) {
-        this.id = id;
+    public Reservation(String sourceUser, String idAppointment, Date startDate, Date endDate, int numGuests, Boolean approved) {
         this.sourceUser = sourceUser;
         this.idAppointment = idAppointment;
         this.startDate = startDate;
@@ -30,8 +29,7 @@ public class Reservation {
         this.approved = approved;
     }
 
-    public Reservation(String id, Date startDate, Date endDate, int numGuests) {
-        this.id = id;
+    public Reservation(Date startDate, Date endDate, int numGuests) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.numGuests = numGuests;
