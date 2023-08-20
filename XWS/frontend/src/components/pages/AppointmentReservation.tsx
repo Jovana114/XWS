@@ -1,10 +1,36 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, TextField } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  TextField,
+} from "@mui/material";
 import useAccomodation from "../../hooks/useAccommodation";
 import DoubleTable from "../common/Table/DoubleTable";
 import { useState } from "react";
+import useReservation from "../../hooks/useReservation";
+
+const columns = [
+  { key: "benefits", text: "Benefits" },
+  { key: "location", text: "Location" },
+  { key: "max_guests", text: "Max number of guests" },
+  { key: "min_guests", text: "Min number of guests" },
+  { key: "name", text: "Name" },
+];
+const collapseColumns = [
+  { key: "start", text: "Start Date" },
+  { key: "end", text: "End Date" },
+  { key: "price", text: "Price" },
+  { key: "price_per", text: "Price For" },
+  { key: "id", text: "", label: "Reserve" },
+];
 
 const AppointmentReservation = () => {
   const { data, fetchFilteredAccommodationData } = useAccomodation(false);
+  const { createReservation } = useReservation();
+
   const [location, setLocation] = useState("");
   const [numGuests, setNumGuests] = useState(0);
   const [start, setStart] = useState<string>(new Date().toISOString());
@@ -12,38 +38,31 @@ const AppointmentReservation = () => {
 
   const [openDialog, setOpenDialog] = useState(false);
 
-  const handleDialogSubmit = (e: any) => {
-    // Implement your account deletion logic here
-    // This function will be triggered when "Confirm Delete" button is clicked
-    // You can also close the dialog here
-    console.log('====================================');
-    console.log(e);
-    console.log('====================================');
-    setOpenDialog(false);
+  const [selectedData, setSelectedData] = useState<any>({});
+
+  const handleDialogSubmit = async () => {
+    try {
+      await createReservation(selectedData.id, {
+        startDate: start,
+        endDate: end,
+        numGuests,
+      });
+      // Additional logic after successful reservation creation
+      setOpenDialog(false);
+    } catch (error) {
+      // Handle errors if necessary
+    }
   };
 
-  const handleOpenDialog = () => {
+  const handleOpenDialog = (e: any) => {
     setOpenDialog(true);
+    setSelectedData(e);
   };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
+    setSelectedData({});
   };
-
-  const columns = [
-    { key: "benefits", text: "Benefits" },
-    { key: "location", text: "Location" },
-    { key: "max_guests", text: "Max number of guests" },
-    { key: "min_guests", text: "Min number of guests" },
-    { key: "name", text: "Name" },
-  ];
-  const collapseColumns = [
-    { key: "start", text: "Start Date" },
-    { key: "end", text: "End Date" },
-    { key: "price", text: "Price"},
-    { key: "price_per", text: "Price For"},
-    { key: "id", text: "", label: "Reserve"}
-  ];
 
   const handleFilters = async () => {
     fetchFilteredAccommodationData(
@@ -62,26 +81,61 @@ const AppointmentReservation = () => {
 
   return (
     <>
-          <Dialog
+      <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Confirm Account Deletion"}
+          {"Confirm Reservation"}
         </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete your account? This action is
-            irreversible and will delete all your data permanently.
-          </DialogContentText>
+        <DialogContent style={{
+          display: "flex", flexDirection: "column", padding:"20px"
+        }}>
+          <TextField
+            style={{ margin: "10px 0" }}
+            type="datetime-local"
+            id="start"
+            label="Arriving Date"
+            value={start}
+            required
+            onChange={(e) => setStart(e.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <TextField
+            style={{ margin: "10px 0" }}
+            type="datetime-local"
+            id="end"
+            label="Departure Date"
+            value={end}
+            required
+            onChange={(e) => setEnd(e.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <TextField
+            style={{ margin: "10px 0" }}
+            type="number"
+            id="numGuestsDialog"
+            label="Number of Guests"
+            value={numGuests}
+            required
+            onChange={(e) => setNumGuests(parseInt(e.target.value))}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
-          {/* <Button onClick={handleDelete} variant="contained" color="primary">
-            Confirm Delete
-          </Button> */}
+          <Button
+            onClick={handleDialogSubmit}
+            variant="contained"
+            color="primary"
+          >
+            Confirm Reservation
+          </Button>
         </DialogActions>
       </Dialog>
       <div>
@@ -146,7 +200,7 @@ const AppointmentReservation = () => {
         columns={columns}
         collapseColumn="appointments"
         collapseColumns={collapseColumns}
-        onButtonClick={handleOpenDialog}
+        onButtonClick={(e) => handleOpenDialog(e)}
       />
     </>
   );
