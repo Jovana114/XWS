@@ -4,7 +4,7 @@ import axiosPrivate from "../api/axios";
 import { AuthContext } from "../auth/AuthContext";
 import { ACCOMMODATIONS_URL } from "../constants/contsnts";
 
-const useAccomodation = () => {
+const useAccomodation = (autoFetch: boolean) => {
   const { auth, setLoading } = useContext(AuthContext);
   const [data, setData] = useState([]);
 
@@ -108,7 +108,8 @@ const useAccomodation = () => {
 
 
   useEffect(() => {
-    fetchAccommodationData();
+    if(autoFetch)
+      fetchAccommodationData();
   }, []);
 
   return { data, fetchFilteredAccommodationData, createAccomodation };

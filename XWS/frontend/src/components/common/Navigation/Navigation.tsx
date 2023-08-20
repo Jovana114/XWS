@@ -30,6 +30,7 @@ const unauthenticatedLinks = [
 const guestLinks = [
   { to: "/", label: "Home" },
   { to: "/users", label: "Users" },
+  { to: "/reserve", label: "Reserve Appointment" },
 ];
 
 const hostLinks = [
@@ -37,6 +38,7 @@ const hostLinks = [
   { to: "/host", label: "Host" },
   { to: "/accommodation", label: "Accommodation" },
   { to: "/appointment", label: "Appointment" },
+  { to: "/reserve", label: "Reserve Appointment" },
 ];
 
 styled(AppBar)(({ theme }) => ({

@@ -3,8 +3,8 @@ import useAccomodation from "../../hooks/useAccommodation";
 import DoubleTable from "../common/Table/DoubleTable";
 import { useState } from "react";
 
-const AccommodationsWithAppointments = () => {
-  const { data, fetchFilteredAccommodationData } = useAccomodation(true);
+const AppointmentReservation = () => {
+  const { data, fetchFilteredAccommodationData } = useAccomodation(false);
   const [location, setLocation] = useState("");
   const [numGuests, setNumGuests] = useState(0);
   const [start, setStart] = useState<string>(new Date().toISOString());
@@ -20,6 +20,7 @@ const AccommodationsWithAppointments = () => {
   const collapseColumns = [
     { key: "start", text: "Start Date" },
     { key: "end", text: "End Date" },
+    { key: "id", text: "", label: "Reserve"}
   ];
 
   const handleFilters = async () => {
@@ -106,4 +107,4 @@ const AccommodationsWithAppointments = () => {
   );
 };
 
-export default AccommodationsWithAppointments;
+export default AppointmentReservation;

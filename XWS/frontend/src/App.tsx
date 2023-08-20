@@ -15,6 +15,7 @@ import "./style/App.css";
 import Profile from "./components/pages/Profile";
 import Accommodation from "./components/pages/Accommodation";
 import Appointment from "./components/pages/Appointment";
+import AppointmentReservation from "./components/pages/AppointmentReservation";
 
 const App: React.FC = () => {
   const { auth } = useContext(AuthContext);
@@ -104,6 +105,14 @@ const App: React.FC = () => {
           element={
             <Layout>
               <Profile />
+            </Layout>
+          }
+        />
+        <Route
+          path="/reserve"
+          element={
+            <Layout>
+              <AppointmentReservation />
             </Layout>
           }
         />

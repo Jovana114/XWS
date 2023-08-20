@@ -37,6 +37,10 @@ function DoubleTable({
     }
   };
 
+  const hasEmptyLabelRow = (rowData: { [key: string]: any }) => {
+    return rowData["label"] === "" && rowData.hasOwnProperty("label");
+  };
+
   return (
     <TableContainer
       component={Paper}
@@ -75,7 +79,7 @@ function DoubleTable({
                 ))}
               </TableRow>
               {collapseColumn &&
-                (row[collapseColumn]?.length ?? 0) > 0 && // Check if the collapsible data exists and is not empty
+                (row[collapseColumn]?.length ?? 0) > 0 &&
                 openRows.includes(row.key || index.toString()) && (
                   <TableRow>
                     <TableCell
@@ -100,7 +104,7 @@ function DoubleTable({
                               }}
                             >
                               <TableRow>
-                                {collapseColumns?.map((column) => (
+                                {collapseColumns && collapseColumns.map((column) => (
                                   <TableCell key={column.key}>
                                     {column.text}
                                   </TableCell>
@@ -116,14 +120,18 @@ function DoubleTable({
                                       borderTop: "1px solid rgba(0,0,0,0.1)",
                                     }}
                                   >
-                                    {collapseColumns?.map((column) => (
+                                    {collapseColumns && collapseColumns.map((column: any) => (
                                       <TableCell
                                         key={column.key}
                                         style={{
                                           border: "none",
                                         }}
                                       >
-                                        {item[column.key]}
+                                        {column.key === "id" ? (
+                                          <button>{column.label}</button>
+                                        ) : (
+                                          item[column.key]
+                                        )}
                                       </TableCell>
                                     ))}
                                   </TableRow>
