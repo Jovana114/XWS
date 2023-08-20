@@ -3,7 +3,7 @@ import { Box, FormControl, TextField, Button } from "@mui/material";
 import useAccomodation from "../../hooks/useAccommodation";
 
 const Accommodation = () => {
-  const { createAccomodation } = useAccomodation();
+  const { createAccomodation } = useAccomodation(true);
 
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
