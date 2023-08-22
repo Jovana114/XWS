@@ -280,7 +280,7 @@ public class AccommodationControler {
                 for (Accommodation accommodation : accommodations) {
                     if (accommodation.getUser_id().equals(user_id)) {
                         for (Appointments appointments : all_appointments) {
-                            if (!appointments.isAuto_reservation() && !appointments.getReservations().isEmpty()) {
+                            if (!appointments.isAuto_reservation() && !appointments.getReservations().isEmpty() && !appointments.getReserved()) {
                                 appointments_with_pending_reservation.add(appointments);
                             }
                         }

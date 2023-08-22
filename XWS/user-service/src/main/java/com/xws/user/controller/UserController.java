@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +47,11 @@ public class UserController {
     @GetMapping("/reservations/{user_id}")
     public List<Reservation> getUserReservationsByUserId(@PathVariable("user_id") String user_id){
         Optional<User> user = userRepository.findById(user_id);
-        return user.get().getReservations();
+        if(!user.get().getReservations().isEmpty()){
+            return user.get().getReservations();
+        } else {
+            return new ArrayList<>();
+        }
     }
 
 
