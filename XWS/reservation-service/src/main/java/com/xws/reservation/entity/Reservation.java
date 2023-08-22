@@ -29,6 +29,16 @@ public class Reservation {
         this.approved = approved;
     }
 
+    public Reservation(String id, String sourceUser, String idAppointment, Date startDate, Date endDate, int numGuests, Boolean approved) {
+        this.id = id;
+        this.sourceUser = sourceUser;
+        this.idAppointment = idAppointment;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.numGuests = numGuests;
+        this.approved = approved;
+    }
+
     public Reservation(Date startDate, Date endDate, int numGuests) {
         this.startDate = startDate;
         this.endDate = endDate;

@@ -1,14 +1,11 @@
 package com.xws.reservation.controller;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import com.google.protobuf.Timestamp;
 import com.xws.accommodation.*;
-import com.xws.reservation.CreateReservationRequest;
-import com.xws.reservation.ReservationServiceGrpc;
 import com.xws.reservation.entity.Reservation;
 import com.xws.reservation.repository.ReservationRepository;
 import com.xws.reservation.service.ReservationService;
@@ -38,11 +35,11 @@ public class ReservationController {
     @PostMapping("/create_reservation/{appointment_id}/{source_user}")
     public ResponseEntity<?> create(@PathVariable("appointment_id") String appointment_id, @PathVariable("source_user") String source_user, @RequestBody Reservation reservation) {
 
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("reservation-service", 7575)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("user-service", 6565)
                 .usePlaintext()
                 .build();
 
-        ReservationServiceGrpc.ReservationServiceBlockingStub stub = ReservationServiceGrpc.newBlockingStub(channel);
+        UserServiceGrpc.UserServiceBlockingStub stub = UserServiceGrpc.newBlockingStub(channel);
 
         ManagedChannel channel1 = ManagedChannelBuilder.forAddress("accommodation-service", 8585)
                 .usePlaintext()
@@ -64,6 +61,17 @@ public class ReservationController {
                 Timestamp startDateTimestamp = convertToTimestamp(reservation.getStartDate());
                 Timestamp endDateTimestamp = convertToTimestamp(reservation.getEndDate());
 
+                Reservation reservation_created = new Reservation(
+                        source_user,
+                        appointment_id,
+                        reservation.getStartDate(),
+                        reservation.getEndDate(),
+                        reservation.getNumGuests(),
+                        false
+                );
+
+                reservationRepository.save(reservation_created);
+
                 com.xws.common.Reservation grpcReservation = com.xws.common.Reservation.newBuilder()
                         .setSourceUser(source_user)
                         .setAppointmentId(appointment_id)
@@ -73,14 +81,23 @@ public class ReservationController {
                         .setApproved(false)
                         .build();
 
-                CreateReservationRequest request = CreateReservationRequest.newBuilder()
+                grpcReservation = grpcReservation.toBuilder().setId(reservation_created.getId()).build();
+
+                AddReservationToAppointmentRequest grpcRequest = AddReservationToAppointmentRequest.newBuilder()
+                        .setAppointmentId(appointment_id)
+                        .setReservation(grpcReservation)
+                        .setSourceUser(source_user)
+                        .build();
+
+                AddReservationToUserRequest grpcRequest1 = AddReservationToUserRequest.newBuilder()
                         .setAppointmentId(appointment_id)
                         .setReservation(grpcReservation)
                         .setSourceUser(source_user)
                         .build();
 
                 try {
-                    stub.createReservation(request);
+                    stub1.addReservationToAppointment(grpcRequest);
+                    stub.addReservationToUser(grpcRequest1);
                     return ResponseEntity.ok().body("{\"message\": \"Reservation request sent\"}");
                 } catch (StatusRuntimeException e) {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Failed to create reservation\"}");
@@ -89,6 +106,17 @@ public class ReservationController {
 
                 Timestamp startDateTimestamp = convertToTimestamp(reservation.getStartDate());
                 Timestamp endDateTimestamp = convertToTimestamp(reservation.getEndDate());
+
+                Reservation reservation_created = new Reservation(
+                        source_user,
+                        appointment_id,
+                        reservation.getStartDate(),
+                        reservation.getEndDate(),
+                        reservation.getNumGuests(),
+                        false
+                );
+
+                reservationRepository.save(reservation_created);
 
                 com.xws.common.Reservation grpcReservation = com.xws.common.Reservation.newBuilder()
                         .setSourceUser(source_user)
@@ -99,14 +127,23 @@ public class ReservationController {
                         .setApproved(true)
                         .build();
 
-                CreateReservationRequest request = CreateReservationRequest.newBuilder()
+                grpcReservation = grpcReservation.toBuilder().setId(reservation_created.getId()).build();
+
+                AddReservationToAppointmentRequest grpcRequest = AddReservationToAppointmentRequest.newBuilder()
+                        .setAppointmentId(appointment_id)
+                        .setReservation(grpcReservation)
+                        .setSourceUser(source_user)
+                        .build();
+
+                AddReservationToUserRequest grpcRequest1 = AddReservationToUserRequest.newBuilder()
                         .setAppointmentId(appointment_id)
                         .setReservation(grpcReservation)
                         .setSourceUser(source_user)
                         .build();
 
                 try {
-                    stub.createReservation(request);
+                    stub1.addReservationToAppointment(grpcRequest);
+                    stub.addReservationToUser(grpcRequest1);
                     return ResponseEntity.ok().body("{\"message\": \"Reservation request sent\"}");
                 } catch (StatusRuntimeException e) {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Failed to create reservation\"}");
@@ -220,6 +257,5 @@ public class ReservationController {
         stub.removeApprovedReservationRequest(request1);
 
         channel1.shutdown();
-        channel.shutdown();
     }
 }

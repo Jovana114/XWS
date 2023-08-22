@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.util.Date;
 
-@Document(collection = "reservation")
+@Document(collection = "reservation_user")
 public class Reservation {
 
     @Id

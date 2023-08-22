@@ -20,11 +20,27 @@ const approvingReservation = () => {
     }
   };
 
-  useEffect(() => {
+  const approveReservation = async (
+    reservationId: string,
+  ) => {
+    try {
+      await axiosPrivate.put(
+        ACCOMMODATIONS_URL + `approvingRequests/${reservationId}`,
+      );
+      toast.success("Reservation approved!");
       fetchData();
+    } catch (error) {
+      toast.error("Failed to approve reservation");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
-  return { data };
+  return { data, approveReservation };
 };
 
 export default approvingReservation;
