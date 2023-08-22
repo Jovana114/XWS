@@ -10,13 +10,13 @@ import Home from "./components/pages/Home";
 import Default from "./components/pages/Default";
 import Host from "./components/pages/Host";
 import Layout from "./components/pages/Layout";
-import Users from "./components/pages/Users";
 import "./style/App.css";
 import Profile from "./components/pages/Profile";
 import Accommodation from "./components/pages/Accommodation";
 import Appointment from "./components/pages/Appointment";
 import AppointmentReservation from "./components/pages/AppointmentReservation";
 import ApproveReservation from "./components/pages/ApproveReservation";
+import GuestReservedAppointments from "./components/pages/GuestReservedAppointments";
 
 const App: React.FC = () => {
   const { auth } = useContext(AuthContext);
@@ -70,19 +70,19 @@ const App: React.FC = () => {
       {/* protected routes */}
       <Route element={<RequireAuth allowedRoles={["ROLE_GUEST"]} />}>
         <Route
-          path="/users"
-          element={
-            <Layout>
-              <Users />
-            </Layout>
-          }
-        />
-        
-        <Route
           path="/reserve"
           element={
             <Layout>
               <AppointmentReservation />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/reserved"
+          element={
+            <Layout>
+              <GuestReservedAppointments />
             </Layout>
           }
         />

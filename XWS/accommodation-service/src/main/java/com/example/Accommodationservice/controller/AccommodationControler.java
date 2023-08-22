@@ -192,73 +192,78 @@ public class AccommodationControler {
         return false;
     }
 
-    @PutMapping("/approvingRequests/{app_id}_{res_id}")
-    public ResponseEntity<Accommodation> approvingRequests(@PathVariable("app_id") String app_id, @PathVariable("res_id") String res_id) {
-        Optional<Appointments> appointment = appointmentRepository.findById(app_id);
+    @PutMapping("/approvingRequests/{res_id}")
+    public ResponseEntity<Accommodation> approvingRequests(@PathVariable("res_id") String res_id) {
+        Optional<Reservation> reservation1 = reservationRepository.findById(res_id);
+        if(reservation1.isPresent()) {
+            Optional<Appointments> appointment = appointmentRepository.findById(reservation1.get().getIdAppointment());
 
-        if (appointment.isPresent()) {
-            Appointments appointment_found = appointment.get();
+            if (appointment.isPresent()) {
+                Appointments appointment_found = appointment.get();
 
-            if(!appointment_found.isAuto_reservation()) {
+                if (!appointment_found.isAuto_reservation()) {
 
-                List<Reservation> reservations = appointment_found.getReservations();
-                Optional<Reservation> chosenReservationOptional = reservations.stream()
-                        .filter(reservation -> reservation.getId().equals(res_id))
-                        .findFirst();
+                    List<Reservation> reservations = appointment_found.getReservations();
+                    Optional<Reservation> chosenReservationOptional = reservations.stream()
+                            .filter(reservation -> reservation.getId().equals(res_id))
+                            .findFirst();
 
-                if (chosenReservationOptional.isPresent()) {
-                    Reservation chosenReservation = chosenReservationOptional.get();
+                    if (chosenReservationOptional.isPresent()) {
+                        Reservation chosenReservation = chosenReservationOptional.get();
 
-                    for (Reservation reservation : reservations) {
-                        if (!reservation.getId().equals(res_id)) {
-                            appointment_found.getReservations().remove(reservation);
-                            reservationRepository.delete(reservation);
+                        for (Reservation reservation : reservations) {
+                            if (!reservation.getId().equals(res_id)) {
+                                appointment_found.getReservations().remove(reservation);
+                                reservationRepository.delete(reservation);
+                            }
                         }
+
+                        chosenReservation.setApproved(true);
+                        reservationRepository.save(chosenReservation);
+
+                        appointment_found.setReserved(true);
+                        appointmentRepository.save(appointment_found);
+
+                        ManagedChannel channel = ManagedChannelBuilder.forAddress("user-service", 6565)
+                                .usePlaintext()
+                                .build();
+
+                        ManagedChannel channel1 = ManagedChannelBuilder.forAddress("reservation-service", 7575)
+                                .usePlaintext()
+                                .build();
+
+                        ReservationServiceGrpc.ReservationServiceBlockingStub stub1 =
+                                ReservationServiceGrpc.newBlockingStub(channel1);
+
+                        UserServiceGrpc.UserServiceBlockingStub stub =
+                                UserServiceGrpc.newBlockingStub(channel);
+
+
+                        ApprovingReservationRequest request1 = ApprovingReservationRequest.newBuilder()
+                                .setReservationId(res_id)
+                                .build();
+
+                        ApprovingReservationChangeForUserRequest request = ApprovingReservationChangeForUserRequest.newBuilder()
+                                .setReservationId(res_id)
+                                .build();
+
+                        try {
+                            stub.approvingReservationChangeForUser(request);
+                            stub1.approvingReservation(request1);
+                        } catch (StatusRuntimeException e) {
+                            // Handle any errors or exceptions that occur while calling the User Service
+                            // You can choose to retry, log, or handle the error based on your application's requirements
+                        }
+
+                        return new ResponseEntity<>(HttpStatus.OK);
+                    } else {
+                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
-
-                    chosenReservation.setApproved(true);
-                    reservationRepository.save(chosenReservation);
-
-                    appointment_found.setReserved(true);
-                    appointmentRepository.save(appointment_found);
-
-                    ManagedChannel channel = ManagedChannelBuilder.forAddress("user-service", 6565)
-                            .usePlaintext()
-                            .build();
-
-                    ManagedChannel channel1 = ManagedChannelBuilder.forAddress("reservation-service", 7575)
-                            .usePlaintext()
-                            .build();
-
-                    ReservationServiceGrpc.ReservationServiceBlockingStub stub1 =
-                            ReservationServiceGrpc.newBlockingStub(channel1);
-
-                    UserServiceGrpc.UserServiceBlockingStub stub =
-                            UserServiceGrpc.newBlockingStub(channel);
-
-
-                    ApprovingReservationRequest request1 = ApprovingReservationRequest.newBuilder()
-                            .setReservationId(res_id)
-                            .build();
-
-                    ApprovingReservationChangeForUserRequest request = ApprovingReservationChangeForUserRequest.newBuilder()
-                            .setReservationId(res_id)
-                            .build();
-
-                    try {
-                        stub.approvingReservationChangeForUser(request);
-                        stub1.approvingReservation(request1);
-                    } catch (StatusRuntimeException e) {
-                        // Handle any errors or exceptions that occur while calling the User Service
-                        // You can choose to retry, log, or handle the error based on your application's requirements
-                    }
-
-                    return new ResponseEntity<>(HttpStatus.OK);
-                } else {
-                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 }
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -275,7 +280,7 @@ public class AccommodationControler {
                 for (Accommodation accommodation : accommodations) {
                     if (accommodation.getUser_id().equals(user_id)) {
                         for (Appointments appointments : all_appointments) {
-                            if (!appointments.isAuto_reservation() && !appointments.getReservations().isEmpty()) {
+                            if (!appointments.isAuto_reservation() && !appointments.getReservations().isEmpty() && !appointments.getReserved()) {
                                 appointments_with_pending_reservation.add(appointments);
                             }
                         }
