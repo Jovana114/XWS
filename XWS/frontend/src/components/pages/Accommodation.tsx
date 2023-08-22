@@ -3,7 +3,7 @@ import { Box, FormControl, TextField, Button } from "@mui/material";
 import useAccomodation from "../../hooks/useAccommodation";
 
 const Accommodation = () => {
-  const { createAccomodation } = useAccomodation();
+  const { createAccomodation } = useAccomodation(true);
 
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
@@ -15,7 +15,14 @@ const Accommodation = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (imageFile) {
-      createAccomodation(name, location, benefits, minGuests, maxGuests, imageFile);
+      createAccomodation(
+        name,
+        location,
+        benefits,
+        minGuests,
+        maxGuests,
+        imageFile
+      );
     } else {
       console.error("Please select an image for the accommodation.");
     }
@@ -90,15 +97,15 @@ const Accommodation = () => {
 
         <FormControl variant="outlined">
           <label>Image:</label>
-            <input
-              type="file"
-              onChange={(e) =>
-                e.target.files && e.target.files.length > 0
-                  ? setImageFile(e.target.files[0])
-                  : null
-              }
-              className="input"
-            />
+          <input
+            type="file"
+            onChange={(e) =>
+              e.target.files && e.target.files.length > 0
+                ? setImageFile(e.target.files[0])
+                : null
+            }
+            className="input"
+          />
         </FormControl>
         <Button type="submit" variant="contained" color="primary">
           Create Accommodation

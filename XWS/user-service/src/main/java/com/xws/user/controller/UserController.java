@@ -43,6 +43,13 @@ public class UserController {
         return user.get().getAccommodations();
     }
 
+    @GetMapping("/reservations/{user_id}")
+    public List<Reservation> getUserReservationsByUserId(@PathVariable("user_id") String user_id){
+        Optional<User> user = userRepository.findById(user_id);
+        return user.get().getReservations();
+    }
+
+
     @PutMapping("/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable String userId, @RequestBody User updatedUser) {
         userService.updateUser(userId, updatedUser);

@@ -90,9 +90,13 @@ const AppointmentReservation = () => {
         <DialogTitle id="alert-dialog-title">
           {"Confirm Reservation"}
         </DialogTitle>
-        <DialogContent style={{
-          display: "flex", flexDirection: "column", padding:"20px"
-        }}>
+        <DialogContent
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            padding: "20px",
+          }}
+        >
           <TextField
             style={{ margin: "10px 0" }}
             type="datetime-local"
@@ -200,7 +204,7 @@ const AppointmentReservation = () => {
         columns={columns}
         collapseColumn="appointments"
         collapseColumns={collapseColumns}
-        onButtonClick={(e) => handleOpenDialog(e)}
+        onColumnButtonClick={(e) => handleOpenDialog(e)}
       />
     </>
   );

@@ -29,8 +29,8 @@ const unauthenticatedLinks = [
 
 const guestLinks = [
   { to: "/", label: "Home" },
-  { to: "/users", label: "Users" },
   { to: "/reserve", label: "Reserve Appointment" },
+  { to: "/reserved", label: "My Appointments" },
 ];
 
 const hostLinks = [
