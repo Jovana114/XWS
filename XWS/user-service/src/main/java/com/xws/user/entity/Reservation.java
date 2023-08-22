@@ -18,6 +18,9 @@ public class Reservation {
     private int numGuests;
     private Boolean approved;
 
+    private String hostId; // Add a field to store the host's ID
+
+
     public Reservation() {
     }
 
@@ -92,5 +95,13 @@ public class Reservation {
 
     public void setIdAppointment(String idAppointment) {
         this.idAppointment = idAppointment;
+    }
+
+    public String getHostId() {
+        return hostId;
+    }
+
+    public void setHostId(String hostId) {
+        this.hostId = hostId;
     }
 }

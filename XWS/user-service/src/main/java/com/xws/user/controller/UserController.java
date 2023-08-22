@@ -6,6 +6,8 @@ import com.xws.accommodation.CheckIfAccommodationHasActiveReservationsResponse;
 import com.xws.accommodation.UserServiceGrpc;
 import com.xws.user.entity.*;
 import com.xws.user.payload.response.MessageResponse;
+import com.xws.user.repo.RatingRepository;
+import com.xws.user.repo.ReservationRepository;
 import com.xws.user.repo.UserRepository;
 import com.xws.user.service.UserService;
 import io.grpc.ManagedChannel;
@@ -27,8 +29,11 @@ import java.util.Optional;
 public class UserController {
 
     @Autowired
+    ReservationRepository reservationRepository;
+    @Autowired
     private UserService userService;
-
+    @Autowired
+    RatingRepository ratingRepository;
     @Autowired
     private UserRepository userRepository;
 
@@ -136,6 +141,40 @@ public class UserController {
             }
         }
         return ResponseEntity.badRequest().body("User is not deleted!");
+    }
+
+    @PostMapping("/rate_host/{reservation_id}/{guest_id}/{host_id}/{rating}")
+    public ResponseEntity<String> rateHost(@PathVariable("reservation_id") String reservationId, @PathVariable("guest_id") String guestId, @PathVariable("host_id") String hostId, @PathVariable("rating") int rating) {
+        Optional<Reservation> reservationOptional = reservationRepository.findById(reservationId);
+
+        if (reservationOptional.isPresent()) {
+            Reservation reservation = reservationOptional.get();
+
+            if (reservation.getSourceUser().equals(guestId)) {
+                if (reservation.getHostId().equals(hostId)) {
+                    if (!reservation.getApproved()) {
+                        Rating newRating = new Rating();
+                        newRating.setGuestId(Integer.parseInt(guestId));
+                        newRating.setHostId(Integer.parseInt(hostId));
+                        newRating.setRatingValue(rating);
+
+                        ratingRepository.save(newRating);
+
+                        System.out.println("Guest " + guestId + " rated Host " + hostId + " with a rating of " + rating);
+
+                        return ResponseEntity.ok("{\"message\": \"Rating added successfully.\"}");
+                    } else {
+                        return ResponseEntity.badRequest().body("{\"error\": \"You cannot rate a reservation that has been approved.\"}");
+                    }
+                } else {
+                    return ResponseEntity.badRequest().body("{\"error\": \"This reservation is not for the specified host.\"}");
+                }
+            } else {
+                return ResponseEntity.badRequest().body("{\"error\": \"You are not authorized to rate this reservation.\"}");
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }
