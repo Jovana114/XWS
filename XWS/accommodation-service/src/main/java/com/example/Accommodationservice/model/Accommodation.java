@@ -22,6 +22,16 @@ public class Accommodation {
     private List<Appointments> appointments;
     private String user_id;
 
+    private List<Integer> ocene;
+
+    public List<Integer> getOcene() {
+        return ocene;
+    }
+
+    public void setOcene(List<Integer> ocene) {
+        this.ocene = ocene;
+    }
+
     public Accommodation(){}
 
     public Accommodation(String id, String name, String location, String benefits, Integer min_guests, Integer max_guests, List<Appointments> appointments) {

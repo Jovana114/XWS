@@ -55,7 +55,7 @@ public class AccommodationControler {
         Accommodation new_accommodation = new Accommodation(accommodation.getName(),
                 accommodation.getLocation(), accommodation.getBenefits(),
                 accommodation.getMin_guests(), accommodation.getMax_guests());
-
+        new_accommodation.setOcene(new ArrayList<>());
         new_accommodation.setUser_id(user_id);
         new_accommodation.setAppointments(new ArrayList<>());
         accommodationRepository.save(new_accommodation);
@@ -292,5 +292,38 @@ public class AccommodationControler {
             }
         } return ResponseEntity.badRequest().body("Error!");
     }
+
+    @PostMapping("/rate/{acc_id}")
+    public ResponseEntity<Accommodation> addGrade(@PathVariable("acc_id") String acc_id, @RequestParam int ocena) {
+        Optional<Accommodation> accommodationOptional = accommodationRepository.findById(acc_id);
+
+        if (accommodationOptional.isPresent()) {
+            Accommodation accommodation = accommodationOptional.get();
+            if (ocena >= 1 && ocena <= 5) {
+                List<Integer> ocene = accommodation.getOcene();
+                ocene.add(ocena);
+                accommodation.setOcene(ocene);
+                return new ResponseEntity<>(accommodationRepository.save(accommodation), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/ratings/{acc_id}")
+    public ResponseEntity<List<Integer>> showGrade(@PathVariable("acc_id") String acc_id) {
+        Optional<Accommodation> accommodationOptional = accommodationRepository.findById(acc_id);
+
+        if (accommodationOptional.isPresent()) {
+            Accommodation accommodation = accommodationOptional.get();
+            List<Integer> ocene = accommodation.getOcene();
+            return new ResponseEntity<>(ocene, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 
 }

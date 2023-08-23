@@ -62,3 +62,44 @@ section {
   background-color: #fff;
   max-width: 1488px;
 }
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 400px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+  text-align: center;
+}
+
+.rating {
+  text-align: center;
+}
+
+.rating input {
+  width: 100%;
+}
+
+.comments {
+  margin-top: 20px;
+}
+
+.comments textarea {
+  width: 100%;
+}
+
+button {
+  display: block;
+  margin: 20px auto;
+}

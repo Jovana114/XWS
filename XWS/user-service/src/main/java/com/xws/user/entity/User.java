@@ -30,6 +30,7 @@ public class User {
     private List<Accommodation> accommodations;
     private Integer cancellation_number;
 
+    
     public User() {
     }
 
