@@ -126,24 +126,19 @@ public class AccommodationControler {
                 .body(new InputStreamResource(in));
     }
 
-    @PutMapping(value = "/add_image/{id}/image")
-    public ResponseEntity<Accommodation> updateAccommodationImage(@PathVariable("id") String accommodation_id, @RequestParam("file") MultipartFile file) throws IOException {
-        Optional<Accommodation> accommodationOptional = accommodationRepository.findById(accommodation_id);
+    @PutMapping(value = "/add_image/{accommodation_id}/image")
+    public ResponseEntity<Accommodation> updateAccommodationImage(@PathVariable("accommodation_id") String accommodation_id, @RequestParam("file") MultipartFile file) throws IOException {
+        Optional<Accommodation> accommodation = accommodationRepository.findById(accommodation_id);
+        if (accommodation.isPresent() && !file.isEmpty()) {
+            Accommodation accommodation_found = accommodation.get();
 
-        if (accommodationOptional.isPresent() && !file.isEmpty()) {
-            Accommodation accommodation_found = accommodationOptional.get();
-
-            String fileName = accommodation_id + ".jpg";
+            String fileName = accommodation_id + ".jpeg";
             String imagesDirectoryPath = "images";
 
-            File imagesDirectory = new File(imagesDirectoryPath);
-            if (!imagesDirectory.exists()) {
-                imagesDirectory.mkdir();
-            }
+            Files.createDirectories(Paths.get(imagesDirectoryPath));
 
             String filePath = imagesDirectoryPath + "/" + fileName;
             File newImage = new File(filePath);
-
             try (OutputStream outputStream = new FileOutputStream(newImage)) {
                 outputStream.write(file.getBytes());
             }

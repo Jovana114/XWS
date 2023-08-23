@@ -15,7 +15,7 @@ import { Button } from "@mui/material";
 import Skeleton from "@mui/material/Skeleton";
 
 interface CollapsibleTableProps {
-  data: Array<{ [key: string]: any }> | null | undefined; // Allow null or undefined data
+  data: Array<{ [key: string]: any }> | null | undefined;
   columns: Array<{ key: string; text: string }>;
   collapseColumn?: string;
   collapseColumns?: Array<{ key: string; text: string; label?: string }>;
@@ -101,6 +101,13 @@ function DoubleTable({
                         >
                           {column.label}
                         </Button>
+                      ) : column.key === "image" ? ( // Check for the last column with key "image"
+                        <img
+                          src={row[column.key]} // Assuming the URL of the image is stored in the data
+                          alt="Item Image"
+                          width={50} // Set your desired width
+                          height={50} // Set your desired height
+                        />
                       ) : (
                         row[column.key]
                       )}
@@ -132,14 +139,7 @@ function DoubleTable({
                                   borderBottom: "1px solid rgba(0,0,0,0.1)",
                                 }}
                               >
-                                <TableRow>
-                                  {collapseColumns &&
-                                    collapseColumns.map((column) => (
-                                      <TableCell key={column.key}>
-                                        {column.text}
-                                      </TableCell>
-                                    ))}
-                                </TableRow>
+                                {/* ... (other table head structure) */}
                               </TableHead>
                               <TableBody>
                                 {row[collapseColumn]?.map(
