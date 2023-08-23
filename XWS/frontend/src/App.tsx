@@ -17,6 +17,9 @@ import Appointment from "./components/pages/Appointment";
 import AppointmentReservation from "./components/pages/AppointmentReservation";
 import ApproveReservation from "./components/pages/ApproveReservation";
 import GuestReservedAppointments from "./components/pages/GuestReservedAppointments";
+import RatingHosts from "./components/pages/RatingHosts";
+import AccommodationFilter from "./components/pages/AccommodationFilter";
+import RatingAccommodation from "./components/pages/RatingAccommodation";
 
 const App: React.FC = () => {
   const { auth } = useContext(AuthContext);
@@ -67,6 +70,15 @@ const App: React.FC = () => {
         element={<Layout>{auth.accessToken ? <Home /> : <Default />}</Layout>}
       />
 
+<Route
+          path="/accommodation_filter"
+          element={
+            <Layout>
+              <AccommodationFilter />
+            </Layout>
+          }
+        />
+
       {/* protected routes */}
       <Route element={<RequireAuth allowedRoles={["ROLE_GUEST"]} />}>
         <Route
@@ -77,6 +89,23 @@ const App: React.FC = () => {
             </Layout>
           }
         />
+        <Route
+          path="/rating_hosts"
+          element={
+            <Layout>
+              <RatingHosts />
+            </Layout>
+          }
+        />   
+
+        <Route
+          path="/rating_accommodation"
+          element={
+            <Layout>
+              <RatingAccommodation />
+            </Layout>
+          }
+        /> 
 
         <Route
           path="/reserved"
