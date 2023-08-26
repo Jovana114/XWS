@@ -113,7 +113,7 @@ public class ReservationController {
                         reservation.getStartDate(),
                         reservation.getEndDate(),
                         reservation.getNumGuests(),
-                        false
+                        true
                 );
 
                 reservationRepository.save(reservation_created);

@@ -24,10 +24,14 @@ const AccommodationsWithAppointments = () => {
       ),
     },
   ];
-  
+
   const collapseColumns = [
     { key: "start", text: "Start Date" },
     { key: "end", text: "End Date" },
+    { key: "price", text: "Price" },
+    { key: "price_per", text: "Price For" },
+    { key: "auto_reservation", text: "Auto reservation" },
+    { key: "reserved", text: "Reserved" },
   ];
 
   const handleFilters = async () => {

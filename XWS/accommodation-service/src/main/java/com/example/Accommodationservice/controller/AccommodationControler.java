@@ -14,7 +14,6 @@ import com.xws.reservation.ReservationServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -188,79 +187,68 @@ public class AccommodationControler {
     }
 
     @PutMapping("/approvingRequests/{res_id}")
-    public ResponseEntity<Accommodation> approvingRequests(@PathVariable("res_id") String res_id) {
-        Optional<Reservation> reservation1 = reservationRepository.findById(res_id);
-        if(reservation1.isPresent()) {
-            Optional<Appointments> appointment = appointmentRepository.findById(reservation1.get().getIdAppointment());
+    public ResponseEntity<String> approvingRequests(@PathVariable("res_id") String res_id) {
+        try {
+            Optional<Reservation> reservationOptional = reservationRepository.findById(res_id);
 
-            if (appointment.isPresent()) {
-                Appointments appointment_found = appointment.get();
+            if (reservationOptional.isPresent()) {
+                Reservation reservation = reservationOptional.get();
 
-                if (!appointment_found.isAuto_reservation()) {
+                Optional<Appointments> appointmentOptional = appointmentRepository.findById(reservation.getIdAppointment());
 
-                    List<Reservation> reservations = appointment_found.getReservations();
-                    Optional<Reservation> chosenReservationOptional = reservations.stream()
-                            .filter(reservation -> reservation.getId().equals(res_id))
-                            .findFirst();
+                if (appointmentOptional.isPresent()) {
+                    Appointments appointment = appointmentOptional.get();
 
-                    if (chosenReservationOptional.isPresent()) {
-                        Reservation chosenReservation = chosenReservationOptional.get();
+                    if (!appointment.isAuto_reservation()) {
+                        appointment.setReserved(true);
 
-                        for (Reservation reservation : reservations) {
-                            if (!reservation.getId().equals(res_id)) {
-                                appointment_found.getReservations().remove(reservation);
-                                reservationRepository.delete(reservation);
+                        List<Reservation> reservationsToRemove = new ArrayList<>();
+                        for (Reservation r : appointment.getReservations()) {
+                            if (!r.getId().equals(res_id)) {
+                                reservationsToRemove.add(r);
                             }
                         }
+                        appointment.getReservations().removeAll(reservationsToRemove);
 
-                        chosenReservation.setApproved(true);
-                        reservationRepository.save(chosenReservation);
+                        appointmentRepository.save(appointment);
 
-                        appointment_found.setReserved(true);
-                        appointmentRepository.save(appointment_found);
-
-                        ManagedChannel channel = ManagedChannelBuilder.forAddress("user-service", 6565)
+                        ManagedChannel userChannel = ManagedChannelBuilder.forAddress("user-service", 6565)
                                 .usePlaintext()
                                 .build();
 
-                        ManagedChannel channel1 = ManagedChannelBuilder.forAddress("reservation-service", 7575)
+                        ManagedChannel reservationChannel = ManagedChannelBuilder.forAddress("reservation-service", 7575)
                                 .usePlaintext()
                                 .build();
 
-                        ReservationServiceGrpc.ReservationServiceBlockingStub stub1 =
-                                ReservationServiceGrpc.newBlockingStub(channel1);
+                        ReservationServiceGrpc.ReservationServiceBlockingStub reservationStub =
+                                ReservationServiceGrpc.newBlockingStub(reservationChannel);
 
-                        UserServiceGrpc.UserServiceBlockingStub stub =
-                                UserServiceGrpc.newBlockingStub(channel);
+                        UserServiceGrpc.UserServiceBlockingStub userStub =
+                                UserServiceGrpc.newBlockingStub(userChannel);
 
-
-                        ApprovingReservationRequest request1 = ApprovingReservationRequest.newBuilder()
+                        ApprovingReservationRequest reservationRequest = ApprovingReservationRequest.newBuilder()
                                 .setReservationId(res_id)
                                 .build();
 
-                        ApprovingReservationChangeForUserRequest request = ApprovingReservationChangeForUserRequest.newBuilder()
+                        ApprovingReservationChangeForUserRequest userRequest = ApprovingReservationChangeForUserRequest.newBuilder()
                                 .setReservationId(res_id)
                                 .build();
 
-                        try {
-                            stub.approvingReservationChangeForUser(request);
-                            stub1.approvingReservation(request1);
-                        } catch (StatusRuntimeException e) {
-                            // Handle any errors or exceptions that occur while calling the User Service
-                            // You can choose to retry, log, or handle the error based on your application's requirements
-                        }
+                        reservationStub.approvingReservation(reservationRequest);
+                        userStub.approvingReservationChangeForUser(userRequest);
 
-                        return new ResponseEntity<>(HttpStatus.OK);
+                        return new ResponseEntity<>("Reservation approved.", HttpStatus.OK);
                     } else {
-                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                        return new ResponseEntity<>("Auto reservations cannot be approved.", HttpStatus.BAD_REQUEST);
                     }
+                } else {
+                    return new ResponseEntity<>("Related appointment not found.", HttpStatus.NOT_FOUND);
                 }
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("Reservation not found.", HttpStatus.NOT_FOUND);
             }
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -10,6 +10,8 @@ import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @GrpcService
@@ -26,26 +28,31 @@ public class ReservationService extends ReservationServiceGrpc.ReservationServic
     public void approvingReservation(ApprovingReservationRequest request, StreamObserver<Empty> responseObserver) {
         String reservationId = request.getReservationId();
 
-        Optional<Reservation> reservationOptional = reservationRepository.findById(reservationId);
+        try {
+            Optional<Reservation> reservationOptional = reservationRepository.findById(reservationId);
 
-        if (reservationOptional.isPresent()) {
-            Reservation reservation = reservationOptional.get();
-            reservation.setApproved(true);
-            reservationRepository.save(reservation);
+            if (reservationOptional.isPresent()) {
+                Reservation reservation = reservationOptional.get();
+                reservation.setApproved(true);
+                reservationRepository.save(reservation);
 
-            String appointment_id = reservation.getIdAppointment();
+                String appointmentId = reservation.getIdAppointment();
 
-            for(Reservation reservation1: reservationRepository.findAll()){
-                if(!reservation1.getApproved() && reservation1.getIdAppointment().equals(appointment_id)){
-                    reservationRepository.delete(reservation1);
+                List<Reservation> reservationsToDelete = new ArrayList<>();
+                for (Reservation r : reservationRepository.findAll()) {
+                    if (!r.getApproved() && r.getIdAppointment().equals(appointmentId)) {
+                        reservationsToDelete.add(r);
+                    }
                 }
+                reservationRepository.deleteAll(reservationsToDelete);
             }
 
             responseObserver.onNext(Empty.getDefaultInstance());
-            responseObserver.onCompleted();
-        } else {
-            responseObserver.onNext(Empty.getDefaultInstance());
+        } catch (Exception e) {
+            responseObserver.onError(e);
+        } finally {
             responseObserver.onCompleted();
         }
     }
+
 }

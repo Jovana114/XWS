@@ -16,6 +16,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @GrpcService
@@ -100,28 +101,39 @@ public class UserSerGrpc extends UserServiceGrpc.UserServiceImplBase {
     public void approvingReservationChangeForUser(ApprovingReservationChangeForUserRequest request, StreamObserver<Empty> responseObserver) {
         String reservationId = request.getReservationId();
 
-        Optional<Reservation> reservationOptional = reservationRepository.findById(reservationId);
+        try {
+            Optional<Reservation> reservationOptional = reservationRepository.findById(reservationId);
 
-        if (reservationOptional.isPresent()) {
-            Reservation reservation = reservationOptional.get();
-            reservation.setApproved(true);
-            reservationRepository.save(reservation);
+            if (reservationOptional.isPresent()) {
+                Reservation approvedReservation = reservationOptional.get();
+                String appointmentId = approvedReservation.getIdAppointment();
 
-            String appointment_id = reservation.getIdAppointment();
-
-            for(Reservation reservation1: reservationRepository.findAll()){
-                if(!reservation1.getApproved() && reservation1.getIdAppointment().equals(appointment_id)){
-                    reservationRepository.delete(reservation1);
+                List<Reservation> reservationsToDelete = new ArrayList<>();
+                for (Reservation r : reservationRepository.findAll()) {
+                    if (r.getIdAppointment().equals(appointmentId)) {
+                        if (r.getId().equals(reservationId)) {
+                            r.setApproved(true);
+                        } else {
+                            reservationsToDelete.add(r);
+                        }
+                    }
                 }
-            }
 
-            responseObserver.onNext(Empty.getDefaultInstance());
-            responseObserver.onCompleted();
-        } else {
-            responseObserver.onNext(Empty.getDefaultInstance());
+                reservationRepository.save(approvedReservation);
+                reservationRepository.deleteAll(reservationsToDelete);
+
+                responseObserver.onNext(Empty.getDefaultInstance());
+            } else {
+                responseObserver.onNext(Empty.getDefaultInstance());
+            }
+        } catch (Exception e) {
+            responseObserver.onError(e);
+        } finally {
             responseObserver.onCompleted();
         }
     }
+
+
 
     @Override
     public void removeReservationUser(RemoveReservationRequestUser request, StreamObserver<Empty> responseObserver) {

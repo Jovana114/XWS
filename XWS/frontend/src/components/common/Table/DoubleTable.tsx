@@ -101,13 +101,15 @@ function DoubleTable({
                         >
                           {column.label}
                         </Button>
-                      ) : column.key === "image" ? ( // Check for the last column with key "image"
+                      ) : column.key === "image" ? (
                         <img
-                          src={row[column.key]} // Assuming the URL of the image is stored in the data
+                          src={row[column.key]}
                           alt="Item Image"
-                          width={50} // Set your desired width
-                          height={50} // Set your desired height
+                          width={50}
+                          height={50}
                         />
+                      ) : typeof row[column.key] === "boolean" ? (
+                        row[column.key] ? "🟢" : "🔴"
                       ) : (
                         row[column.key]
                       )}
@@ -139,7 +141,12 @@ function DoubleTable({
                                   borderBottom: "1px solid rgba(0,0,0,0.1)",
                                 }}
                               >
-                                {/* ... (other table head structure) */}
+                                {collapseColumns &&
+                                  collapseColumns.map((column) => (
+                                    <TableCell key={column.key}>
+                                      {column.text}
+                                    </TableCell>
+                                  ))}
                               </TableHead>
                               <TableBody>
                                 {row[collapseColumn]?.map(
@@ -167,6 +174,8 @@ function DoubleTable({
                                               >
                                                 {column.label}
                                               </Button>
+                                            ) : typeof item[column.key] === "boolean" ? (
+                                              item[column.key] ? "🟢" : "🔴"
                                             ) : (
                                               item[column.key]
                                             )}
