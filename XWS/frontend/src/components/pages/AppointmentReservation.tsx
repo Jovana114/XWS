@@ -6,6 +6,7 @@ import {
   DialogTitle,
   FormControl,
   TextField,
+  Typography,
 } from "@mui/material";
 import useAccomodation from "../../hooks/useAccommodation";
 import DoubleTable from "../common/Table/DoubleTable";
@@ -99,39 +100,15 @@ const AppointmentReservation = () => {
             padding: "20px",
           }}
         >
-          <TextField
-            style={{ margin: "10px 0" }}
-            type="datetime-local"
-            id="start"
-            label="Arriving Date"
-            value={start}
-            required
-            onChange={(e) => setStart(e.target.value)}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-          <TextField
-            style={{ margin: "10px 0" }}
-            type="datetime-local"
-            id="end"
-            label="Departure Date"
-            value={end}
-            required
-            onChange={(e) => setEnd(e.target.value)}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-          <TextField
-            style={{ margin: "10px 0" }}
-            type="number"
-            id="numGuestsDialog"
-            label="Number of Guests"
-            value={numGuests}
-            required
-            onChange={(e) => setNumGuests(parseInt(e.target.value))}
-          />
+          <Typography style={{ margin: "10px 0" }}>
+            Arriving date: {start}
+          </Typography>
+          <Typography style={{ margin: "10px 0" }}>
+            Departure date: {end}
+          </Typography>
+          <Typography style={{ margin: "10px 0" }}>
+            Number of Guests: {numGuests}
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
