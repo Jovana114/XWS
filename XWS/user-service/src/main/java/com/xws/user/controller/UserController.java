@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -78,7 +79,7 @@ public class UserController {
 
             for (Role role : user_found.getRoles()) {
                 if (role.getName() == ERole.ROLE_GUEST) {
-                    if(!user_found.getReservations().isEmpty()) {
+                    if(!user_found.getReservations().isEmpty() && !user_found.getReservations().stream().allMatch(Objects::isNull)) {
                         for (Reservation reservation : user_found.getReservations()) {
                             if (reservation.getApproved() && reservation.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(LocalDate.now())) {
                                 canDeleteUser = false;

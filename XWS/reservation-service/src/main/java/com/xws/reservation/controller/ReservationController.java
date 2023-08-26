@@ -184,15 +184,17 @@ public class ReservationController {
                 } catch (Exception e) {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Failed to remove reservation\"}");
                 }
-            } else if (reservation_found.getApproved() && java.time.Duration.between(java.time.LocalDateTime.now(), reservation_found.getStartDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime()).toHours() < 24) {
-                return new ResponseEntity<>("You cannot cancel 24h before the start date", HttpStatus.NOT_FOUND);
-            } else if (reservation_found.getApproved() && java.time.Duration.between(java.time.LocalDateTime.now(), reservation_found.getStartDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime()).toHours() > 24){
-                try {
-                    removeApprovedReservationFromServices(reservation_found);
-                    reservationRepository.delete(reservation_found);
-                    return ResponseEntity.ok("{\"message\": \"Reservation request removed\"}");
-                } catch (Exception e) {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Failed to remove reservation\"}");
+            } else if (reservation_found.getApproved()){
+                if (reservation_found.getApproved() && java.time.Duration.between(java.time.LocalDateTime.now(), reservation_found.getStartDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime()).toHours() < 24) {
+                    return new ResponseEntity<>("You cannot cancel 24h before the start date", HttpStatus.NOT_FOUND);
+                } else {
+                    try {
+                        removeApprovedReservationFromServices(reservation_found);
+                        reservationRepository.delete(reservation_found);
+                        return ResponseEntity.ok("{\"message\": \"Reservation request removed\"}");
+                    } catch (Exception e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Failed to remove reservation\"}");
+                    }
                 }
             }
         }

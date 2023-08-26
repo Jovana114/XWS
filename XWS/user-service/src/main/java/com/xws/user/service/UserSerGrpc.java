@@ -147,15 +147,18 @@ public class UserSerGrpc extends UserServiceGrpc.UserServiceImplBase {
             Reservation reservation_found = reservation.get();
             User user_found = user.get();
 
-            user_found.getReservations().remove(reservation_found);
-            userRepository.save(user_found);
-
             reservationRepository.delete(reservation_found);
+
+            user_found.getReservations().removeIf(r -> r.getId().equals(reservation_id));
+
+            userRepository.save(user_found);
         }
 
         responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();
     }
+
+
 
     @Override
     public void removeApprovedReservationRequest(RemoveApprovedReservationRequestUser request, StreamObserver<Empty> responseObserver) {
