@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axiosPrivate from "../api/axios";
@@ -7,14 +8,16 @@ import { ACCOMMODATIONS_URL } from "../constants/contsnts";
 const useAccomodation = (autoFetch: boolean) => {
   const { auth, setLoading } = useContext(AuthContext);
   const [data, setData] = useState<any[]>([]);
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   const fetchAccommodationData = async () => {
     try {
       const response = await axiosPrivate.get(ACCOMMODATIONS_URL + "all");
       const accommodations = response.data;
 
-      const accommodationsWithImages = await loadAccommodationImages(accommodations);
+      const accommodationsWithImages = await loadAccommodationImages(
+        accommodations
+      );
 
       setData(accommodationsWithImages);
 
@@ -26,34 +29,41 @@ const useAccomodation = (autoFetch: boolean) => {
   };
 
   const loadAccommodationImages = async (accommodationsToLoad: any) => {
-    const updatedAccommodationsPromises = accommodationsToLoad.map(async (accommodation: any) => {
-      try {
-        const imageResponse = await axiosPrivate.get(
-          ACCOMMODATIONS_URL + `images/${accommodation.id}.jpeg`,
-          { responseType: "blob" }
-        );
+    const updatedAccommodationsPromises = accommodationsToLoad.map(
+      async (accommodation: any) => {
+        try {
+          const imageResponse = await axiosPrivate.get(
+            ACCOMMODATIONS_URL + `images/${accommodation.id}.jpeg`,
+            { responseType: "blob" }
+          );
 
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            accommodation.image = reader.result;
-            resolve(accommodation);
-          };
-          reader.onerror = (error) => {
-            console.error(`Error converting image for accommodation ID ${accommodation.id}:`, error);
-            reject(error);
-          };
-          reader.readAsDataURL(imageResponse.data);
-        });
-      } catch (error) {
-        console.error(`Error fetching image for accommodation ID ${accommodation.id}:`, error);
-        return accommodation;
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              accommodation.image = reader.result;
+              resolve(accommodation);
+            };
+            reader.onerror = (error) => {
+              console.error(
+                `Error converting image for accommodation ID ${accommodation.id}:`,
+                error
+              );
+              reject(error);
+            };
+            reader.readAsDataURL(imageResponse.data);
+          });
+        } catch (error) {
+          console.error(
+            `Error fetching image for accommodation ID ${accommodation.id}:`,
+            error
+          );
+          return accommodation;
+        }
       }
-    });
+    );
 
     return Promise.all(updatedAccommodationsPromises);
   };
-  
 
   const fetchFilteredAccommodationData = async (
     location: string,
@@ -73,6 +83,7 @@ const useAccomodation = (autoFetch: boolean) => {
           },
         }
       );
+
       setData(response.data);
       setLoading(false);
     } catch (error) {
@@ -101,25 +112,26 @@ const useAccomodation = (autoFetch: boolean) => {
           max_guests,
         }
       );
-  
+
       console.log("Accommodation created:", createAccommodationResponse);
-  
+
       if (imageFile) {
         const accommodationId = createAccommodationResponse.data.id;
-        const setImageURL =  ACCOMMODATIONS_URL + `add_image/${accommodationId}/image`;
+        const setImageURL =
+          ACCOMMODATIONS_URL + `add_image/${accommodationId}/image`;
         const formData = new FormData();
         formData.append("file", imageFile);
-  
+
         await axiosPrivate.put(setImageURL, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         });
-  
+
         console.log("Image uploaded successfully");
       }
-  
+
       toast.success("Successfully created accommodation");
       fetchAccommodationData();
     } catch (error) {
@@ -129,12 +141,9 @@ const useAccomodation = (autoFetch: boolean) => {
       setLoading(false);
     }
   };
-  
-
 
   useEffect(() => {
-    if (autoFetch)
-      fetchAccommodationData();
+    if (autoFetch) fetchAccommodationData();
   }, []);
 
   return { data, fetchFilteredAccommodationData, createAccomodation };

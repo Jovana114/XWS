@@ -8,7 +8,6 @@ import { useContext } from "react";
 import { AuthContext } from "./auth/AuthContext";
 import Home from "./components/pages/Home";
 import Default from "./components/pages/Default";
-import Host from "./components/pages/Host";
 import Layout from "./components/pages/Layout";
 import "./style/App.css";
 import Profile from "./components/pages/Profile";
@@ -89,14 +88,6 @@ const App: React.FC = () => {
       </Route>
 
       <Route element={<RequireAuth allowedRoles={["ROLE_HOST"]} />}>
-        <Route
-          path="/host"
-          element={
-            <Layout>
-              <Host />
-            </Layout>
-          }
-        />
         <Route
           path="/accommodation"
           element={

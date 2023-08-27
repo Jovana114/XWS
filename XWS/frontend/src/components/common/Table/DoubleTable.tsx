@@ -16,11 +16,18 @@ import Skeleton from "@mui/material/Skeleton";
 
 interface CollapsibleTableProps {
   data: Array<{ [key: string]: any }> | null | undefined;
-  columns: Array<{ key: string; text: string }>;
+  columns: Array<ColumnDefinition>;
   collapseColumn?: string;
-  collapseColumns?: Array<{ key: string; text: string; label?: string }>;
+  collapseColumns?: Array<ColumnDefinition>;
   onButtonClick?: (rowData: any) => void;
   onColumnButtonClick?: (rowData: any) => void;
+}
+
+interface ColumnDefinition {
+  key: string;
+  text: string;
+  value?: (rowData: any) => any; // Function to calculate value
+  label?: string;
 }
 
 function DoubleTable({
@@ -40,6 +47,26 @@ function DoubleTable({
           ? prevOpenRows.filter((key) => key !== rowKey)
           : [...prevOpenRows, rowKey]
       );
+    }
+  };
+
+  const renderCellValue = (row: any, column: ColumnDefinition) => {
+    if (column.key === "id") {
+      return (
+        <Button onClick={() => onButtonClick && onButtonClick(row[column.key])}>
+          {column.label}
+        </Button>
+      );
+    } else if (column.key === "image") {
+      return (
+        <img src={row[column.key]} alt="Item Image" width={50} height={50} />
+      );
+    } else if (typeof column.value === "function") {
+      return column.value(row); // Apply the provided calculation function
+    } else if (typeof row[column.key] === "boolean") {
+      return row[column.key] ? "🟢" : "🔴";
+    } else {
+      return row[column.key];
     }
   };
 
@@ -91,28 +118,9 @@ function DoubleTable({
                       </IconButton>
                     </TableCell>
                   )}
-                  {columns.map((column: any) => (
+                  {columns.map((column: ColumnDefinition) => (
                     <TableCell key={column.key}>
-                      {column.key === "id" ? (
-                        <Button
-                          onClick={() =>
-                            onButtonClick && onButtonClick(row[column.key])
-                          }
-                        >
-                          {column.label}
-                        </Button>
-                      ) : column.key === "image" ? (
-                        <img
-                          src={row[column.key]}
-                          alt="Item Image"
-                          width={50}
-                          height={50}
-                        />
-                      ) : typeof row[column.key] === "boolean" ? (
-                        row[column.key] ? "🟢" : "🔴"
-                      ) : (
-                        row[column.key]
-                      )}
+                      {renderCellValue(row, column)}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -136,18 +144,6 @@ function DoubleTable({
                               aria-label="purchases"
                               className="custom-table"
                             >
-                              <TableHead
-                                style={{
-                                  borderBottom: "1px solid rgba(0,0,0,0.1)",
-                                }}
-                              >
-                                {collapseColumns &&
-                                  collapseColumns.map((column) => (
-                                    <TableCell key={column.key}>
-                                      {column.text}
-                                    </TableCell>
-                                  ))}
-                              </TableHead>
                               <TableBody>
                                 {row[collapseColumn]?.map(
                                   (item: any, itemIndex: number) => (
@@ -174,10 +170,8 @@ function DoubleTable({
                                               >
                                                 {column.label}
                                               </Button>
-                                            ) : typeof item[column.key] === "boolean" ? (
-                                              item[column.key] ? "🟢" : "🔴"
                                             ) : (
-                                              item[column.key]
+                                              renderCellValue(item, column)
                                             )}
                                           </TableCell>
                                         ))}
