@@ -12,6 +12,22 @@ message Accommodation {
   string name = 2;
 }
 
+message User {
+  string id = 1;
+}
+
+message RemoveAccommodationsOfHostThatIsBeingDeletedRequest{
+  User user = 1;
+}
+
+message getUsersCancellationNumberRequest{
+  User user = 1;
+}
+
+message getUsersCancellationNumberResponse{
+  int32 users_cancellation_number = 1;
+}
+
 message CheckIfAccommodationHasActiveReservationsRequest {
   Accommodation accommodation = 1;
 }
@@ -59,6 +75,7 @@ service AccommodationService {
   rpc CheckIfAppointmentHasAutoApproval(CheckIfAppointmentHasAutoApprovalRequest) returns (CheckIfAppointmentHasAutoApprovalRequestResponse);
   rpc RemoveReservation(RemoveReservationRequest) returns (google.protobuf.Empty);
   rpc RemoveApprovedReservation(RemoveApprovedReservationRequest) returns (google.protobuf.Empty);
+  rpc RemoveAccommodationsOfHostThatIsBeingDeleted(RemoveAccommodationsOfHostThatIsBeingDeletedRequest) returns (google.protobuf.Empty);
 }
 
 service UserService {
@@ -67,6 +84,7 @@ service UserService {
   rpc ApprovingReservationChangeForUser(ApprovingReservationChangeForUserRequest) returns (google.protobuf.Empty);
   rpc RemoveReservationUser(RemoveReservationRequestUser) returns (google.protobuf.Empty);
   rpc RemoveApprovedReservationRequest(RemoveApprovedReservationRequestUser) returns (google.protobuf.Empty);
+  rpc getUsersCancellationNumber(getUsersCancellationNumberRequest) returns (getUsersCancellationNumberResponse);
 }
 
 message AddReservationToAppointmentRequest {

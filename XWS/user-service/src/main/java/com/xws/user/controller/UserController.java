@@ -1,11 +1,11 @@
 package com.xws.user.controller;
 
-import com.xws.accommodation.AccommodationServiceGrpc;
-import com.xws.accommodation.CheckIfAccommodationHasActiveReservationsRequest;
-import com.xws.accommodation.CheckIfAccommodationHasActiveReservationsResponse;
-import com.xws.accommodation.UserServiceGrpc;
+import com.xws.accommodation.*;
 import com.xws.user.entity.*;
+import com.xws.user.entity.Accommodation;
+import com.xws.user.entity.User;
 import com.xws.user.payload.response.MessageResponse;
+import com.xws.user.repo.AccommodationRepository;
 import com.xws.user.repo.UserRepository;
 import com.xws.user.service.UserService;
 import io.grpc.ManagedChannel;
@@ -32,6 +32,9 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AccommodationRepository accommodationRepository;
 
     @GetMapping("/getUserById/{user_id}")
     public User getUserById(@PathVariable("user_id") String user_id){
@@ -130,8 +133,44 @@ public class UserController {
             }
 
             if (canDeleteUser) {
-                userRepository.delete(user_found);
-                return ResponseEntity.ok(new MessageResponse("User deleted successfully!"));
+                for (Role role : user_found.getRoles()) {
+                    if (role.getName() == ERole.ROLE_GUEST) {
+                        userRepository.delete(user_found);
+                        return ResponseEntity.ok(new MessageResponse("User deleted successfully!"));
+                    } else if (role.getName() == ERole.ROLE_HOST){
+
+                        for (Accommodation accommodation : user_found.getAccommodations()) {
+                            accommodationRepository.delete(accommodation);
+                        }
+
+                        ManagedChannel channel1 = ManagedChannelBuilder.forAddress("accommodation-service", 8585)
+                                .usePlaintext()
+                                .build();
+
+                        AccommodationServiceGrpc.AccommodationServiceBlockingStub stub1 =
+                                AccommodationServiceGrpc.newBlockingStub(channel1);
+
+                        com.xws.accommodation.User grpcUser = com.xws.accommodation.User.newBuilder()
+                                .setId(user_found.getId())
+                                .build();
+
+                        RemoveAccommodationsOfHostThatIsBeingDeletedRequest request = RemoveAccommodationsOfHostThatIsBeingDeletedRequest.newBuilder()
+                                .setUser(grpcUser)
+                                .build();
+
+                        try {
+
+                            stub1.removeAccommodationsOfHostThatIsBeingDeleted(request);
+
+                        } catch (StatusRuntimeException e) {
+                            Status status = Status.fromThrowable(e);
+                            System.err.println("Error during gRPC call: " + status.getCode());
+                        }
+
+                        userRepository.delete(user_found);
+                        return ResponseEntity.ok(new MessageResponse("User deleted successfully!"));
+                    }
+                }
             } else {
                 return ResponseEntity.ok(new MessageResponse("User has active reservations!"));
             }

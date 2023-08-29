@@ -16,11 +16,12 @@ public class Reservation {
     private Date endDate;
     private int numGuests;
     private Boolean approved;
+    private Integer users_cancellation_number;
 
     public Reservation() {
     }
 
-    public Reservation(String id, String sourceUser, String idAppointment, Date startDate, Date endDate, int numGuests, Boolean approved) {
+    public Reservation(String id, String sourceUser, String idAppointment, Date startDate, Date endDate, int numGuests, Boolean approved, Integer users_cancellation_number) {
         this.id = id;
         this.sourceUser = sourceUser;
         this.idAppointment = idAppointment;
@@ -28,6 +29,7 @@ public class Reservation {
         this.endDate = endDate;
         this.numGuests = numGuests;
         this.approved = approved;
+        this.users_cancellation_number = users_cancellation_number;
     }
 
     public Reservation(String id, Date startDate, Date endDate, int numGuests) {
@@ -91,5 +93,13 @@ public class Reservation {
 
     public void setIdAppointment(String idAppointment) {
         this.idAppointment = idAppointment;
+    }
+
+    public Integer getUsers_cancellation_number() {
+        return users_cancellation_number;
+    }
+
+    public void setUsers_cancellation_number(Integer users_cancellation_number) {
+        this.users_cancellation_number = users_cancellation_number;
     }
 }

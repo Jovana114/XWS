@@ -35,8 +35,8 @@ const guestLinks = [
 
 const hostLinks = [
   { to: "/", label: "Home" },
-  { to: "/accommodation", label: "Accommodation" },
-  { to: "/appointment", label: "Appointment" },
+  { to: "/accommodation", label: "Create accommodation" },
+  { to: "/appointment", label: "Create appointment" },
   { to: "/approve_reservation", label: "Approve reservation" },
 ];
 

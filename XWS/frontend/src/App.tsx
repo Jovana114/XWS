@@ -16,6 +16,7 @@ import Appointment from "./components/pages/Appointment";
 import AppointmentReservation from "./components/pages/AppointmentReservation";
 import ApproveReservation from "./components/pages/ApproveReservation";
 import GuestReservedAppointments from "./components/pages/GuestReservedAppointments";
+import AppointmentUpdate from "./components/pages/AppointementUpdate";
 
 const App: React.FC = () => {
   const { auth } = useContext(AuthContext);

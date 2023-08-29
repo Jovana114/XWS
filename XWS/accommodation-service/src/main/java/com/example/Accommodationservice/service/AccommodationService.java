@@ -9,7 +9,12 @@ import com.example.Accommodationservice.repository.ReservationRepository;
 import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
 import com.xws.accommodation.*;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
+import jdk.dynalink.linker.LinkerServices;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -18,6 +23,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @GrpcService
@@ -50,9 +56,27 @@ public class AccommodationService extends AccommodationServiceGrpc.Accommodation
         long milliseconds2 = timestamp2.getSeconds() * 1000 + timestamp2.getNanos() / 1000000;
         Date endDate = new Date(milliseconds2);
 
+        ManagedChannel userChannel = ManagedChannelBuilder.forAddress("user-service", 6565)
+                .usePlaintext()
+                .build();
+
+        UserServiceGrpc.UserServiceBlockingStub userStub =
+                UserServiceGrpc.newBlockingStub(userChannel);
+
+        com.xws.accommodation.User grpcUser = com.xws.accommodation.User.newBuilder()
+                .setId(grpcReservation.getSourceUser())
+                .build();
+
+        getUsersCancellationNumberRequest request1 = getUsersCancellationNumberRequest.newBuilder()
+                .setUser(grpcUser)
+                .build();
+
+        getUsersCancellationNumberResponse response = userStub.getUsersCancellationNumber(request1);
+
+
         Reservation reservation = new Reservation(grpcReservation.getId(), grpcReservation.getSourceUser(),
                 grpcReservation.getAppointmentId(), startDate, endDate,
-                grpcReservation.getNumGuests(), grpcReservation.getApproved());
+                grpcReservation.getNumGuests(), grpcReservation.getApproved(), response.getUsersCancellationNumber());
 
         reservationRepository.save(reservation);
 
@@ -173,6 +197,18 @@ public class AccommodationService extends AccommodationServiceGrpc.Accommodation
             appointmentRepository.save(appointment_found);
 
             reservationRepository.delete(reservation_found);
+        }
+        responseObserver.onNext(Empty.getDefaultInstance());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void removeAccommodationsOfHostThatIsBeingDeleted(RemoveAccommodationsOfHostThatIsBeingDeletedRequest request, StreamObserver<Empty> responseObserver) {
+        String user_id = request.getUser().getId();
+        for(Accommodation accommodation: accommodationRepository.findAll()){
+            if(accommodation.getUser_id().equals(user_id)){
+                accommodationRepository.delete(accommodation);
+            }
         }
         responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();

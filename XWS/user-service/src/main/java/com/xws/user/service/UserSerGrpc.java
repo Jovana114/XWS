@@ -134,7 +134,6 @@ public class UserSerGrpc extends UserServiceGrpc.UserServiceImplBase {
     }
 
 
-
     @Override
     public void removeReservationUser(RemoveReservationRequestUser request, StreamObserver<Empty> responseObserver) {
         String reservation_id = request.getReservationId();
@@ -181,5 +180,21 @@ public class UserSerGrpc extends UserServiceGrpc.UserServiceImplBase {
 
         responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getUsersCancellationNumber(getUsersCancellationNumberRequest request, StreamObserver<getUsersCancellationNumberResponse> responseObserver) {
+        String id = request.getUser().getId();
+        Optional<User> user = userRepository.findById(id);
+        if(user.isPresent()){
+            User user_found = user.get();
+
+            getUsersCancellationNumberResponse response = getUsersCancellationNumberResponse.newBuilder()
+                    .setUsersCancellationNumber(user_found.getCancellation_number())
+                    .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        }
     }
 }

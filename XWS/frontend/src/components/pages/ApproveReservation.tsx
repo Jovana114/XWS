@@ -12,6 +12,7 @@ const collapseColumns = [
   { key: "startDate", text: "Start Date" },
   { key: "endDate", text: "End Date" },
   { key: "numGuests", text: "Number of guests" },
+  { key: "users_cancellation_number", text: "User's cancellation number" },
   {
     key: "id",
     text: "Approve",
