@@ -117,4 +117,13 @@ public class AppointmentsController {
         return appointmentRepository.findAll();
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteAppointment(@PathVariable("id") String id){
+        try{
+            appointmentRepository.deleteById(id);
+            return ResponseEntity.ok("Appointment Successfully Deleted.");
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

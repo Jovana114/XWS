@@ -28,6 +28,7 @@ interface ColumnDefinition {
   text: string;
   value?: (rowData: any) => any; // Function to calculate value
   label?: string;
+  function?: (rowData: any) => void; // Function for button click
 }
 
 function DoubleTable({
@@ -35,7 +36,6 @@ function DoubleTable({
   columns,
   collapseColumn,
   collapseColumns,
-  onButtonClick,
   onColumnButtonClick,
 }: CollapsibleTableProps) {
   const [openRows, setOpenRows] = useState<string[]>([]);
@@ -51,9 +51,9 @@ function DoubleTable({
   };
 
   const renderCellValue = (row: any, column: ColumnDefinition) => {
-    if (column.key === "id") {
+    if (column.key.includes("id")) {
       return (
-        <Button onClick={() => onButtonClick && onButtonClick(row[column.key])}>
+        <Button onClick={() => column.function && column.function(row)}>
           {column.label}
         </Button>
       );

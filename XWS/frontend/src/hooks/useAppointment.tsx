@@ -60,6 +60,7 @@ const useAppointment = () => {
       setLoading(false);
     }
   };
+
   const modifyAppointment = async (
     appointmentId: string,
     start: string,
@@ -97,6 +98,18 @@ const useAppointment = () => {
     }
   };
 
+  const deleteAppointment = async (id: string) => {
+    try {
+      await axiosPrivate.delete(APPOINTMENTS_URL + "delete/" + id);
+      toast.success("Appointment Deleted successfully!");
+      setLoading(false);
+      fetchAppointments();
+    } catch (error) {
+      toast.error("Failed to Delete Appointment");
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchAppointments();
   }, []);
@@ -107,6 +120,7 @@ const useAppointment = () => {
     getAppointmentById,
     createAppointment,
     modifyAppointment,
+    deleteAppointment,
   };
 };
 

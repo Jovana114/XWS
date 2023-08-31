@@ -14,25 +14,12 @@ import useAppointment from "../../hooks/useAppointment";
 import DoubleTable from "../common/Table/DoubleTable";
 import { useState } from "react";
 
-const columns = [
-  { key: "start", text: "Start Date" },
-  { key: "end", text: "End Date" },
-  { key: "reserved", text: "Reserved" },
-  { key: "price_type", text: "Price Type" },
-  { key: "price_per", text: "Price Per" },
-  { key: "auto_reservation", text: "Auto Reservation" },
-  { key: "price", text: "Price" },
-  {
-    key: "id",
-    text: "Modify",
-    label: "Modify",
-  },
-];
-
 const ModifyAppointments = () => {
-  const { data, getAppointmentById, modifyAppointment } = useAppointment();
+  const { data, getAppointmentById, modifyAppointment, deleteAppointment } =
+    useAppointment();
 
   const [appointmentId, setAppointmentId] = useState("");
+  const [deleteId, setDeleteId] = useState("");
   const [start, setStart] = useState<string>(new Date().toISOString());
   const [end, setEnd] = useState<string>(new Date().toISOString());
   const [priceType, setPriceType] = useState<any>("");
@@ -53,7 +40,13 @@ const ModifyAppointments = () => {
     handleClose();
   };
 
+  const handleDelete = () => {
+    deleteAppointment(deleteId);
+    handleCloseDelete();
+  };
+
   const [open, setOpen] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
   const handleOpen = () => {
     setOpen(true);
   };
@@ -61,10 +54,18 @@ const ModifyAppointments = () => {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const handleOpenDelete = () => {
+    setOpenDelete(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
   const handleModifyAppointment = async (e: any) => {
     if (e !== null) {
-      setAppointmentId(e);
-      const appointment: any = await getAppointmentById(e);
+      setAppointmentId(e.id);
+      const appointment: any = await getAppointmentById(e.id);
       if (appointment !== null) {
         setStart(appointment.start);
         setEnd(appointment.end);
@@ -78,13 +79,54 @@ const ModifyAppointments = () => {
     handleOpen();
   };
 
+  const handleDeleteAppointment = async (e: any) => {
+    if (e !== null) {
+      setDeleteId(e.id);
+    }
+    setOpenDelete(true);
+  };
+
+  const columns = [
+    { key: "start", text: "Start Date" },
+    { key: "end", text: "End Date" },
+    { key: "reserved", text: "Reserved" },
+    { key: "price_type", text: "Price Type" },
+    { key: "price_per", text: "Price Per" },
+    { key: "auto_reservation", text: "Auto Reservation" },
+    { key: "price", text: "Price" },
+    {
+      key: "id",
+      text: "Modify",
+      label: "Modify",
+      function: (e: any) => handleModifyAppointment(e),
+    },
+    {
+      key: "_id",
+      text: "Delete",
+      label: "Delete",
+      function: (e: any) => handleDeleteAppointment(e),
+    },
+  ];
+
   return (
     <>
-      <DoubleTable
-        data={data}
-        columns={columns}
-        onButtonClick={(e) => handleModifyAppointment(e)}
-      />
+      <DoubleTable data={data} columns={columns} />
+      <Dialog
+        open={openDelete}
+        onClose={handleOpenDelete}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Confirm Delete Appointment"}
+        </DialogTitle>
+        <DialogActions>
+          <Button onClick={handleCloseDelete}>Cancel</Button>
+          <Button onClick={handleDelete} variant="contained" color="primary">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Dialog
         open={open}
         onClose={handleClose}
