@@ -35,9 +35,10 @@ const guestLinks = [
 
 const hostLinks = [
   { to: "/", label: "Home" },
-  { to: "/accommodation", label: "Create accommodation" },
-  { to: "/appointment", label: "Create appointment" },
-  { to: "/approve_reservation", label: "Approve reservation" },
+  { to: "/accommodation", label: "Create Accommodation" },
+  { to: "/appointment", label: "Create Appointment" },
+  { to: "/approve_reservation", label: "Approve Reservation" },
+  { to: "/modify_appointments", label: "Modify Appointments" },
 ];
 
 styled(AppBar)(({ theme }) => ({

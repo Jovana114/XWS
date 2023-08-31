@@ -16,7 +16,7 @@ import Appointment from "./components/pages/Appointment";
 import AppointmentReservation from "./components/pages/AppointmentReservation";
 import ApproveReservation from "./components/pages/ApproveReservation";
 import GuestReservedAppointments from "./components/pages/GuestReservedAppointments";
-import AppointmentUpdate from "./components/pages/AppointementUpdate";
+import ModifyAppointments from "./components/pages/ModifyAppointments";
 
 const App: React.FC = () => {
   const { auth } = useContext(AuthContext);
@@ -102,6 +102,15 @@ const App: React.FC = () => {
           element={
             <Layout>
               <Appointment />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/modify_appointments"
+          element={
+            <Layout>
+              <ModifyAppointments />
             </Layout>
           }
         />

@@ -65,6 +65,31 @@ public class AppointmentsController {
         }
     }
 
+    @GetMapping("/appointments_per_user/{user_id}")
+    public List<Appointments> getAppointmentsUserId(@PathVariable("user_id") String user_id){
+        List<Appointments> appointments = new ArrayList<>();
+        for(Accommodation accommodation: accommodationRepository.findAll()){
+            if(accommodation.getUser_id().equals(user_id)) {
+                for (Appointments appointment : accommodation.getAppointments()) {
+                    appointments.add(appointment);
+                }
+            }
+        }
+        return appointments;
+    }
+
+    @GetMapping("/{appointment_id}")
+    public ResponseEntity<?> getAppointmentById(@PathVariable("appointment_id") String appointment_id) {
+        try {
+            Optional<Appointments> appointments = appointmentRepository.findById(appointment_id);
+            if (appointments.isPresent()) {
+                return ResponseEntity.ok(appointments.get());
+            } else
+                return ResponseEntity.badRequest().body("Appointment Not Found");
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @PutMapping("/update/{app_id}")
     public ResponseEntity<Appointments> updateApp(@PathVariable("app_id") String app_id, @RequestBody Appointments appointment) {
@@ -75,12 +100,12 @@ public class AppointmentsController {
             if(!_appointment.getReserved()) {
                 _appointment.setStart(appointment.getStart());
                 _appointment.setEnd(appointment.getEnd());
-                _appointment.setReserved(appointment.getReserved());
                 _appointment.setPrice(appointment.getPrice());
                 _appointment.setPrice_per(appointment.getPrice_per());
+                _appointment.setPrice_type(appointment.getPrice_type());
                 _appointment.setAuto_reservation(appointment.isAuto_reservation());
-                _appointment.setPrice(appointment.getPrice());
-                return new ResponseEntity<>(appointmentRepository.save(_appointment), HttpStatus.OK);
+                appointmentRepository.save(_appointment);
+                return new ResponseEntity<>(HttpStatus.OK);
             } return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
