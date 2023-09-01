@@ -13,6 +13,7 @@ import {
   OutlinedInput,
   InputAdornment,
   IconButton,
+  Switch,
 } from "@mui/material";
 
 const Register = () => {
@@ -25,6 +26,7 @@ const Register = () => {
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
   const [address, setAddress] = useState("");
+  const [isHost, setIsHost] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -37,7 +39,8 @@ const Register = () => {
       matchPwd,
       first_name,
       last_name,
-      address
+      address,
+      isHost
     );
   };
 
@@ -164,6 +167,19 @@ const Register = () => {
             value={address}
             required
             onChange={(e) => setAddress(e.target.value)}
+          />
+        </FormControl>
+        <FormControl
+          style={{
+            display: "flex",
+            flexDirection: "row",
+          }}
+        >
+          <Typography margin="auto 0">Sign up as Host</Typography>
+          <Switch
+            id="hostSwitch"
+            checked={isHost}
+            onChange={() => setIsHost((prev) => !prev)}
           />
         </FormControl>
         <Button

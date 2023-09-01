@@ -91,7 +91,8 @@ const useAuthForm = () => {
     matchPwd: string,
     first_name: string,
     last_name: string,
-    address: string
+    address: string,
+    isHost: boolean
   ) => {
     try {
       if (
@@ -115,7 +116,7 @@ const useAuthForm = () => {
         toast.error("Invalid Entry");
         return;
       }
-
+      const roles = isHost ? ["host"] : null;
       await axiosPrivate.post(REGISTER_URL, {
         email,
         username,
@@ -123,6 +124,7 @@ const useAuthForm = () => {
         first_name,
         last_name,
         address,
+        roles,
       });
 
       navigate("/signin");
