@@ -55,7 +55,7 @@ public class AccommodationControler {
         Accommodation new_accommodation = new Accommodation(accommodation.getName(),
                 accommodation.getLocation(), accommodation.getBenefits(),
                 accommodation.getMin_guests(), accommodation.getMax_guests());
-        new_accommodation.setOcene(new ArrayList<>());
+        new_accommodation.setGrades(new ArrayList<>());
         new_accommodation.setUser_id(user_id);
         new_accommodation.setAppointments(new ArrayList<>());
         accommodationRepository.save(new_accommodation);
@@ -294,15 +294,15 @@ public class AccommodationControler {
     }
 
     @PostMapping("/rate/{acc_id}")
-    public ResponseEntity<Accommodation> addGrade(@PathVariable("acc_id") String acc_id, @RequestParam int ocena) {
+    public ResponseEntity<Accommodation> addGrade(@PathVariable("acc_id") String acc_id, @RequestParam int grade) {
         Optional<Accommodation> accommodationOptional = accommodationRepository.findById(acc_id);
 
         if (accommodationOptional.isPresent()) {
             Accommodation accommodation = accommodationOptional.get();
-            if (ocena >= 1 && ocena <= 5) {
-                List<Integer> ocene = accommodation.getOcene();
-                ocene.add(ocena);
-                accommodation.setOcene(ocene);
+            if (grade >= 1 && grade <= 5) {
+                List<Integer> grades = accommodation.getGrades();
+                grades.add(grade);
+                accommodation.setGrades(grades);
                 return new ResponseEntity<>(accommodationRepository.save(accommodation), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -318,8 +318,8 @@ public class AccommodationControler {
 
         if (accommodationOptional.isPresent()) {
             Accommodation accommodation = accommodationOptional.get();
-            List<Integer> ocene = accommodation.getOcene();
-            return new ResponseEntity<>(ocene, HttpStatus.OK);
+            List<Integer> grades = accommodation.getGrades();
+            return new ResponseEntity<>(grades, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

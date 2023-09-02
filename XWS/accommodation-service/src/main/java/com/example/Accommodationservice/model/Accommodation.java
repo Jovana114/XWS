@@ -22,14 +22,14 @@ public class Accommodation {
     private List<Appointments> appointments;
     private String user_id;
 
-    private List<Integer> ocene;
+    private List<Integer> grades;
 
-    public List<Integer> getOcene() {
-        return ocene;
+    public List<Integer> getGrades() {
+        return grades;
     }
 
-    public void setOcene(List<Integer> ocene) {
-        this.ocene = ocene;
+    public void setGrades(List<Integer> ocene) {
+        this.grades = ocene;
     }
 
     public Accommodation(){}

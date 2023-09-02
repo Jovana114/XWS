@@ -72,7 +72,6 @@ public class UserController {
         return ResponseEntity.ok(new MessageResponse("Password updated successfully!"));
     }
 
-
     @DeleteMapping("/delete_user/{userId}")
     public ResponseEntity<?> deleteUser(@PathVariable String userId) {
         Optional<User> user = userRepository.findById(userId);
@@ -176,7 +175,5 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
-
-
-
+    
 }
