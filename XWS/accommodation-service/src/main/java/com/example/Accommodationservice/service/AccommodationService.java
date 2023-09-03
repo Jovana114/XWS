@@ -213,4 +213,28 @@ public class AccommodationService extends AccommodationServiceGrpc.Accommodation
         responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();
     }
+
+    @Override
+    public void checkIfAppointmentHasReservation(CheckIfAppointmentHasReservationRequest request, StreamObserver<CheckIfAppointmentHasReservationResponse> responseObserver) {
+        String appointment_id = request.getAppointmentId();
+
+        Optional<Appointments> appointment = appointmentRepository.findById(appointment_id);
+
+        boolean has_reservation = false;
+
+        if(appointment.isPresent()){
+            Appointments appointment_found = appointment.get();
+            if(appointment_found.getReserved()){
+                has_reservation = true;
+
+            }
+        }
+
+        CheckIfAppointmentHasReservationResponse response = CheckIfAppointmentHasReservationResponse.newBuilder()
+                .setAppointmentHasReservation(has_reservation)
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
 }

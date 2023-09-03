@@ -160,29 +160,32 @@ public class AccommodationControler {
         for (Accommodation accommodation : accommodationRepository.findAll()) {
             if (accommodation.getLocation().equals(location)
                     && accommodation.getMin_guests() <= numGuests
-                    && accommodation.getMax_guests() >= numGuests
-                    && isWithinAppointmentTime(accommodation, start, end)) {
-                filtered.add(accommodation);
+                    && accommodation.getMax_guests() >= numGuests) {
+                List<Appointments> filteredAppointments = filterAppointments(accommodation, start, end);
+                if (!filteredAppointments.isEmpty()) {
+                    accommodation.setAppointments(filteredAppointments);
+                    filtered.add(accommodation);
+                }
             }
         }
 
         return filtered;
     }
 
-    private boolean isWithinAppointmentTime(Accommodation accommodation, Date start, Date end) {
+    private List<Appointments> filterAppointments(Accommodation accommodation, Date start, Date end) {
+        List<Appointments> filteredAppointments = new ArrayList<>();
         for (Appointments appointment : accommodation.getAppointments()) {
-            if(!appointment.getReserved()) {
-                Date appointmentStart = appointment.getStart();
-                Date appointmentEnd = appointment.getEnd();
-
-                if (start.compareTo(appointmentEnd) < 0 && end.compareTo(appointmentStart) > 0 &&
-                        end.compareTo(appointmentEnd) <= 0 && start.compareTo(appointmentStart) >= 0) {
-                    return true;
-                }
+            if (!appointment.getReserved() && isWithinAppointmentTime(appointment, start, end)) {
+                filteredAppointments.add(appointment);
             }
         }
-        return false;
+        return filteredAppointments;
     }
+
+    private boolean isWithinAppointmentTime(Appointments appointment, Date start, Date end) {
+        return appointment.getStart().before(start) && appointment.getEnd().after(end);
+    }
+
 
     @PutMapping("/approvingRequests/{res_id}")
     public ResponseEntity<String> approvingRequests(@PathVariable("res_id") String res_id) {

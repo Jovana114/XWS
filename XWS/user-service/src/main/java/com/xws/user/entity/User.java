@@ -25,9 +25,9 @@ public class User {
     @DBRef
     private Set<Role> roles = new HashSet<>();
     @DBRef
-    private List<Reservation> reservations;
+    private Set<Reservation> reservations;
     @DBRef
-    private List<Accommodation> accommodations;
+    private Set<Accommodation> accommodations;
     private Integer cancellation_number;
 
     public User() {
@@ -107,19 +107,19 @@ public class User {
         this.roles = roles;
     }
 
-    public List<Reservation> getReservations() {
+    public Set<Reservation> getReservations() {
         return reservations;
     }
 
-    public void setReservations(List<Reservation> reservations) {
+    public void setReservations(Set<Reservation> reservations) {
         this.reservations = reservations;
     }
 
-    public List<Accommodation> getAccommodations() {
+    public Set<Accommodation> getAccommodations() {
         return accommodations;
     }
 
-    public void setAccommodations(List<Accommodation> accommodations) {
+    public void setAccommodations(Set<Accommodation> accommodations) {
         this.accommodations = accommodations;
     }
 

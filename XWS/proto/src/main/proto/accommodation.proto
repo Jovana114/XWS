@@ -44,6 +44,14 @@ message CheckIfAppointmentHasAutoApprovalRequestResponse {
   bool appointment_has_auto_approval = 1;
 }
 
+message CheckIfAppointmentHasReservationRequest {
+  string appointment_id = 1;
+}
+
+message CheckIfAppointmentHasReservationResponse {
+  bool appointment_has_reservation = 1;
+}
+
 message AddAccommodationToUserOwner {
   Accommodation accommodation = 1;
   string user_owner_id = 2;
@@ -76,6 +84,7 @@ service AccommodationService {
   rpc RemoveReservation(RemoveReservationRequest) returns (google.protobuf.Empty);
   rpc RemoveApprovedReservation(RemoveApprovedReservationRequest) returns (google.protobuf.Empty);
   rpc RemoveAccommodationsOfHostThatIsBeingDeleted(RemoveAccommodationsOfHostThatIsBeingDeletedRequest) returns (google.protobuf.Empty);
+  rpc CheckIfAppointmentHasReservation(CheckIfAppointmentHasReservationRequest) returns (CheckIfAppointmentHasReservationResponse);
 }
 
 service UserService {

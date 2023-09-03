@@ -52,6 +52,10 @@ public class ReservationController {
                 .setAppointmentId(appointment_id)
                 .build();
 
+        CheckIfAppointmentHasReservationRequest request2 = CheckIfAppointmentHasReservationRequest.newBuilder()
+                .setAppointmentId(appointment_id)
+                .build();
+
         try {
 
             CheckIfAppointmentHasAutoApprovalRequestResponse response = stub1.checkIfAppointmentHasAutoApproval(request1);
@@ -104,49 +108,56 @@ public class ReservationController {
                 }
             } else {
 
-                Timestamp startDateTimestamp = convertToTimestamp(reservation.getStartDate());
-                Timestamp endDateTimestamp = convertToTimestamp(reservation.getEndDate());
+                CheckIfAppointmentHasReservationResponse response2 = stub1.checkIfAppointmentHasReservation(request2);
 
-                Reservation reservation_created = new Reservation(
-                        source_user,
-                        appointment_id,
-                        reservation.getStartDate(),
-                        reservation.getEndDate(),
-                        reservation.getNumGuests(),
-                        true
-                );
+                if(response2.getAppointmentHasReservation()) {
 
-                reservationRepository.save(reservation_created);
+                    Timestamp startDateTimestamp = convertToTimestamp(reservation.getStartDate());
+                    Timestamp endDateTimestamp = convertToTimestamp(reservation.getEndDate());
 
-                com.xws.common.Reservation grpcReservation = com.xws.common.Reservation.newBuilder()
-                        .setSourceUser(source_user)
-                        .setAppointmentId(appointment_id)
-                        .setStartDate(startDateTimestamp)
-                        .setEndDate(endDateTimestamp)
-                        .setNumGuests(reservation.getNumGuests())
-                        .setApproved(true)
-                        .build();
+                    Reservation reservation_created = new Reservation(
+                            source_user,
+                            appointment_id,
+                            reservation.getStartDate(),
+                            reservation.getEndDate(),
+                            reservation.getNumGuests(),
+                            true
+                    );
 
-                grpcReservation = grpcReservation.toBuilder().setId(reservation_created.getId()).build();
+                    reservationRepository.save(reservation_created);
 
-                AddReservationToAppointmentRequest grpcRequest = AddReservationToAppointmentRequest.newBuilder()
-                        .setAppointmentId(appointment_id)
-                        .setReservation(grpcReservation)
-                        .setSourceUser(source_user)
-                        .build();
+                    com.xws.common.Reservation grpcReservation = com.xws.common.Reservation.newBuilder()
+                            .setSourceUser(source_user)
+                            .setAppointmentId(appointment_id)
+                            .setStartDate(startDateTimestamp)
+                            .setEndDate(endDateTimestamp)
+                            .setNumGuests(reservation.getNumGuests())
+                            .setApproved(true)
+                            .build();
 
-                AddReservationToUserRequest grpcRequest1 = AddReservationToUserRequest.newBuilder()
-                        .setAppointmentId(appointment_id)
-                        .setReservation(grpcReservation)
-                        .setSourceUser(source_user)
-                        .build();
+                    grpcReservation = grpcReservation.toBuilder().setId(reservation_created.getId()).build();
 
-                try {
-                    stub1.addReservationToAppointment(grpcRequest);
-                    stub.addReservationToUser(grpcRequest1);
-                    return ResponseEntity.ok().body("{\"message\": \"Reservation request sent\"}");
-                } catch (StatusRuntimeException e) {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Failed to create reservation\"}");
+                    AddReservationToAppointmentRequest grpcRequest = AddReservationToAppointmentRequest.newBuilder()
+                            .setAppointmentId(appointment_id)
+                            .setReservation(grpcReservation)
+                            .setSourceUser(source_user)
+                            .build();
+
+                    AddReservationToUserRequest grpcRequest1 = AddReservationToUserRequest.newBuilder()
+                            .setAppointmentId(appointment_id)
+                            .setReservation(grpcReservation)
+                            .setSourceUser(source_user)
+                            .build();
+
+                    try {
+                        stub1.addReservationToAppointment(grpcRequest);
+                        stub.addReservationToUser(grpcRequest1);
+                        return ResponseEntity.ok().body("{\"message\": \"Reservation request sent\"}");
+                    } catch (StatusRuntimeException e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Failed to create reservation\"}");
+                    }
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Already reserved! \"}");
                 }
             }
         } catch (StatusRuntimeException e) {

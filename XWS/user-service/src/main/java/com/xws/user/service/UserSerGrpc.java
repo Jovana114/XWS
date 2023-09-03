@@ -11,13 +11,11 @@ import com.xws.user.repo.ReservationRepository;
 import com.xws.user.repo.UserRepository;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
+import org.apache.hc.core5.http2.H2ConnectionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @GrpcService
 @ComponentScan(basePackages = "com.xws.user.repository")
@@ -61,7 +59,7 @@ public class UserSerGrpc extends UserServiceGrpc.UserServiceImplBase {
             User user = _user.get();
 
             if (user.getReservations() == null) {
-                user.setReservations(new ArrayList<>());
+                user.setReservations(new HashSet<>());
             }
 
             user.getReservations().add(reservation);
@@ -87,7 +85,7 @@ public class UserSerGrpc extends UserServiceGrpc.UserServiceImplBase {
             User user_found = user.get();
 
             if(user_found.getAccommodations() == null){
-                user_found.setAccommodations(new ArrayList<>());
+                user_found.setAccommodations(new HashSet<>());
             }
 
             user_found.getAccommodations().add(accommodation);

@@ -117,43 +117,7 @@ public class AuthController {
 		}
 
 		user.setRoles(roles);
-		user.setReservations(new ArrayList<>());
-		userRepository.save(user);
-
-		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-	}
-
-	@PostMapping("/signuphost")
-	public ResponseEntity<?> registerHost(@Valid @RequestBody SignupRequest signUpRequest) {
-		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-			return ResponseEntity
-					.badRequest()
-					.body(new MessageResponse("Error: Username is already taken!"));
-		}
-
-		if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-			return ResponseEntity
-					.badRequest()
-					.body(new MessageResponse("Error: Email is already in use!"));
-		}
-
-		// Create new user's account
-		User user = new User(
-				signUpRequest.getFirst_name(),
-				signUpRequest.getLast_name(),
-				signUpRequest.getAddress(),
-				signUpRequest.getUsername(),
-				signUpRequest.getEmail(),
-				encoder.encode(signUpRequest.getPassword()),
-				0);
-
-		Set<Role> roles = new HashSet<>();
-
-		Role modRole = roleRepository.findByName(ERole.ROLE_HOST)
-				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-		roles.add(modRole);
-
-		user.setRoles(roles);
+		user.setReservations(new HashSet<>());
 		userRepository.save(user);
 
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
