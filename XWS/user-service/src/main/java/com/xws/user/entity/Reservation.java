@@ -1,8 +1,5 @@
-package com.xws.user.entity;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.util.Date;
 
@@ -17,9 +14,8 @@ public class Reservation {
     private Date endDate;
     private int numGuests;
     private Boolean approved;
-
     private String hostId; // Add a field to store the host's ID
-
+    private Boolean canceled; // Add a field to store whether the reservation is canceled
 
     public Reservation() {
     }
@@ -103,5 +99,13 @@ public class Reservation {
 
     public void setHostId(String hostId) {
         this.hostId = hostId;
+    }
+
+    public Boolean getCanceled() {
+        return canceled;
+    }
+
+    public void setCanceled(Boolean canceled) {
+        this.canceled = canceled;
     }
 }

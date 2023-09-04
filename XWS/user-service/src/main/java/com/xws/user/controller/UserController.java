@@ -175,5 +175,68 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
-    
+
+
+    @GetMapping("/istaknutiHost/{user_id}")
+    public ResponseEntity<String> checkAndAssignIstaknutiHostStatus(@PathVariable("user_id") String user_id) {
+        Optional<User> userOptional = userRepository.findById(user_id);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            boolean meetsConditions = checkIstaknutiHostConditions(user);
+
+            if (meetsConditions) {
+                // Assign the "Istaknuti host" status if not already assigned
+                if (!user.isIstaknutiHost()) {
+                    user.setIstaknutiHost(true);
+                    userRepository.save(user);
+                }
+                return ResponseEntity.ok("User is an Istaknuti host.");
+            } else {
+                // Remove the "Istaknuti host" status if it was assigned
+                if (user.isIstaknutiHost()) {
+                    user.setIstaknutiHost(false);
+                    userRepository.save(user);
+                }
+                return ResponseEntity.ok("User is not an Istaknuti host.");
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    private boolean checkIstaknutiHostConditions(User user) {
+        // Check if the user meets the conditions for Istaknuti host
+        double minRating = 4.7;
+        double maxCancellationRate = 5.0;
+        int minPastReservations = 5;
+        int minTotalReservationDays = 50;
+
+        double userRating = user.getRating();
+        double cancellationRate = calculateCancellationRate(user);
+        int pastReservations = user.getReservations().size();
+        int totalReservationDays = calculateTotalReservationDays(user);
+
+        return userRating > minRating &&
+                cancellationRate < maxCancellationRate &&
+                pastReservations >= minPastReservations &&
+                totalReservationDays > minTotalReservationDays;
+    }
+
+    private double calculateCancellationRate(User user) {
+        // Implement logic to calculate the cancellation rate for the user
+        // You will need to fetch the relevant data and perform the calculation
+        // Return the cancellation rate as a percentage (e.g., 4.5 for 4.5%)
+        // Replace this with your actual calculation
+        return 0.0;
+    }
+
+    private int calculateTotalReservationDays(User user) {
+        // Implement logic to calculate the total reservation days for the user
+        // You will need to fetch the relevant data and perform the calculation
+        // Return the total reservation days
+        // Replace this with your actual calculation
+        return 0;
+    }
 }

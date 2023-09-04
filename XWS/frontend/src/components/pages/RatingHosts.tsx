@@ -1,109 +1,134 @@
-import { Button, FormControl, TextField } from "@mui/material";
-import useAccomodation from "../../hooks/useAccommodation";
-import DoubleTable from "../common/Table/DoubleTable";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  TextField,
+  Typography,
+} from "@mui/material";
+import useAuth from "../../hooks/useAuth";
+import useRating from "../../hooks/useRating";
 
-const RatingHosts = () => {
-    const { data, fetchFilteredAccommodationData } = useAccomodation(true);
-    const [location, setLocation] = useState("");
-    const [numGuests, setNumGuests] = useState(0);
-    const [start, setStart] = useState<string>(new Date().toISOString());
-    const [end, setEnd] = useState<string>(new Date().toISOString());
-  
-    const columns = [
-      { key: "benefits", text: "Benefits" },
-      { key: "location", text: "Location" },
-      { key: "max_guests", text: "Max number of guests" },
-      { key: "min_guests", text: "Min number of guests" },
-      { key: "name", text: "Name" },
-    ];
-    const collapseColumns = [
-      { key: "start", text: "Start Date" },
-      { key: "end", text: "End Date" },
-    ];
-  
-    const handleFilters = async () => {
-      fetchFilteredAccommodationData(
-        location,
-        numGuests,
-        formatDateTime(start),
-        formatDateTime(end)
-      );
-    };
-    const disableForm = location !== "" && numGuests > 0 && start && end;
-  
-    const formatDateTime = (dateTimeString: string): string => {
-      const date = new Date(dateTimeString);
-      return date.toISOString().slice(0, 19);
-    };
-  
-    return (
-      <>
-        <div>
-          <FormControl
-            variant="outlined"
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
-          >
-            <TextField
-              style={{ margin: "0 10px" }}
-              type="text"
-              id="location"
-              label="Location"
-              value={location}
-              required
-              onChange={(e) => setLocation(e.target.value)}
-            />
-            <TextField
-              style={{ margin: "0 10px", width: "150px" }}
-              type="number"
-              id="numGuests"
-              label="Number of Guests"
-              value={numGuests}
-              required
-              onChange={(e) => setNumGuests(parseInt(e.target.value))}
-            />
-            <TextField
-              style={{ margin: "0 10px" }}
-              type="datetime-local"
-              id="start"
-              label="Arriving Date"
-              value={start}
-              required
-              onChange={(e) => setStart(e.target.value)}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-            <TextField
-              style={{ margin: "0 10px" }}
-              type="datetime-local"
-              id="end"
-              label="Departure Date"
-              value={end}
-              required
-              onChange={(e) => setEnd(e.target.value)}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-  
-            <Button disabled={!disableForm} onClick={handleFilters}>
-              Filter Search
-            </Button>
-          </FormControl>
-        </div>
-        <DoubleTable
-          data={data}
-          columns={columns}
-          collapseColumn="appointments"
-          collapseColumns={collapseColumns}
-        />
-      </>
-    );
+const RatingHost = () => {
+  const { user } = useAuth();
+  const { createRating, updateRating, deleteRating, getRatingsByHost } = useRating();
+
+  const [hostId, setHostId] = useState<string>("");
+  const [rating, setRating] = useState<number>(0);
+  const [ratings, setRatings] = useState<any[]>([]);
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (user && user.hasPreviousReservation) {
+      getRatingsByHost(hostId).then((data: any[]) => {
+        setRatings(data);
+      });
+    }
+  }, [user, hostId, getRatingsByHost]);
+
+  const handleOpenDialog = (hostId: string) => {
+    setHostId(hostId);
+    setOpenDialog(true);
   };
- 
-export default RatingHosts;
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setRating(0);
+    setHostId("");
+  };
+
+  const handleRatingSubmit = async () => {
+    try {
+      if (rating > 0) {
+        const existingRating = ratings.find((r) => r.guestId === user.id);
+        if (existingRating) {
+          await updateRating(existingRating.id, rating);
+        } else {
+          await createRating(hostId, { // Remove the third argument here
+            startDate: "", // Replace with the actual start date
+            endDate: "",   // Replace with the actual end date
+            numGuests: 0,  // Replace with the actual number of guests
+          });
+        }
+  
+        const updatedRatings = await getRatingsByHost(hostId);
+        setRatings(updatedRatings);
+  
+        handleCloseDialog();
+      }
+    } catch (error) {
+      // Handle errors as needed
+    }
+  };
+  const handleDeleteRating = async (ratingId: any) => {
+    try {
+      await deleteRating(ratingId);
+
+      const updatedRatings = await getRatingsByHost(hostId);
+      setRatings(updatedRatings);
+    } catch (error) {
+      // Handle errors as needed
+    }
+  };
+
+  function formatDateTime(date: any): import("react").ReactNode {
+    throw new Error("Function not implemented.");
+  }
+
+  return (
+    <>
+      <div>
+        <Typography variant="h5">Ratings for Host</Typography>
+        <ul>
+          {ratings.map((rating) => (
+            <li key={rating.id}>
+              <span>Rating: {rating.value}</span>
+              <span>Given by: {rating.guestId}</span>
+              <span>Date: {formatDateTime(rating.date)}</span>
+              <Button
+                onClick={() => handleDeleteRating(rating.id)}
+                variant="outlined"
+                color="secondary"
+              >
+                Delete
+              </Button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="rating-dialog-title"
+        aria-describedby="rating-dialog-description"
+      >
+        <DialogTitle id="rating-dialog-title">Rate Host</DialogTitle>
+        <DialogContent>
+          <FormControl>
+            <TextField
+              type="number"
+              label="Rating (1-5)"
+              value={rating}
+              onChange={(e) => setRating(Number(e.target.value))}
+              inputProps={{ min: 1, max: 5 }}
+            />
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleRatingSubmit} color="primary">
+            Submit Rating
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+};
+
+export default RatingHost;

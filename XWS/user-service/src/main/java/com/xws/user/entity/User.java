@@ -1,14 +1,15 @@
 package com.xws.user.entity;
 
+import com.xws.user.repo.RatingRepository;
+import com.xws.user.service.impl.RatingService;
 import jakarta.validation.constraints.Email;
 import lombok.ToString;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @ToString
 @Document(collection = "users")
@@ -30,7 +31,8 @@ public class User {
     private List<Accommodation> accommodations;
     private Integer cancellation_number;
 
-    
+    @Autowired
+    private RatingRepository ratingRepository;
     public User() {
     }
 
@@ -42,6 +44,64 @@ public class User {
         this.email = email;
         this.password = password;
         this.cancellation_number = cancellation_number;
+    }
+
+    public boolean isIstaknutiHost() {
+        // Implement the logic to check if the user meets the conditions
+        // for being an Istaknuti host here based on your data model
+        double minRating = 4.7;
+        double maxCancellationRate = 5.0;
+        int minPastReservations = 5;
+        int minTotalReservationDays = 50;
+
+        // Replace the placeholders with actual logic based on your data
+        boolean meetsRatingCondition = getRating() > minRating;
+        boolean meetsCancellationRateCondition = calculateCancellationRate() < maxCancellationRate;
+        boolean meetsPastReservationsCondition = getReservations() != null && getReservations().size() >= minPastReservations;
+        boolean meetsTotalReservationDaysCondition = calculateTotalReservationDays() > minTotalReservationDays;
+
+        return meetsRatingCondition &&
+                meetsCancellationRateCondition &&
+                meetsPastReservationsCondition &&
+                meetsTotalReservationDaysCondition;
+    }
+
+    private double getRating() {
+        Optional<Rating> userRatingOptional = ratingRepository.findByUserId(id); // Replace with your actual method in the repository
+        if (userRatingOptional.isPresent()) {
+            Rating userRating = userRatingOptional.get();
+            return userRating.getRatingValue(); // Assuming Rating has a field for the rating value
+        }
+        return 0.0;
+    }
+
+    private double calculateCancellationRate() {
+        if (reservations == null || reservations.isEmpty()) {
+            // Handle the case when the user has no reservations
+            return 0.0; // Return 0% cancellation rate
+        }
+
+        int totalReservations = reservations.size();
+        int canceledReservations = 0;
+
+        // Iterate through the user's reservations to count canceled reservations
+        for (Reservation res : reservations) {
+            if (res.isCanceled()) {
+                canceledReservations++;
+            }
+        }
+
+        // Calculate the cancellation rate as a percentage
+        double cancellationRate = ((double) canceledReservations / totalReservations) * 100.0;
+
+        return cancellationRate;
+    }
+
+    private int calculateTotalReservationDays() {
+        // Implement logic to calculate the total reservation days for the user
+        // based on your data model and reservations
+        // Replace this with your actual logic
+        return 0;
     }
 
     public String getFirst_name() {

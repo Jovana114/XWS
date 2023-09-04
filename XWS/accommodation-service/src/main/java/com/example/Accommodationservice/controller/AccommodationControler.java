@@ -325,5 +325,46 @@ public class AccommodationControler {
         }
     }
 
+    @PostMapping("/rate_accommodations/{userId}")
+    public ResponseEntity<String> rateAccommodation(
+            @PathVariable("reservation_id") String reservationId,
+            @PathVariable("guest_id") Long guestId,
+            @PathVariable("accommodation_id") Long accommodationId,
+            @PathVariable("rating") int rating
+    ) {
+        Optional<Reservation> reservationOptional = reservationRepository.findById(reservationId);
+
+        if (reservationOptional.isPresent()) {
+            Reservation reservation = reservationOptional.get();
+
+            if (reservation.getSourceUser().equals(String.valueOf(guestId))) {
+                if (reservation.getAccommodationId().equals(String.valueOf(accommodationId))) {
+                    if (!reservation.getApproved()) {
+                        Rating newRating = new Rating();
+                        newRating.setGuestId(guestId);
+                        newRating.setAccommodationId(accommodationId);
+                        newRating.setRatingValue(rating);
+
+                        ratingRepository.save(newRating);
+
+                        System.out.println("Guest " + guestId + " rated Accommodation " + accommodationId + " with a rating of " + rating);
+
+                        return ResponseEntity.ok("{\"message\": \"Rating added successfully.\"}");
+                    } else {
+                        return ResponseEntity.badRequest().body("{\"error\": \"You cannot rate a reservation that has been approved.\"}");
+                    }
+                } else {
+                    return ResponseEntity.badRequest().body("{\"error\": \"This reservation is not for the specified accommodation.\"}");
+                }
+            } else {
+                return ResponseEntity.badRequest().body("{\"error\": \"You are not authorized to rate this reservation.\"}");
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+
 
 }
