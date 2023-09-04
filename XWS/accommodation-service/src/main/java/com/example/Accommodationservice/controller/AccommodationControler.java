@@ -6,6 +6,9 @@ import com.example.Accommodationservice.model.Reservation;
 import com.example.Accommodationservice.repository.AccommodationRepository;
 import com.example.Accommodationservice.repository.AppointmentRepository;
 import com.example.Accommodationservice.repository.ReservationRepository;
+import com.example.Accommodationservice.service.AccommodationService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xws.accommodation.AddAccommodationToUserOwner;
 import com.xws.accommodation.ApprovingReservationChangeForUserRequest;
 import com.xws.accommodation.UserServiceGrpc;
@@ -48,6 +51,9 @@ public class AccommodationControler {
 
     @Autowired
     ReservationRepository reservationRepository;
+    @Autowired
+    AccommodationService accommodationService;
+    ObjectMapper objectMapper;
 
     @PostMapping("/create/{user_id}")
     public ResponseEntity<?> create(@PathVariable("user_id") String user_id, @RequestBody Accommodation accommodation) {
@@ -364,7 +370,28 @@ public class AccommodationControler {
         }
     }
 
+    @PostMapping("/accommodation/{userId}/search/byPriceRating")
+    public ResponseEntity<String> findAccommodationByPriceRating(
+            @PathVariable("userId") Long userId,
+            @PathVariable("priceMin") Long priceMin,
+            @PathVariable("priceMax") Long priceMax
+    ) {
+        List<Accommodation> accommodations = accommodationService.findAccommodationsByPriceRange(userId, priceMin, priceMax);
 
+        if (accommodations.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        try {
+            // Convert accommodations to JSON
+            String accommodationsJson = objectMapper.writeValueAsString(accommodations);
+
+            // Return JSON response
+            return ResponseEntity.ok(accommodationsJson);
+        } catch (JsonProcessingException e) {
+            // Handle JSON processing exception
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error converting to JSON");
+        }
+    }
 
 
 }

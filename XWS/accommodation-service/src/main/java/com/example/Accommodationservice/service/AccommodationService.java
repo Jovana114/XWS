@@ -8,7 +8,6 @@ import com.example.Accommodationservice.repository.AppointmentRepository;
 import com.example.Accommodationservice.repository.ReservationRepository;
 import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
-import com.xws.accommodation.*;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @GrpcService
@@ -176,5 +176,9 @@ public class AccommodationService extends AccommodationServiceGrpc.Accommodation
         }
         responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();
+    }
+
+    public List<Accommodation> findAccommodationsByPriceRange(Long userId, Long priceMin, Long priceMax) {
+        return accommodationRepository.findByUserIdAndPriceBetween(userId, priceMin, priceMax);
     }
 }
