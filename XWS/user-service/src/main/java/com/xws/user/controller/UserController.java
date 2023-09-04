@@ -79,7 +79,7 @@ public class UserController {
 
             for (Role role : user_found.getRoles()) {
                 if (role.getName() == ERole.ROLE_GUEST) {
-                    if(!user_found.getReservations().isEmpty() && !user_found.getReservations().stream().allMatch(Objects::isNull)) {
+                    if(!user_found.getReservations().isEmpty() || !user_found.getReservations().stream().allMatch(Objects::isNull)) {
                         for (Reservation reservation : user_found.getReservations()) {
                             if (reservation.getApproved() && reservation.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(LocalDate.now())) {
                                 canDeleteUser = false;
@@ -91,7 +91,7 @@ public class UserController {
                         break;
                     }
                 } else if (role.getName() == ERole.ROLE_HOST) {
-                    if(!user_found.getAccommodations().isEmpty()) {
+                    if(!user_found.getAccommodations().isEmpty() || !user_found.getAccommodations().stream().allMatch(Objects::isNull)) {
                         for (Accommodation accommodation : user_found.getAccommodations()) {
                             ManagedChannel channel1 = ManagedChannelBuilder.forAddress("accommodation-service", 8585)
                                     .usePlaintext()

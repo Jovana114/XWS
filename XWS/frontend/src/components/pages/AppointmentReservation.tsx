@@ -41,10 +41,29 @@ const AppointmentReservation = () => {
       text: "Price",
     },
     {
-      key: "totalPrice", // Use a unique key for calculated total price
+      key: "totalPrice",
       text: "Total Price",
-      value: (rowData: any) => rowData.price * numGuests,
-    },
+
+      value: (rowData: any) => {
+        const startDate = new Date(rowData.start);
+        const endDate = new Date(rowData.end);
+        
+        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+          return null;
+        }
+        
+        const timeDifferenceInMilliseconds = endDate.getTime() - startDate.getTime();
+        let daysDifference = timeDifferenceInMilliseconds / (24 * 60 * 60 * 1000);
+      
+        if (daysDifference > 0) {
+          daysDifference -= 1;
+        }
+        
+        return rowData.price * daysDifference;
+      }
+      
+      
+      },
     { key: "price_per", text: "Price For" },
     { key: "auto_reservation", text: "Auto reservation" },
     { key: "reserved", text: "Reserved" },
