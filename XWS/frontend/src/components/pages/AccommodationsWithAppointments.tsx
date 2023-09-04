@@ -16,10 +16,22 @@ const AccommodationsWithAppointments = () => {
     { key: "max_guests", text: "Max number of guests" },
     { key: "min_guests", text: "Min number of guests" },
     { key: "name", text: "Name" },
+    {
+      key: "image",
+      text: "Image",
+      render: (rowData: any) => (
+        <img src={`data:image/jpeg;base64,${rowData.image}`} style={{ maxWidth: "100px" }} />
+      ),
+    },
   ];
+
   const collapseColumns = [
     { key: "start", text: "Start Date" },
     { key: "end", text: "End Date" },
+    { key: "price", text: "Price" },
+    { key: "price_per", text: "Price For" },
+    { key: "auto_reservation", text: "Auto reservation" },
+    { key: "reserved", text: "Reserved" },
   ];
 
   const handleFilters = async () => {

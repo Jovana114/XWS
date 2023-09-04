@@ -1,13 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
 import { Button } from "@mui/material";
 import { withStyles } from "@mui/styles";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 
-// Your other imports...
-
-// Define the styles for the image upload card
 const styles = () => ({
   root: {
     margin: "8px 0",

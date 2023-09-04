@@ -6,39 +6,50 @@ import {
   DialogTitle,
   FormControl,
   TextField,
+  Typography,
 } from "@mui/material";
 import useAccomodation from "../../hooks/useAccommodation";
 import DoubleTable from "../common/Table/DoubleTable";
 import { useState } from "react";
 import useReservation from "../../hooks/useReservation";
 
-const columns = [
-  { key: "benefits", text: "Benefits" },
-  { key: "location", text: "Location" },
-  { key: "max_guests", text: "Max number of guests" },
-  { key: "min_guests", text: "Min number of guests" },
-  { key: "name", text: "Name" },
-];
-const collapseColumns = [
-  { key: "start", text: "Start Date" },
-  { key: "end", text: "End Date" },
-  { key: "price", text: "Price" },
-  { key: "price_per", text: "Price For" },
-  { key: "id", text: "", label: "Reserve" },
-];
-
 const AppointmentReservation = () => {
   const { data, fetchFilteredAccommodationData } = useAccomodation(false);
   const { createReservation } = useReservation();
 
   const [location, setLocation] = useState("");
-  const [numGuests, setNumGuests] = useState(0);
+  const [numGuests, setNumGuests] = useState(1);
   const [start, setStart] = useState<string>(new Date().toISOString());
   const [end, setEnd] = useState<string>(new Date().toISOString());
 
   const [openDialog, setOpenDialog] = useState(false);
 
   const [selectedData, setSelectedData] = useState<any>({});
+
+  const columns = [
+    { key: "benefits", text: "Benefits" },
+    { key: "location", text: "Location" },
+    { key: "max_guests", text: "Max number of guests" },
+    { key: "min_guests", text: "Min number of guests" },
+    { key: "name", text: "Name" },
+  ];
+  const collapseColumns = [
+    { key: "start", text: "Start Date" },
+    { key: "end", text: "End Date" },
+    {
+      key: "price",
+      text: "Price",
+    },
+    {
+      key: "totalPrice", // Use a unique key for calculated total price
+      text: "Total Price",
+      value: (rowData: any) => rowData.price * numGuests,
+    },
+    { key: "price_per", text: "Price For" },
+    { key: "auto_reservation", text: "Auto reservation" },
+    { key: "reserved", text: "Reserved" },
+    { key: "id", text: "", label: "Reserve" },
+  ];
 
   const handleDialogSubmit = async () => {
     try {
@@ -97,39 +108,15 @@ const AppointmentReservation = () => {
             padding: "20px",
           }}
         >
-          <TextField
-            style={{ margin: "10px 0" }}
-            type="datetime-local"
-            id="start"
-            label="Arriving Date"
-            value={start}
-            required
-            onChange={(e) => setStart(e.target.value)}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-          <TextField
-            style={{ margin: "10px 0" }}
-            type="datetime-local"
-            id="end"
-            label="Departure Date"
-            value={end}
-            required
-            onChange={(e) => setEnd(e.target.value)}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-          <TextField
-            style={{ margin: "10px 0" }}
-            type="number"
-            id="numGuestsDialog"
-            label="Number of Guests"
-            value={numGuests}
-            required
-            onChange={(e) => setNumGuests(parseInt(e.target.value))}
-          />
+          <Typography style={{ margin: "10px 0" }}>
+            Arriving date: {start}
+          </Typography>
+          <Typography style={{ margin: "10px 0" }}>
+            Departure date: {end}
+          </Typography>
+          <Typography style={{ margin: "10px 0" }}>
+            Number of Guests: {numGuests}
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
@@ -167,6 +154,9 @@ const AppointmentReservation = () => {
             label="Number of Guests"
             value={numGuests}
             required
+            inputProps={{
+              min: 1,
+            }}
             onChange={(e) => setNumGuests(parseInt(e.target.value))}
           />
           <TextField

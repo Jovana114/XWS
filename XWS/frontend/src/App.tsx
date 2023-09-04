@@ -16,10 +16,10 @@ import Appointment from "./components/pages/Appointment";
 import AppointmentReservation from "./components/pages/AppointmentReservation";
 import ApproveReservation from "./components/pages/ApproveReservation";
 import GuestReservedAppointments from "./components/pages/GuestReservedAppointments";
+import ModifyAppointments from "./components/pages/ModifyAppointments";
 import RatingHosts from "./components/pages/RatingHosts";
-import AccommodationFilter from "./components/pages/AccommodationFilter";
 import RatingAccommodation from "./components/pages/RatingAccommodation";
-import Host from "./components/pages/Host";
+import AccommodationFilter from "./components/pages/AccommodationFilter";
 
 const App: React.FC = () => {
   const { auth } = useContext(AuthContext);
@@ -47,6 +47,15 @@ const App: React.FC = () => {
           </Layout>
         }
       />
+
+      <Route
+        path="/accommodation_filter"
+        element={
+          <Layout>
+            <AccommodationFilter />
+          </Layout>
+        }
+      />
       <Route
         path="/approve_reservation"
         element={
@@ -70,71 +79,85 @@ const App: React.FC = () => {
         element={<Layout>{auth.accessToken ? <Home /> : <Default />}</Layout>}
       />
 
+      {/* protected routes */}
+      <Route element={<RequireAuth allowedRoles={["ROLE_GUEST"]} />}>
+        <Route
+          path="/reserve"
+          element={
+            <Layout>
+              <AppointmentReservation />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/reserved"
+          element={
+            <Layout>
+              <GuestReservedAppointments />
+            </Layout>
+          }
+        />
+
       <Route
-        path="/accommodation_filter"
+        path="/rating_hosts"
         element={
           <Layout>
-            <AccommodationFilter />
+            <RatingHosts />
           </Layout>
         }
       />
 
-      {/* protected routes for ROLE_GUEST */}
-      <Route  element={
-          <RequireAuth allowedRoles={["ROLE_GUEST"]}>
-            <Layout>
-              <Route
-                path="/reserve"
-                element={<AppointmentReservation />}
-              />
-              <Route
-                path="/rating_hosts"
-                element={<RatingHosts />}
-              />
-              <Route
-                path="/rating_accommodation"
-                element={<RatingAccommodation />}
-              />
-              <Route
-                path="/reserved"
-                element={<GuestReservedAppointments />}
-              />
-              <Route
-                path="/accommodation_filter"
-                element={<AccommodationFilter />}
-              />
-            </Layout>
-          </RequireAuth>
-        }
-      />
-
-      {/* protected routes for ROLE_HOST */}
       <Route
+        path="/rate_accommodation"
         element={
-          <RequireAuth allowedRoles={["ROLE_HOST"]}>
+          <Layout>
+            <RatingAccommodation/>
+          </Layout>
+        }
+      />
+      </Route>
+
+      <Route element={<RequireAuth allowedRoles={["ROLE_HOST"]} />}>
+        <Route
+          path="/accommodation"
+          element={
             <Layout>
-              <Route path="/host" element={<Host />} />
-              <Route
-                path="/accommodation"
-                element={<Accommodation />}
-              />
-              <Route
-                path="/appointment"
-                element={<Appointment />}
-              />
+              <Accommodation />
             </Layout>
-          </RequireAuth>
-        }
-      />
+          }
+        />
+        <Route
+          path="/appointment"
+          element={
+            <Layout>
+              <Appointment />
+            </Layout>
+          }
+        />
 
-      {/* protected routes for ROLE_GUEST or ROLE_HOST */}
+        <Route
+          path="/modify_appointments"
+          element={
+            <Layout>
+              <ModifyAppointments />
+            </Layout>
+          }
+        />
+      </Route>
+
       <Route
-        element={<RequireAuth allowedRoles={["ROLE_GUEST", "ROLE_HOST"]}>
-              <Route path="/profile" element={<Profile />} />
-          </RequireAuth>
-        }
-      />
-
+        element={<RequireAuth allowedRoles={["ROLE_GUEST", "ROLE_HOST"]} />}
+      >
+        <Route
+          path="/profile"
+          element={
+            <Layout>
+              <Profile />
+            </Layout>
+          }
+        />
+      </Route>
 
       {/* catch all */}
       <Route

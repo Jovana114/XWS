@@ -94,11 +94,14 @@ const Accommodation = () => {
             onChange={(e) => setMaxGuests(parseInt(e.target.value))}
           />
         </FormControl>
-
         <FormControl variant="outlined">
-          <label>Image:</label>
+          <label htmlFor="image" className="file-label">
+            Image
+          </label>
           <input
             type="file"
+            id="image"
+            accept="image/*"
             onChange={(e) =>
               e.target.files && e.target.files.length > 0
                 ? setImageFile(e.target.files[0])

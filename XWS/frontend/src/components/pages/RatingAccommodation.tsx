@@ -1,213 +1,67 @@
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    FormControl,
-    TextField,
-  } from "@mui/material";
-  import useAccomodation from "../../hooks/useAccommodation";
-  import DoubleTable from "../common/Table/DoubleTable";
-  import { useState } from "react";
-  import useReservation from "../../hooks/useReservation";
-  
-  const columns = [
-    { key: "benefits", text: "Benefits" },
-    { key: "location", text: "Location" },
-    { key: "max_guests", text: "Max number of guests" },
-    { key: "min_guests", text: "Min number of guests" },
-    { key: "name", text: "Name" },
-  ];
-  const collapseColumns = [
-    { key: "start", text: "Start Date" },
-    { key: "end", text: "End Date" },
-    { key: "price", text: "Price" },
-    { key: "price_per", text: "Price For" },
-    { key: "id", text: "", label: "Reserve" },
-  ];
+import { useEffect } from "react";
+import useRatingAccommodation from "../../hooks/useRatingAccommodation";
+import useHandlingReservation from "../../hooks/useHandlingReservation";
+import DoubleTable from "../common/Table/DoubleTable";
 
 const RatingAccommodation = () => {
-    const { data, fetchFilteredAccommodationData } = useAccomodation(false);
-    const { createReservation } = useReservation();
-  
-    const [location, setLocation] = useState("");
-    const [numGuests, setNumGuests] = useState(0);
-    const [start, setStart] = useState<string>(new Date().toISOString());
-    const [end, setEnd] = useState<string>(new Date().toISOString());
-  
-    const [openDialog, setOpenDialog] = useState(false);
-  
-    const [selectedData, setSelectedData] = useState<any>({});
-  
-    const handleDialogSubmit = async () => {
-      try {
-        await createReservation(selectedData.id, {
-          startDate: start,
-          endDate: end,
-          numGuests,
-        });
-        // Additional logic after successful reservation creation
-        setOpenDialog(false);
-      } catch (error) {
-        // Handle errors if necessary
-      }
-    };
-  
-    const handleOpenDialog = (e: any) => {
-      setOpenDialog(true);
-      setSelectedData(e);
-    };
-  
-    const handleCloseDialog = () => {
-      setOpenDialog(false);
-      setSelectedData({});
-    };
-  
-    const handleFilters = async () => {
-      fetchFilteredAccommodationData(
-        location,
-        numGuests,
-        formatDateTime(start),
-        formatDateTime(end)
-      );
-    };
-    const disableForm = location !== "" && numGuests > 0 && start && end;
-  
-    const formatDateTime = (dateTimeString: string): string => {
-      const date = new Date(dateTimeString);
-      return date.toISOString().slice(0, 19);
-    };
-  
-    return (
-      <>
-        <Dialog
-          open={openDialog}
-          onClose={handleCloseDialog}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">
-            {"Confirm Reservation"}
-          </DialogTitle>
-          <DialogContent
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              padding: "20px",
-            }}
-          >
-            <TextField
-              style={{ margin: "10px 0" }}
-              type="datetime-local"
-              id="start"
-              label="Arriving Date"
-              value={start}
-              required
-              onChange={(e) => setStart(e.target.value)}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-            <TextField
-              style={{ margin: "10px 0" }}
-              type="datetime-local"
-              id="end"
-              label="Departure Date"
-              value={end}
-              required
-              onChange={(e) => setEnd(e.target.value)}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-            <TextField
-              style={{ margin: "10px 0" }}
-              type="number"
-              id="numGuestsDialog"
-              label="Number of Guests"
-              value={numGuests}
-              required
-              onChange={(e) => setNumGuests(parseInt(e.target.value))}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog}>Cancel</Button>
-            <Button
-              onClick={handleDialogSubmit}
-              variant="contained"
-              color="primary"
-            >
-              Confirm Reservation
-            </Button>
-          </DialogActions>
-        </Dialog>
-        <div>
-          <FormControl
-            variant="outlined"
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
-          >
-            <TextField
-              style={{ margin: "0 10px" }}
-              type="text"
-              id="location"
-              label="Location"
-              value={location}
-              required
-              onChange={(e) => setLocation(e.target.value)}
-            />
-            <TextField
-              style={{ margin: "0 10px", width: "150px" }}
-              type="number"
-              id="numGuests"
-              label="Number of Guests"
-              value={numGuests}
-              required
-              onChange={(e) => setNumGuests(parseInt(e.target.value))}
-            />
-            <TextField
-              style={{ margin: "0 10px" }}
-              type="datetime-local"
-              id="start"
-              label="Arriving Date"
-              value={start}
-              required
-              onChange={(e) => setStart(e.target.value)}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-            <TextField
-              style={{ margin: "0 10px" }}
-              type="datetime-local"
-              id="end"
-              label="Departure Date"
-              value={end}
-              required
-              onChange={(e) => setEnd(e.target.value)}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-  
-            <Button disabled={!disableForm} onClick={handleFilters}>
-              Filter Search
-            </Button>
-          </FormControl>
-        </div>
-        <DoubleTable
-          data={data}
-          columns={columns}
-          collapseColumn="appointments"
-          collapseColumns={collapseColumns}
-          onColumnButtonClick={(e) => handleOpenDialog(e)}
-        />
-      </>
-    );
+  const { accommodationRatingData, error, submitRating, getRating } = useRatingAccommodation(true);
+
+  useEffect(() => {
+    const accommodationId = "youraccommodationId";
+    getRating(accommodationId);
+  }, []);
+
+  const handleRatingSubmit = (accommodationId: string, rating: number, review: string) => {
+    submitRating(accommodationId, rating, review);
   };
- 
+
+  const { data, cancelReservation } = useHandlingReservation();
+
+  const handleCancelAppointment = (e: any) => {
+    cancelReservation(e.id);
+  };
+
+  const columns = [
+    { key: "accommodationID", text: "Accommodation ID" },
+    { key: "startDate", text: "Start Date" },
+    { key: "endDate", text: "End Date" },
+    { key: "numGuests", text: "Number of Guests" },
+    {
+      key: "id",
+      text: "Cancel",
+      label: "Cancel",
+      function: (e: any) => handleCancelAppointment(e),
+    },
+  ];
+
+  return (
+    <div>
+      <h1>Rating accommodations</h1>
+      {error && <div className="error-message">{error}</div>}
+      <br></br>
+      <div>
+        {/* Display accommodation rating data */}
+        <h2>Accommodation Rating Data</h2>
+        <pre>{JSON.stringify(accommodationRatingData, null, 2)}</pre>
+      </div>
+      <br></br>
+      <div>
+        {/* Rating form */}
+        <h2>Submit Rating</h2>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <input type="text" placeholder="Reservation ID" />
+          <input type="text" placeholder="Accommodation ID" />
+          <input type="number" placeholder="Rating" />
+          <button onClick={() => handleRatingSubmit("youraccommodationId", 5, "Great accommodation!")}>
+            Submit
+          </button>
+        </form>
+      </div>
+      <br></br>
+      <h2>My Reservations</h2>
+      <DoubleTable data={data} columns={columns} />
+    </div>
+  );
+};
+
 export default RatingAccommodation;

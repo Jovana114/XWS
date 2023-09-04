@@ -1,134 +1,45 @@
-import { useState, useEffect } from "react";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  TextField,
-  Typography,
-} from "@mui/material";
-import useAuth from "../../hooks/useAuth";
+import { useEffect } from "react";
 import useRating from "../../hooks/useRating";
 
-const RatingHost = () => {
-  const { user } = useAuth();
-  const { createRating, updateRating, deleteRating, getRatingsByHost } = useRating();
-
-  const [hostId, setHostId] = useState<string>("");
-  const [rating, setRating] = useState<number>(0);
-  const [ratings, setRatings] = useState<any[]>([]);
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
+const RatingHosts = () => {
+  const { hostRatingData, error, submitRating, getRating } = useRating(true);
 
   useEffect(() => {
-    if (user && user.hasPreviousReservation) {
-      getRatingsByHost(hostId).then((data: any[]) => {
-        setRatings(data);
-      });
-    }
-  }, [user, hostId, getRatingsByHost]);
+    const hostId = "yourHostId";
+    getRating(hostId);
+  }, []);
 
-  const handleOpenDialog = (hostId: string) => {
-    setHostId(hostId);
-    setOpenDialog(true);
+  const handleRatingSubmit = (hostId: string, rating: number, review: string) => {
+    submitRating(hostId, rating, review);
   };
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setRating(0);
-    setHostId("");
-  };
-
-  const handleRatingSubmit = async () => {
-    try {
-      if (rating > 0) {
-        const existingRating = ratings.find((r) => r.guestId === user.id);
-        if (existingRating) {
-          await updateRating(existingRating.id, rating);
-        } else {
-          await createRating(hostId, { // Remove the third argument here
-            startDate: "", // Replace with the actual start date
-            endDate: "",   // Replace with the actual end date
-            numGuests: 0,  // Replace with the actual number of guests
-          });
-        }
-  
-        const updatedRatings = await getRatingsByHost(hostId);
-        setRatings(updatedRatings);
-  
-        handleCloseDialog();
-      }
-    } catch (error) {
-      // Handle errors as needed
-    }
-  };
-  const handleDeleteRating = async (ratingId: any) => {
-    try {
-      await deleteRating(ratingId);
-
-      const updatedRatings = await getRatingsByHost(hostId);
-      setRatings(updatedRatings);
-    } catch (error) {
-      // Handle errors as needed
-    }
-  };
-
-  function formatDateTime(date: any): import("react").ReactNode {
-    throw new Error("Function not implemented.");
-  }
 
   return (
-    <>
+    <div>
+      <h1>Rating Hosts</h1>
+      {error && <div className="error-message">{error}</div>}
+      <br></br>
       <div>
-        <Typography variant="h5">Ratings for Host</Typography>
-        <ul>
-          {ratings.map((rating) => (
-            <li key={rating.id}>
-              <span>Rating: {rating.value}</span>
-              <span>Given by: {rating.guestId}</span>
-              <span>Date: {formatDateTime(rating.date)}</span>
-              <Button
-                onClick={() => handleDeleteRating(rating.id)}
-                variant="outlined"
-                color="secondary"
-              >
-                Delete
-              </Button>
-            </li>
-          ))}
-        </ul>
+        {/* Display host rating data */}
+        <h2>Host Rating Data</h2>
+        <pre>{JSON.stringify(hostRatingData, null, 2)}</pre>
       </div>
-
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-        aria-labelledby="rating-dialog-title"
-        aria-describedby="rating-dialog-description"
-      >
-        <DialogTitle id="rating-dialog-title">Rate Host</DialogTitle>
-        <DialogContent>
-          <FormControl>
-            <TextField
-              type="number"
-              label="Rating (1-5)"
-              value={rating}
-              onChange={(e) => setRating(Number(e.target.value))}
-              inputProps={{ min: 1, max: 5 }}
-            />
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleRatingSubmit} color="primary">
-            Submit Rating
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+      <br></br>
+      <div>
+        {/* Rating form */}
+        <h2>Submit Rating</h2>
+        <br></br>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <input type="text" placeholder="Reservation ID" />
+          <input type="text" placeholder="Host ID" />
+          <input type="number" placeholder="Rating" />
+          <button onClick={() => handleRatingSubmit("yourHostId", 5, "Great host!")}>
+            Submit
+          </button>
+        </form>
+      </div>
+    </div>
   );
 };
 
-export default RatingHost;
+export default RatingHosts;

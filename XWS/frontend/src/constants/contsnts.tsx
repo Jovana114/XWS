@@ -6,7 +6,8 @@ export const USERS_URL = "/user/";
 export const ACCOMMODATIONS_URL = "/accommodation/";
 export const APPOINTMENTS_URL = "/appointments/";
 export const RESERVATION_URL = "/reservation/";
-export const RATINGS_URL = "/rating/"
+export const HOSTS_URL = "/rate_hosts/{reservation_id}/{guest_id}/{host_id}/{rating}";
+export const RATE_ACCOMMODATIONS_URL = "/rate_accommodation"
 
 // Add other endpoints as needed
 export const LOGIN_URL = "/auth/signin";

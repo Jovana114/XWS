@@ -25,25 +25,25 @@ const unauthenticatedLinks = [
   { to: "/", label: "Home" },
   { to: "/signin", label: "Sign In" },
   { to: "/signup", label: "Sign Up" },
-  { to: "/accommodation_filter", label: "Accommodation filter" },
+  { to: "/accommodation_filter", label: "Accommodation filter" }
 ];
 
 const guestLinks = [
   { to: "/", label: "Home" },
   { to: "/reserve", label: "Reserve Appointment" },
-  { to: "/reserved", label: "My Appointments" },
+  { to: "/reserved", label: "My Reservation" },
   { to: "/rating_hosts", label: "Rating hosts" },
-  { to: "/rating_accommodation", label: "Rating accommodation" },
-  { to: "/accommodation_filter", label: "Accommodation filter" },
+  { to: "/rate_accommodation", label: "Rating accommodations" },
+  { to: "/accommodation_filter", label: "Accommodation filter" }
 ];
 
 const hostLinks = [
   { to: "/", label: "Home" },
-  { to: "/host", label: "Host" },
-  { to: "/accommodation", label: "Accommodation" },
-  { to: "/appointment", label: "Appointment" },
-  { to: "/approve_reservation", label: "Approve reservation" },
-  { to: "/accommodation_filter", label: "Accommodation filter" },
+  { to: "/accommodation", label: "Create Accommodation" },
+  { to: "/appointment", label: "Create Appointment" },
+  { to: "/approve_reservation", label: "Approve Reservation" },
+  { to: "/modify_appointments", label: "Modify Appointments" },
+  { to: "/accommodation_filter", label: "Accommodation filter" }
 ];
 
 styled(AppBar)(({ theme }) => ({

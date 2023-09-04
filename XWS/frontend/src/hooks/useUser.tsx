@@ -101,9 +101,17 @@ const useUser = () => {
 
   const handleDelete = async () => {
     try {
-      await axiosPrivate.delete(USERS_URL + "delete_user/" + auth.id);
-      toast.success("Account deleted successfully!");
-      logout();
+      const response = await axiosPrivate.delete(
+        USERS_URL + "delete_user/" + auth.id
+      );
+      if (response.data == "User deleted successfully!") {
+        toast.success("Account deleted successfully!");
+        logout();
+      } else {
+        console.log(response.data.message);
+
+        toast.info(response.data.message);
+      }
     } catch (error) {
       toast.error("Failed to delete account.");
     }

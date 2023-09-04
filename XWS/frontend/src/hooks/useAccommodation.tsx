@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axiosPrivate from "../api/axios";
@@ -6,20 +7,63 @@ import { ACCOMMODATIONS_URL } from "../constants/contsnts";
 
 const useAccomodation = (autoFetch: boolean) => {
   const { auth, setLoading } = useContext(AuthContext);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<any[]>([]);
+  const token = localStorage.getItem("token");
 
   const fetchAccommodationData = async () => {
     try {
       const response = await axiosPrivate.get(ACCOMMODATIONS_URL + "all");
-      setData(response.data);
+      const accommodations = response.data;
+
+      const accommodationsWithImages = await loadAccommodationImages(
+        accommodations
+      );
+
+      setData(accommodationsWithImages);
+
       setLoading(false);
     } catch (error) {
       toast.error("Failed to fetch accommodation data");
-    } finally {
       setLoading(false);
     }
   };
-  
+
+  const loadAccommodationImages = async (accommodationsToLoad: any) => {
+    const updatedAccommodationsPromises = accommodationsToLoad.map(
+      async (accommodation: any) => {
+        try {
+          const imageResponse = await axiosPrivate.get(
+            ACCOMMODATIONS_URL + `images/${accommodation.id}.jpeg`,
+            { responseType: "blob" }
+          );
+
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              accommodation.image = reader.result;
+              resolve(accommodation);
+            };
+            reader.onerror = (error) => {
+              console.error(
+                `Error converting image for accommodation ID ${accommodation.id}:`,
+                error
+              );
+              reject(error);
+            };
+            reader.readAsDataURL(imageResponse.data);
+          });
+        } catch (error) {
+          console.error(
+            `Error fetching image for accommodation ID ${accommodation.id}:`,
+            error
+          );
+          return accommodation;
+        }
+      }
+    );
+
+    return Promise.all(updatedAccommodationsPromises);
+  };
 
   const fetchFilteredAccommodationData = async (
     location: string,
@@ -39,6 +83,7 @@ const useAccomodation = (autoFetch: boolean) => {
           },
         }
       );
+
       setData(response.data);
       setLoading(false);
     } catch (error) {
@@ -57,8 +102,7 @@ const useAccomodation = (autoFetch: boolean) => {
     imageFile: File
   ) => {
     try {
-
-      await axiosPrivate.post(
+      const createAccommodationResponse = await axiosPrivate.post(
         ACCOMMODATIONS_URL + "create/" + auth.id,
         {
           name,
@@ -67,50 +111,39 @@ const useAccomodation = (autoFetch: boolean) => {
           min_guests,
           max_guests,
         }
-      ).then((response: any) => {
-        console.log("response:", response);
-        appendImage(response.data.id, imageFile)
-      })
+      );
+
+      console.log("Accommodation created:", createAccommodationResponse);
+
+      if (imageFile) {
+        const accommodationId = createAccommodationResponse.data.id;
+        const setImageURL =
+          ACCOMMODATIONS_URL + `add_image/${accommodationId}/image`;
+        const formData = new FormData();
+        formData.append("file", imageFile);
+
+        await axiosPrivate.put(setImageURL, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        console.log("Image uploaded successfully");
+      }
 
       toast.success("Successfully created accommodation");
       fetchAccommodationData();
-
     } catch (error) {
-      console.error("Error Creating Accommodation:", error);
+      console.error("Error creating accommodation:", error);
       toast.error("Failed to create accommodation");
     } finally {
       setLoading(false);
     }
   };
 
-  const appendImage = async (url: string, imageFile: any) => {
-    try {
-      setLoading(true)
-      const setImageURL = ACCOMMODATIONS_URL + `add_image/${url}/image`
-      const formData = new FormData();
-      formData.append("file", imageFile);
-
-      console.log("formData:", formData.get("file"));
-
-      await axiosPrivate.put(setImageURL, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-
-      setLoading(false);
-    } catch (error) {
-      toast.error("Appending image failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
   useEffect(() => {
-    if (autoFetch)
-      fetchAccommodationData();
+    if (autoFetch) fetchAccommodationData();
   }, []);
 
   return { data, fetchFilteredAccommodationData, createAccomodation };

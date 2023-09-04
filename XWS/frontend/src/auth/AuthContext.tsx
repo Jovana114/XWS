@@ -14,12 +14,10 @@ export interface AuthData {
   username?: string;
   accessToken?: string;
   roles?: string[];
-  hasPreviousReservation?: boolean; // Add the hasPreviousReservation property
 }
 
 export interface AuthContextValue {
   auth: AuthData;
-  user: AuthData; 
   loading: boolean;
   setLoading: (data: boolean) => void;
   setAuth: React.Dispatch<SetStateAction<AuthData>>;
@@ -28,7 +26,6 @@ export interface AuthContextValue {
 
 export const AuthContext = createContext<AuthContextValue>({
   auth: {},
-  user: {}, 
   loading: true,
   setLoading: () => {},
   setAuth: () => {},
@@ -80,7 +77,6 @@ export const AuthProvider = (props: AuthProps) => {
 
   const authContextValue: AuthContextValue = {
     auth,
-    user: auth, // Set user to auth initially
     loading,
     setLoading: updateLoading,
     setAuth: updateAuthData,
