@@ -20,7 +20,6 @@ const useAccomodation = (autoFetch: boolean) => {
       );
 
       setData(accommodationsWithImages);
-
       setLoading(false);
     } catch (error) {
       toast.error("Failed to fetch accommodation data");
