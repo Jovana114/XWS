@@ -370,7 +370,7 @@ public class AccommodationControler {
         }
     }
 
-    @PostMapping("/accommodation/{userId}/search/byPriceRating")
+    @PostMapping("/{userId}/search/byPriceRating")
     public ResponseEntity<String> findAccommodationByPriceRating(
             @PathVariable("userId") Long userId,
             @PathVariable("priceMin") Long priceMin,

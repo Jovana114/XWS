@@ -11,6 +11,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.*;
 
+import static com.xws.user.entity.ERole.ROLE_HOST;
+
 @ToString
 @Document(collection = "users")
 public class User {
@@ -30,8 +32,8 @@ public class User {
     @DBRef
     private List<Accommodation> accommodations;
     private Integer cancellation_number;
+    private boolean highlighted;
 
-    @Autowired
     private RatingRepository ratingRepository;
     public User() {
     }
@@ -47,8 +49,7 @@ public class User {
     }
 
     public boolean isIstaknutiHost() {
-        // Implement the logic to check if the user meets the conditions
-        // for being an Istaknuti host here based on your data model
+        
         double minRating = 4.7;
         double maxCancellationRate = 5.0;
         int minPastReservations = 5;
@@ -65,6 +66,7 @@ public class User {
                 meetsPastReservationsCondition &&
                 meetsTotalReservationDaysCondition;
     }
+
 
     private double getRating() {
         Optional<Rating> userRatingOptional = ratingRepository.findByUserId(id); // Replace with your actual method in the repository
@@ -86,7 +88,7 @@ public class User {
 
         // Iterate through the user's reservations to count canceled reservations
         for (Reservation res : reservations) {
-            if (res.isCanceled()) {
+            if (res.getCanceled()) {
                 canceledReservations++;
             }
         }
@@ -95,13 +97,6 @@ public class User {
         double cancellationRate = ((double) canceledReservations / totalReservations) * 100.0;
 
         return cancellationRate;
-    }
-
-    private int calculateTotalReservationDays() {
-        // Implement logic to calculate the total reservation days for the user
-        // based on your data model and reservations
-        // Replace this with your actual logic
-        return 0;
     }
 
     public String getFirst_name() {
@@ -191,4 +186,6 @@ public class User {
     public void setCancellation_number(Integer cancellation_number) {
         this.cancellation_number = cancellation_number;
     }
+
+
 }

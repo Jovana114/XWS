@@ -101,4 +101,7 @@ public class Reservation {
     public void setIdAppointment(String idAppointment) {
         this.idAppointment = idAppointment;
     }
+
+    public Object getHostId() {
+    }
 }

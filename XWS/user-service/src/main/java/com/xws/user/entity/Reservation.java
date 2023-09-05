@@ -1,3 +1,5 @@
+package com.xws.user.entity;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -108,4 +110,5 @@ public class Reservation {
     public void setCanceled(Boolean canceled) {
         this.canceled = canceled;
     }
+
 }

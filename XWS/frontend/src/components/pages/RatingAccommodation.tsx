@@ -11,8 +11,8 @@ const RatingAccommodation = () => {
     getRating(accommodationId);
   }, []);
 
-  const handleRatingSubmit = (accommodationId: string, rating: number, review: string) => {
-    submitRating(accommodationId, rating, review);
+  const handleRatingSubmit = (accommodationId: string, rating: number) => {
+    submitRating(accommodationId, rating);
   };
 
   const { data, cancelReservation } = useHandlingReservation();
@@ -23,9 +23,6 @@ const RatingAccommodation = () => {
 
   const columns = [
     { key: "accommodationID", text: "Accommodation ID" },
-    { key: "startDate", text: "Start Date" },
-    { key: "endDate", text: "End Date" },
-    { key: "numGuests", text: "Number of Guests" },
     {
       key: "id",
       text: "Cancel",
@@ -36,31 +33,22 @@ const RatingAccommodation = () => {
 
   return (
     <div>
+      
       <h1>Rating accommodations</h1>
-      {error && <div className="error-message">{error}</div>}
       <br></br>
       <div>
-        {/* Display accommodation rating data */}
-        <h2>Accommodation Rating Data</h2>
-        <pre>{JSON.stringify(accommodationRatingData, null, 2)}</pre>
-      </div>
-      <br></br>
-      <div>
-        {/* Rating form */}
-        <h2>Submit Rating</h2>
         <form onSubmit={(e) => e.preventDefault()}>
-          <input type="text" placeholder="Reservation ID" />
-          <input type="text" placeholder="Accommodation ID" />
-          <input type="number" placeholder="Rating" />
-          <button onClick={() => handleRatingSubmit("youraccommodationId", 5, "Great accommodation!")}>
+          <input type="text" name="accommodationID" placeholder="Accommodation ID" />
+          <input type="number" placeholder="Rating (1-5)" />
+          <button onClick={() => { handleRatingSubmit("1", 2, "Great accommodation!")}}>
             Submit
           </button>
         </form>
       </div>
       <br></br>
       <h2>My Reservations</h2>
-      <DoubleTable data={data} columns={columns} />
-    </div>
+      <DoubleTable data={data} columns={columns} />          
+    </div>    
   );
 };
 

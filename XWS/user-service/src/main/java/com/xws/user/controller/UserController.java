@@ -4,6 +4,7 @@ import com.xws.accommodation.AccommodationServiceGrpc;
 import com.xws.accommodation.CheckIfAccommodationHasActiveReservationsRequest;
 import com.xws.accommodation.CheckIfAccommodationHasActiveReservationsResponse;
 import com.xws.accommodation.UserServiceGrpc;
+import com.xws.reservation.entity.Reservation;
 import com.xws.user.entity.*;
 import com.xws.user.payload.response.MessageResponse;
 import com.xws.user.repo.RatingRepository;
@@ -15,6 +16,7 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api/user")
@@ -143,7 +146,11 @@ public class UserController {
     }
 
     @PostMapping("/rate_host/{reservation_id}/{guest_id}/{host_id}/{rating}")
-    public ResponseEntity<String> rateHost(@PathVariable("reservation_id") String reservationId, @PathVariable("guest_id") String guestId, @PathVariable("host_id") String hostId, @PathVariable("rating") int rating) {
+    public ResponseEntity<Object> rateHost(
+            @PathVariable("reservation_id") String reservationId,
+            @PathVariable("guest_id") String guestId,
+            @PathVariable("host_id") String hostId,
+            @PathVariable("rating") int rating) {
         Optional<Reservation> reservationOptional = reservationRepository.findById(reservationId);
 
         if (reservationOptional.isPresent()) {
@@ -161,7 +168,7 @@ public class UserController {
 
                         System.out.println("Guest " + guestId + " rated Host " + hostId + " with a rating of " + rating);
 
-                        return ResponseEntity.ok("{\"message\": \"Rating added successfully.\"}");
+                        return ResponseEntity.ok().body("{\"message\": \"Rating added successfully.\"}");
                     } else {
                         return ResponseEntity.badRequest().body("{\"error\": \"You cannot rate a reservation that has been approved.\"}");
                     }
@@ -169,7 +176,7 @@ public class UserController {
                     return ResponseEntity.badRequest().body("{\"error\": \"This reservation is not for the specified host.\"}");
                 }
             } else {
-                return ResponseEntity.badRequest().body("{\"error\": \"You are not authorized to rate this reservation.\"}");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"error\": \"You are not authorized to rate this reservation.\"}");
             }
         } else {
             return ResponseEntity.notFound().build();
