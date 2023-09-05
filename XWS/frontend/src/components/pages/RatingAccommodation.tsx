@@ -1,19 +1,27 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useRatingAccommodation from "../../hooks/useRatingAccommodation";
 import useHandlingReservation from "../../hooks/useHandlingReservation";
 import DoubleTable from "../common/Table/DoubleTable";
 
 const RatingAccommodation = () => {
+  
   const { accommodationRatingData, error, submitRating, getRating } = useRatingAccommodation(true);
+  const [accommodationID, setAccommodationID] = useState(""); 
+  const [rating, setRating] = useState(0);
 
   useEffect(() => {
     const accommodationId = "youraccommodationId";
     getRating(accommodationId);
   }, []);
 
-  const handleRatingSubmit = (accommodationId: string, rating: number) => {
-    submitRating(accommodationId, rating);
+  const handleRatingSubmit = async (e: any) => {
+    e.preventDefault();
+      submitRating(
+        accommodationID,
+        rating
+      );    
   };
+
 
   const { data, cancelReservation } = useHandlingReservation();
 

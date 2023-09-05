@@ -4,7 +4,6 @@ import com.xws.accommodation.AccommodationServiceGrpc;
 import com.xws.accommodation.CheckIfAccommodationHasActiveReservationsRequest;
 import com.xws.accommodation.CheckIfAccommodationHasActiveReservationsResponse;
 import com.xws.accommodation.UserServiceGrpc;
-import com.xws.reservation.entity.Reservation;
 import com.xws.user.entity.*;
 import com.xws.user.payload.response.MessageResponse;
 import com.xws.user.repo.RatingRepository;
@@ -62,7 +61,6 @@ public class UserController {
         }
     }
 
-
     @PutMapping("/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable String userId, @RequestBody User updatedUser) {
         userService.updateUser(userId, updatedUser);
@@ -86,7 +84,7 @@ public class UserController {
             for (Role role : user_found.getRoles()) {
                 if (role.getName() == ERole.ROLE_GUEST) {
                     if(!user_found.getReservations().isEmpty()) {
-                        for (Reservation reservation : user_found.getReservations()) {
+                        for (com.xws.user.entity.Reservation reservation : user_found.getReservations()) {
                             if (reservation.getApproved() && reservation.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(LocalDate.now())) {
                                 canDeleteUser = false;
                                 break;
@@ -151,10 +149,10 @@ public class UserController {
             @PathVariable("guest_id") String guestId,
             @PathVariable("host_id") String hostId,
             @PathVariable("rating") int rating) {
-        Optional<Reservation> reservationOptional = reservationRepository.findById(reservationId);
+        Optional<com.xws.user.entity.Reservation> reservationOptional = reservationRepository.findById(reservationId);
 
         if (reservationOptional.isPresent()) {
-            Reservation reservation = reservationOptional.get();
+            com.xws.user.entity.Reservation reservation = reservationOptional.get();
 
             if (reservation.getSourceUser().equals(guestId)) {
                 if (reservation.getHostId().equals(hostId)) {
@@ -194,14 +192,12 @@ public class UserController {
             boolean meetsConditions = checkIstaknutiHostConditions(user);
 
             if (meetsConditions) {
-                // Assign the "Istaknuti host" status if not already assigned
                 if (!user.isIstaknutiHost()) {
                     user.setIstaknutiHost(true);
                     userRepository.save(user);
                 }
                 return ResponseEntity.ok("User is an Istaknuti host.");
             } else {
-                // Remove the "Istaknuti host" status if it was assigned
                 if (user.isIstaknutiHost()) {
                     user.setIstaknutiHost(false);
                     userRepository.save(user);
@@ -214,7 +210,6 @@ public class UserController {
     }
 
     private boolean checkIstaknutiHostConditions(User user) {
-        // Check if the user meets the conditions for Istaknuti host
         double minRating = 4.7;
         double maxCancellationRate = 5.0;
         int minPastReservations = 5;
@@ -232,18 +227,12 @@ public class UserController {
     }
 
     private double calculateCancellationRate(User user) {
-        // Implement logic to calculate the cancellation rate for the user
-        // You will need to fetch the relevant data and perform the calculation
-        // Return the cancellation rate as a percentage (e.g., 4.5 for 4.5%)
-        // Replace this with your actual calculation
+
         return 0.0;
     }
 
     private int calculateTotalReservationDays(User user) {
-        // Implement logic to calculate the total reservation days for the user
-        // You will need to fetch the relevant data and perform the calculation
-        // Return the total reservation days
-        // Replace this with your actual calculation
+
         return 0;
     }
 }

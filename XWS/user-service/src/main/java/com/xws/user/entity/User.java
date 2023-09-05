@@ -49,13 +49,12 @@ public class User {
     }
 
     public boolean isIstaknutiHost() {
-        
+
         double minRating = 4.7;
         double maxCancellationRate = 5.0;
         int minPastReservations = 5;
         int minTotalReservationDays = 50;
 
-        // Replace the placeholders with actual logic based on your data
         boolean meetsRatingCondition = getRating() > minRating;
         boolean meetsCancellationRateCondition = calculateCancellationRate() < maxCancellationRate;
         boolean meetsPastReservationsCondition = getReservations() != null && getReservations().size() >= minPastReservations;
@@ -67,33 +66,34 @@ public class User {
                 meetsTotalReservationDaysCondition;
     }
 
+    private int calculateTotalReservationDays() {
+        return 0;
+    }
 
-    private double getRating() {
-        Optional<Rating> userRatingOptional = ratingRepository.findByUserId(id); // Replace with your actual method in the repository
+
+    public double getRating() {
+        Optional<Rating> userRatingOptional = ratingRepository.findByUserId(id);
         if (userRatingOptional.isPresent()) {
             Rating userRating = userRatingOptional.get();
-            return userRating.getRatingValue(); // Assuming Rating has a field for the rating value
+            return userRating.getRatingValue();
         }
         return 0.0;
     }
 
     private double calculateCancellationRate() {
         if (reservations == null || reservations.isEmpty()) {
-            // Handle the case when the user has no reservations
-            return 0.0; // Return 0% cancellation rate
+            return 0.0;
         }
 
         int totalReservations = reservations.size();
         int canceledReservations = 0;
 
-        // Iterate through the user's reservations to count canceled reservations
         for (Reservation res : reservations) {
             if (res.getCanceled()) {
                 canceledReservations++;
             }
         }
 
-        // Calculate the cancellation rate as a percentage
         double cancellationRate = ((double) canceledReservations / totalReservations) * 100.0;
 
         return cancellationRate;
@@ -188,4 +188,7 @@ public class User {
     }
 
 
+    public void setIstaknutiHost(boolean b) {
+
+    }
 }
