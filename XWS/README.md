@@ -17,3 +17,16 @@ Microservices Architecture: The project follows a microservices architecture, pr
 gRPC Communication: Microservices communicate efficiently using gRPC, ensuring seamless data exchange between different components of the system.
 
 Airbnb-Inspired Design: The user interface and overall design draw inspiration from Airbnb, providing users with a familiar and intuitive experience.
+
+To run the project locally using Docker Compose, follow these steps:
+
+Clone the repository:
+https://github.com/Jovana114/XWS.git
+
+Build and run the project:
+cd resources
+docker-compose up
+
+cd frontend
+npm install
+npm run dev
