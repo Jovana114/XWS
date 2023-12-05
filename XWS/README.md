@@ -1,10 +1,8 @@
-Overview
 This project is a full-stack application built with Java Spring, React, and Maven, utilizing a microservices architecture with communication facilitated through gRPC. The application, inspired by Airbnb, provides a user-friendly platform.
 
-Technologies Used
 Java Spring: The backend of the application is developed using the Java Spring framework, providing a robust and scalable foundation for building enterprise-level applications.
 
-React: The frontend is built using React, a popular JavaScript library for building user interfaces. React allows for the creation of dynamic and responsive UI components.
+React: The frontend is built using React, a popular TypeScript library for building user interfaces. React allows for the creation of dynamic and responsive UI components.
 
 Maven: Maven serves as the build tool for the project, simplifying the build process and managing project dependencies.
 
@@ -12,18 +10,10 @@ gRPC: Microservices communicate seamlessly using gRPC, a high-performance, open-
 
 MongoDB: The project utilizes MongoDB as the database system, offering a flexible and scalable NoSQL solution for storing and retrieving data.
 
-Containerization
 Docker: The application is containerized using Docker, allowing seamless packaging and deployment across diverse environments.
 
-Features
 Microservices Architecture: The project follows a microservices architecture, promoting scalability, maintainability, and fault isolation by organizing functionalities into independent microservices.
 
 gRPC Communication: Microservices communicate efficiently using gRPC, ensuring seamless data exchange between different components of the system.
 
 Airbnb-Inspired Design: The user interface and overall design draw inspiration from Airbnb, providing users with a familiar and intuitive experience.
-
-Getting Started
-To run the project locally, follow these steps:
-
-Clone the repository:
-Build and run the project:
