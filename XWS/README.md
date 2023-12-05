@@ -23,10 +23,11 @@ To run the project locally using Docker Compose, follow these steps:
 Clone the repository:
 https://github.com/Jovana114/XWS.git
 
-Build and run the project:
+Build and run the project - backend:
 1. cd resources
 2. docker-compose up
 
+Build and run the project - frontend:
 1. cd frontend
 2. npm install
 3. npm run dev
