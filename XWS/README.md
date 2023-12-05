@@ -24,9 +24,9 @@ Clone the repository:
 https://github.com/Jovana114/XWS.git
 
 Build and run the project:
-cd resources
-docker-compose up
+1. cd resources
+2. docker-compose up
 
-cd frontend
-npm install
-npm run dev
+1. cd frontend
+2. npm install
+3. npm run dev
